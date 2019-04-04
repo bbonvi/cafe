@@ -1,0 +1,13 @@
+{
+    "name": "bona.cafe",
+    "short_name": "bona.cafe",
+    "icons": [
+        {
+            "src": "/static/favicons/android-chrome-192x192.png?v=69PYNbeEvr",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#202c36",
+    "background_color": "#202c36"
+}

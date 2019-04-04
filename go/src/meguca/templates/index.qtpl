@@ -1,0 +1,206 @@
+{% import "meguca/config" %}
+{% import "meguca/lang" %}
+{% import "meguca/auth" %}
+
+{% func renderHeader(l string, cs config.BoardConfigs, status bool) %}{% stripspace %}
+	<header class="header">
+		<a class="header-item header-logo" href="/all/" title="{%s lang.Get(l, "main") %}">
+			<i class="logo"></i>
+		</a>
+		{% comment %} <a class="header-item header-board" href="/all/">{%s lang.Get(l, "aggregator") %}</a> {% endcomment %}
+		{% for _, conf := range cs %}
+			<a class="header-item header-board" href="/{%s conf.ID %}/">{%s conf.Title %}</a>
+		{% endfor %}
+		<div class="header-spacer"></div>
+		{% if status %}
+		<span class="header-item header-status" title="{%s lang.Get(l, "sync") %}">
+			<i class="fa fa-spinner fa-pulse fa-fw"></i>
+		</span>
+		{% endif %}
+		<a class="header-item header-icon header-faq-icon" title="{%s lang.Get(l, "FAQ") %}">
+			<i class="fa fa-info-circle"></i>
+		</a>
+		<a class="header-item header-icon header-account-icon" title="{%s lang.Get(l, "account") %}">
+			<i class="fa fa-user-circle-o"></i>
+		</a>
+		<a class="header-item header-icon header-options-icon" title="{%s lang.Get(l, "options") %}">
+			<i class="fa fa-gear"></i>
+		</a>
+	</header>
+{% endstripspace %}{% endfunc %}
+
+{% func renderPage(ss *auth.Session, l, title, page string, status bool) %}{% stripspace %}
+	{% code conf := config.Get() %}
+	{% code confJSON := config.GetJSON() %}
+	{% code boards := config.GetBoardConfigs() %}
+	{% code boardsJSON := config.GetBoardsJSON() %}
+	{% code sessionJSON := ss.TryMarshal() %}
+	{% code pos := ss.GetPositions() %}
+	<!DOCTYPE html>
+	<html class="{%s posClasses(pos) %}">
+	<head>
+		<meta charset="utf-8">
+		<script>
+		function check_webp_feature(feature, callback) {
+				var kTestImages = {
+						lossy: "UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA",
+						lossless: "UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
+						alpha: "UklGRkoAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAwAAAARBxAR/Q9ERP8DAABWUDggGAAAABQBAJ0BKgEAAQAAAP4AAA3AAP7mtQAAAA==",
+						animation: "UklGRlIAAABXRUJQVlA4WAoAAAASAAAAAAAAAAAAQU5JTQYAAAD/////AABBTk1GJgAAAAAAAAAAAAAAAAAAAGQAAABWUDhMDQAAAC8AAAAQBxAREYiI/gcA"
+				};
+				var img = new Image();
+				img.onload = function () {
+						var result = (img.width > 0) && (img.height > 0);
+						callback(feature, result);
+				};
+				img.onerror = function () {
+						callback(feature, false);
+				};
+				img.src = "data:image/webp;base64," + kTestImages[feature];
+		}
+
+		check_webp_feature('lossy', function (feature, isSupported) {
+				if (!isSupported) {
+					var html = document.documentElement;
+					html.classList.add('no-webp');
+				} 
+				if (isSupported) {
+					var html = document.documentElement;
+					html.classList.add('has-webp');
+				} 
+		});
+		</script> 
+		<link rel="preload" href="/static/css/dark.css" as="style">
+		<link rel="preload" href="/static/css/light.css" as="style">
+		<link rel="stylesheet" href="/static/css/light.css" class="theme-temp">
+		<link rel="stylesheet" href="/static/css/dark.css" class="theme-temp">
+		<link rel="preload" href="https://fonts.gstatic.com/s/montserrat/v12/JTURjIg1_i6t8kCHKm45_c5H3g3D_u50.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+		<link rel="preload" href="https://fonts.gstatic.com/s/montserrat/v12/JTURjIg1_i6t8kCHKm45_c5H3gnD_g.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+		<link rel="preload" href="/static/fonts/fontawesome-webfont.woff2?v=4.7.0" as="font" type="font/woff2" crossorigin="anonymous">
+		<link rel="preload" href="/static/js/loader.js" as="script">
+		<link rel="preload" href="/static/js/app.js" as="script">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="application-name" content="Bona.cafe">
+		<meta name="description" content="Bona.cafe">
+		<title>{%s title %}</title>
+		<link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png">
+		<link rel="shortcut icon" type="image/png" sizes="192x192" href="/static/mobile/icon192.png">
+		<link rel="manifest" href="/static/favicons/site.webmanifest">
+		<link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg" color="#202c36">
+		<link rel="shortcut icon" href="/static/favicons/default.ico" id="favicon">
+		<meta name="apple-mobile-web-app-title" content="bona.cafe">
+		<meta name="msapplication-TileColor" content="#202c36">
+		<meta name="msapplication-config" content="/static/favicons/browserconfig.xml">
+		<meta name="theme-color" content="#202c36">
+		<script>
+			var html = document.documentElement;
+			html.classList.add('page-loaded');
+		</script> 
+		<link rel="stylesheet" href="/static/css/{%s conf.DefaultCSS %}.css" id="theme-css">
+		<script id="style-script">
+			var styles = document.getElementsByClassName('theme-temp');
+			styles[0].href = '';
+			styles[1].href = '';
+		</script>
+		{% if conf.ImageRootOverride != "" %}
+			<link rel="dns-prefetch" href="{%s conf.ImageRootOverride %}">
+		{% endif %}
+		<style id="ignore-css">
+			{%= generateIgnoreCSS(ss) %}
+		</style>
+
+		<script>
+			var lang="{%s l %}",config={%z= confJSON %},boards={%z= boardsJSON %},session={%z= sessionJSON %};
+			if (localStorage.theme !== config.DefaultCSS) {
+				document.getElementById("theme-css").href = "/static/css/" + localStorage.theme + ".css";
+			}
+		</script>
+	</head>
+	<body>
+		{%= renderHeader(l, boards, status) %}
+		<main class="main">{%s= page %}</main>
+		<aside class="alerts-container"></aside>
+		<aside class="hover-container"></aside>
+		<aside class="popup-container"></aside>
+		<aside class="modal-container">
+			<div class="modal faq-modal"></div>
+			{%= accountModal(ss, l) %}
+			{%= optionsModal(l) %}
+		</aside>
+		<script src="/static/js/loader.js"></script>
+	</body>
+	</html>
+{% endstripspace %}{% endfunc %}
+
+Custom not found page.
+{% func NotFound(l string) %}{% stripspace %}
+	{% code conf := config.Get() %}
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="/static/css/{%s conf.DefaultCSS %}.css" id="theme-css">
+		<link rel="icon" href="/static/favicons/default.ico">
+		<title>{%s lang.Get(l, "notFound") %}</title>
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+			}
+			body {
+				color: #fff;
+				background: #131416;
+				font-family: Helvetica, sans-serif;
+			}
+			main {
+				height: 100%;
+				display: flex;
+				text-align: center;
+				flex-direction: column;
+				justify-content: center;
+				background: center/contain no-repeat url(/static/img/404.jpg);
+			}
+			div {
+				background: center/contain no-repeat url(/static/img/404.jpg);
+				background-size: 100%;
+				filter: blur(20px);
+				transform: scale(1.1);
+				position: fixed;
+				top: 0;
+				bottom: 0;
+				width: 100%;
+				z-index: -1;
+		}
+			h1 {
+				margin: 0;
+				padding: 0px;
+				font-size: 110px;
+				font-weight: 800;
+				letter-spacing: -.002em;
+				font-family: Montserrat;
+				color: #eee;
+			}
+			h2 {
+				font-size: 30px;
+				margin: 0;
+				padding: 0px;
+				letter-spacing: -.002em;
+				font-weight: normal;
+				color: #eee;
+				line-height: 0;
+				letter-spacing: -.002em;
+				font-family: 'Open Sans';
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>404</h1>
+			<h2>{%s lang.Get(l, "notFound") %}</h2>
+		</main>
+		<div>
+		</div>
+	</body>
+	</html>
+{% endstripspace %}{% endfunc %}

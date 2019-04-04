@@ -1,0 +1,32 @@
+# Enable debug server routes (pprof).
+#debug = false
+
+# Host to listen on.
+host = "127.0.0.1"
+
+# Port to listen on.
+port = 8090
+
+# PostgreSQL connection string.
+conn = "user=postgres password=123 dbname=test sslmode=disable"
+
+# Assume server is behind reverse proxy when resolving client IPs.
+rproxy = true
+
+# Use secure cookies.
+#secure = false
+
+# Spawn thumbnail process as separate user.
+#user = ""
+
+# Cache size in megabytes.
+#cache = 128
+
+# Site directory location.
+#site_dir = "./dist"
+
+# Uploads directory location.
+#file_dir = "./uploads"
+
+# GeoIP databases directory location.
+#geo_dir = "./geoip"

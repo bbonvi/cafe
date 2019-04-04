@@ -1,0 +1,45 @@
+<article class="{{ PostClass }}" id="post{{ ID }}" data-id="{{ ID }}">
+
+  <header class="post-header">
+    <a class="post-anchor" name="{{ ID }}"></a>
+    {{#HasBoard}}
+      <a class="post-header-item post-board" href="/{{ Board }}/">{{ Board }}</a>
+    {{/HasBoard}}
+    {{#OP}}
+      <h3 class="post-header-item post-subject">{{ Subject }}</h3>
+    {{/OP}}
+    <a class="post-header-item post-id" href="{{ URL }}">#{{ ID }}</a>
+    <span style="{{ #ShowColor }}color:#{{ Color }}{{/ ShowColor }}" class="post-header-item post-name trigger-ignore-user">{{ Name }}</span>
+    {{#Badge}}
+      <span class="post-header-item post-badge">### {{ Auth }} ###</span>
+    {{/Badge}}
+    <time class="post-header-item post-time">{{ Time }}</time>
+  </header>
+
+  <section class="post-body">
+    {{#HasFiles}}
+      <div class="post-files">
+        {{#Files}}{{{.}}}{{/Files}}
+      </div>
+    {{/HasFiles}}
+    <blockquote class="post-message">
+      {{{Body}}}
+    </blockquote>
+  </section>
+
+  <footer class="post-footer">
+    <div class="post-backlinks">{{{Backlinks}}}</div>
+    <div class="post-controls">
+      <a class="control post-control post-delete-control trigger-delete-post">
+        <i class="fa fa-remove trigger-delete-post"></i>
+      </a>
+      <a class="control post-control post-ban-control trigger-ban-by-post">
+        <i class="fa fa-gavel trigger-ban-by-post"></i>
+      </a>
+      <a class="control post-control post-quote-control trigger-quote-post">
+        <span class="fa fa-reply trigger-quote-post"></span> 
+      </a>
+    </div>
+  </footer>
+
+</article>

@@ -1,0 +1,703 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+msgid "boardName"
+msgstr "Name"
+
+msgid "boardNameTitle"
+msgstr "Name of the new board. Can contain up to 10 lowercase Latin letters or numbers."
+
+msgid "boardTitle"
+msgstr "Title"
+
+msgid "boardTitleTitle"
+msgstr "Title of the new board, such as 'K-pop music'. Up to 100 characters long."
+
+msgid "defaultCSS"
+msgstr "Default theme"
+
+msgid "defaultCSSTitle"
+msgstr "Theme to load by default, when none is set by the client"
+
+msgid "id"
+msgstr "Login"
+
+msgid "ops"
+msgstr "Operations"
+
+msgid "identity"
+msgstr "Identity"
+
+msgid "popupBackdrop"
+msgstr "Popup backdrop"
+
+msgid "popupBackdropTitle"
+msgstr "Close popups by clicking on background"
+
+msgid "imageHover"
+msgstr "Media hover expansion"
+
+msgid "imageHoverTitle"
+msgstr "Display media previews on hover"
+
+msgid "imageRootOverride"
+msgstr "Image root override"
+
+msgid "imageRootOverrideTitle"
+msgstr "If you wish to host images from a separate location like a CDN, enter the full root address here. Leave empty to use the default address. Example: 'https://images.meguca.org'"
+
+msgid "lang"
+msgstr "Язык"
+
+msgid "langTitle"
+msgstr "Change interface language"
+
+msgid "maxSize"
+msgstr "Image size limit"
+
+msgid "maxSizeTitle"
+msgstr "Maximum size of uploaded images in MB"
+
+msgid "maxFiles"
+msgstr "Files per post"
+
+msgid "maxFilesTitle"
+msgstr "Maximum number of files per post"
+
+msgid "newPassword"
+msgstr "New password"
+
+msgid "newPost"
+msgstr "New post"
+
+msgid "newPostTitle"
+msgstr "Open reply form"
+
+msgid "cancelPost"
+msgstr "Cancel post"
+
+msgid "cancelPostTitle"
+msgstr "Close reply form"
+
+msgid "selectFile"
+msgstr "Select file"
+
+msgid "selectFileTitle"
+msgstr "Open file select dialog"
+
+msgid "bold"
+msgstr "Bold"
+
+msgid "boldTitle"
+msgstr "Paste bold markup"
+
+msgid "italic"
+msgstr "Italic"
+
+msgid "italicTitle"
+msgstr "Paste italic markup"
+
+msgid "spoiler"
+msgstr "Spoiler"
+
+msgid "spoilerTitle"
+msgstr "Paste spoiler markup"
+
+msgid "enterMsg"
+msgstr "Enter your message"
+
+msgid "search"
+msgstr "Search"
+
+msgid "idolSearch"
+msgstr "Search idols"
+
+msgid "idolSearchTitle"
+msgstr "Jump to idols search"
+
+msgid "searchIdol"
+msgstr "Search idol…"
+
+msgid "smile"
+msgstr "Paste smile"
+
+msgid "previewPost"
+msgstr "Preview post"
+
+msgid "previewPostTitle"
+msgstr "Toggle post preview mode"
+
+msgid "staffBadge"
+msgstr "Show staff badge"
+
+msgid "notification"
+msgstr "Notification"
+
+msgid "notificationTitle"
+msgstr "Get desktop notifications when quoted"
+
+msgid "oldPassword"
+msgstr "Old password"
+
+msgid "password"
+msgstr "Password"
+
+msgid "register"
+msgstr "Register"
+
+msgid "relativeTime"
+msgstr "Relative Timestamps"
+
+msgid "relativeTimeTitle"
+msgstr "Relative post timestamps. Ex.: '1 hour ago'"
+
+msgid "scrollToBottom"
+msgstr "Scroll to bottom"
+
+msgid "scrollToBottomTitle"
+msgstr "Scroll page to bottom on new post"
+
+msgid "theme"
+msgstr "Theme"
+
+msgid "themeTitle"
+msgstr "Select CSS theme"
+
+msgid "workMode"
+msgstr "Work mode"
+
+msgid "workModeTitle"
+msgstr "Hides images"
+
+msgid "workModeToggle"
+msgstr "Work mode"
+
+msgid "workModeToggleTitle"
+msgstr "Hides images"
+
+msgid "light"
+msgstr "Daytime Cafe"
+
+msgid "dark"
+msgstr "Midnight Cafe"
+
+msgid "en"
+msgstr "english"
+
+msgid "ru"
+msgstr "русский"
+
+msgid "de"
+msgstr "deutsch"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Hotkeys"
+msgstr "Hotkeys"
+
+msgid "sortBump"
+msgstr "Bump time"
+
+msgid "sortCreation"
+msgstr "Creation time"
+
+msgid "sortReplyCount"
+msgstr "Reply count"
+
+msgid "sortFileCount"
+msgstr "File count"
+
+msgid "admin"
+msgstr "Admin"
+
+msgid "owners"
+msgstr "Board Owner"
+
+msgid "moderators"
+msgstr "Moderator"
+
+msgid "janitors"
+msgstr "Assistant"
+
+msgid "Owners"
+msgstr "Owners"
+
+msgid "Moderators"
+msgstr "Moderators"
+
+msgid "Janitors"
+msgstr "Janitors"
+
+msgid "No bans"
+msgstr "No bans"
+
+msgid "Empty log"
+msgstr "Empty log"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Reason"
+msgstr "Reason"
+
+msgid "By"
+msgstr "By"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Expires"
+msgstr "Expires"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Read only"
+msgstr "Read only"
+
+msgid "Mod only"
+msgstr "Mod only"
+
+msgid "Access mode"
+msgstr "Access mode"
+
+msgid "Bypass"
+msgstr "Bypass"
+
+msgid "Deny blacklisted"
+msgstr "Deny blacklisted"
+
+msgid "Allow whitelisted"
+msgstr "Allow whitelisted"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Bans"
+msgstr "Bans"
+
+msgid "Members"
+msgstr "Members"
+
+msgid "Mod log"
+msgstr "Mod log"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "To whitelist"
+msgstr "To whitelist"
+
+msgid "From whitelist"
+msgstr "From whitelist"
+
+msgid "To blacklist"
+msgstr "To blacklist"
+
+msgid "From blacklist"
+msgstr "From blacklist"
+
+msgid "Show name"
+msgstr "Show name"
+
+msgid "Hex Color"
+msgstr "Color"
+
+msgid "Increase contrast"
+msgstr "Increase contrast!"
+
+msgid "Add name"
+msgstr "Add name"
+
+msgid "Ignore mode"
+msgstr "Ignore mode"
+
+msgid "No ignore"
+msgstr "No ignore"
+
+msgid "Hide blacklisted"
+msgstr "Hide blacklisted"
+
+msgid "Show whitelisted"
+msgstr "Show whitelisted"
+
+msgid "Whitelist"
+msgstr "Whitelist"
+
+msgid "Blacklist"
+msgstr "Blacklist"
+
+msgid "Including anonymous"
+msgstr "Including anonymous"
+
+msgid "Enter to add"
+msgstr "Enter to add"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Color"
+msgstr "8c8c8c"
+
+msgid "Real name"
+msgstr "Real name"
+
+msgid "Bands"
+msgstr "Bands"
+
+msgid "Birthday"
+msgstr "Birthday"
+
+msgid "Height"
+msgstr "Height"
+
+msgid "Weight"
+msgstr "Weight"
+
+msgid "Positions"
+msgstr "Positions"
+
+msgid "cm"
+msgstr "%s cm"
+
+msgid "kg"
+msgstr "%s kg"
+
+msgid "main"
+msgstr "Main page"
+
+msgid "notFound"
+msgstr "Face not found"
+
+msgid "landingHeader"
+msgstr "The only one k-pop imageboard"
+
+msgid "landingInfo"
+msgstr "kpop.re is an anonymous kpop-oriented imageboard where you can freely share your opinion with others. You don't need to register to take participation in discussions, just go to threads and start posting in the one you're interested in."
+
+msgid "threads"
+msgstr "Go to threads"
+
+msgid "rules"
+msgstr "Rules"
+
+msgid "news"
+msgstr "News"
+
+msgid "stickers"
+msgstr "Stickers"
+
+msgid "clickToCancel"
+msgstr "Click to cancel upload"
+
+msgid "attach"
+msgstr "Attach file"
+
+msgid "record"
+msgstr "Record voice message"
+
+msgid "tooBig"
+msgstr "Too big file"
+
+msgid "delConfirm"
+msgstr "Delete post?"
+
+msgid "banConfirm"
+msgstr "Delete post and ban author?"
+
+msgid "unsupFile"
+msgstr "Unsupported file type"
+
+msgid "unknownErr"
+msgstr "Unknown error"
+
+msgid "networkErr"
+msgstr "Network error"
+
+msgid "initErr"
+msgstr "Site load error"
+
+msgid "sendErr"
+msgstr "Send error"
+
+msgid "aggregator"
+msgstr "All boards"
+
+msgid "FAQ"
+msgstr "Information"
+
+msgid "account"
+msgstr "Account"
+
+msgid "add"
+msgstr "Add"
+
+msgid "apply"
+msgstr "Apply"
+
+msgid "ban"
+msgstr "Ban"
+
+msgid "cancel"
+msgstr "Cancel"
+
+msgid "catalog"
+msgstr "Catalog"
+
+msgid "changePassword"
+msgstr "Change password"
+
+msgid "clear"
+msgstr "Clear"
+
+msgid "configureBoard"
+msgstr "Configure board"
+
+msgid "configureServer"
+msgstr "Configure server"
+
+msgid "createBoard"
+msgstr "Create board"
+
+msgid "deleteImage"
+msgstr "Delete image"
+
+msgid "deletePost"
+msgstr "Delete post"
+
+msgid "deleteThread"
+msgstr "Delete thread"
+
+msgid "updateBoard"
+msgstr "Update board"
+
+msgid "done"
+msgstr "Done"
+
+msgid "expires"
+msgstr "Expires"
+
+msgid "logout"
+msgstr "Logout"
+
+msgid "logoutAll"
+msgstr "Clear sessions"
+
+msgid "newThread"
+msgstr "New thread"
+
+msgid "options"
+msgstr "Options"
+
+msgid "reply"
+msgstr "Reply"
+
+msgid "return"
+msgstr "Return"
+
+msgid "sortMode"
+msgstr "Sort threads by"
+
+msgid "subject"
+msgstr "Subject (required)"
+
+msgid "submit"
+msgstr "Submit"
+
+msgid "sync"
+msgstr "Connection status"
+
+msgid "syncCount"
+msgstr "Unique connected IP count"
+
+msgid "text"
+msgstr "Text"
+
+msgid "snapshot"
+msgstr "Take a snapshot of current frame and paste into reply form"
+
+msgid "fullscreen"
+msgstr "Enter fullscreen"
+
+msgid "fullscreenExit"
+msgstr "Exit fullscreen"
+
+msgid "download"
+msgstr "Download video"
+
+msgid "play"
+msgstr "Play video"
+
+msgid "pause"
+msgstr "Pause video"
+
+msgid "time"
+msgstr "Time"
+
+msgid "type"
+msgstr "Type"
+
+msgid "unban"
+msgstr "Unban"
+
+msgid "send"
+msgstr "Send"
+
+msgid "replies"
+msgstr "Replies"
+
+msgid "mustMatch"
+msgstr "Passwords must match"
+
+msgid "quoted"
+msgstr "You have been quoted"
+
+msgid "refresh"
+msgstr "Refresh"
+
+msgid "sessionExpired"
+msgstr "Login session expired"
+
+msgid "last"
+msgstr "Last"
+
+msgid "clickToCopy"
+msgstr "Click to copy"
+
+msgid "and"
+msgstr "and"
+
+msgid "%s %s ago"
+msgstr "%s %s ago"
+
+msgid "in %s %s"
+msgstr "in %s %s"
+
+msgid "justNow"
+msgstr "just now"
+
+msgid "goToThread"
+msgstr "Go to thread"
+
+msgid "seeAll"
+msgstr "See all"
+
+msgid "show"
+msgstr "Show"
+
+msgid "you"
+msgstr "(You)"
+
+msgid "b"
+msgstr "b"
+
+msgid "kb"
+msgstr "Kb"
+
+msgid "mb"
+msgstr "Mb"
+
+msgid "Jan"
+msgstr "Jan"
+
+msgid "Feb"
+msgstr "Feb"
+
+msgid "Mar"
+msgstr "Mar"
+
+msgid "Apr"
+msgstr "Apr"
+
+msgid "May"
+msgstr "May"
+
+msgid "Jun"
+msgstr "Jun"
+
+msgid "Jul"
+msgstr "Jul"
+
+msgid "Aug"
+msgstr "Aug"
+
+msgid "Sep"
+msgstr "Sep"
+
+msgid "Oct"
+msgstr "Oct"
+
+msgid "Nov"
+msgstr "Nov"
+
+msgid "Dec"
+msgstr "Dec"
+
+msgid "Sun"
+msgstr "Sun"
+
+msgid "Mon"
+msgstr "Mon"
+
+msgid "Tue"
+msgstr "Tue"
+
+msgid "Wed"
+msgstr "Wed"
+
+msgid "Thu"
+msgstr "Thu"
+
+msgid "Fri"
+msgstr "Fri"
+
+msgid "Sat"
+msgstr "Sat"
+
+msgid "omitted"
+msgid_plural "omitted"
+msgstr[0] "omitted"
+msgstr[1] "omitted"
+
+msgid "day"
+msgid_plural "days"
+msgstr[0] "day"
+msgstr[1] "days"
+
+msgid "hour"
+msgid_plural "hours"
+msgstr[0] "hour"
+msgstr[1] "hours"
+
+msgid "file"
+msgid_plural "files"
+msgstr[0] "file"
+msgstr[1] "files"
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] "minute"
+msgstr[1] "minutes"
+
+msgid "month"
+msgid_plural "months"
+msgstr[0] "month"
+msgstr[1] "months"
+
+msgid "post"
+msgid_plural "posts"
+msgstr[0] "post"
+msgstr[1] "posts"
+
+msgid "year"
+msgid_plural "years"
+msgstr[0] "year"
+msgstr[1] "years"
