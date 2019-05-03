@@ -413,20 +413,19 @@ gulp.task("smiles", () => {
         }
         
         html.has-webp .smile {
-            background-image: url(/static/img/smiles-325d89d88a.webp);
+            background-image: url(/static/img/smiles-${hash}.webp);
         }
         html.no-webp .smile {
-            background-image: url(/static/img/smiles-325d89d88a.png);
+            background-image: url(/static/img/smiles-${hash}.png);
         }
-        
-        
+
         @media (-webkit-min-device-pixel-ratio: 2),
                 (min-resolution: 192dpi) {
             html.has-webp .smile {
-                background-image: url(/static/img/smiles-325d89d88a@2x.webp);
+                background-image: url(/static/img/smiles-${hash}@2x.webp);
             }
             html.no-webp .smile {
-                background-image: url(/static/img/smiles-325d89d88a@2x.png);
+                background-image: url(/static/img/smiles-${hash}@2x.png);
             }
         }            
         `
