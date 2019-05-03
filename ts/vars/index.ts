@@ -30,6 +30,7 @@ export const PAGE_NAV_TOP_SEL = ".page-nav-top";
 export const PAGE_NAV_BOTTOM_SEL = ".page-nav-bottom";
 
 export const COLOR_PICKER_SEL = ".color-picker";
+export const COLOR_SELECTOR_SEL = ".color-selector";
 export const COLOR_PICKER_CURSOR = ".color-picker_cursor";
 export const COLOR_PICKER_H_CURSOR = ".color-picker_cursor_hue";
 export const COLOR_PICKER_S_CURSOR = ".color-picker_cursor_saturation";

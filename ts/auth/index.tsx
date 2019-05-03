@@ -17,7 +17,7 @@ import { getModel, page } from "../state";
 import { Constructable, hook, HOOKS, on, remove, trigger, unhook } from "../util";
 import {
   MODAL_CONTAINER_SEL, TRIGGER_BAN_BY_POST_SEL,
-  TRIGGER_DELETE_POST_SEL, TRIGGER_IGNORE_USER_SEL, COLOR_PICKER_CURSOR, COLOR_PICKER_SEL, CONTRAST_RATIO,
+  TRIGGER_DELETE_POST_SEL, TRIGGER_IGNORE_USER_SEL, COLOR_PICKER_CURSOR, COLOR_PICKER_SEL, COLOR_SELECTOR_SEL, CONTRAST_RATIO,
 } from "../vars";
 import { BackgroundClickMixin, EscapePressMixin, MemberList } from "../widgets";
 import { BoardCreationForm } from "./board-form";
@@ -117,14 +117,24 @@ class IdentityTab extends Component<IdentityProps, IdentityState> {
   public colorEl = null as HTMLElement;
   public componentDidMount() {
     document.addEventListener('mousedown', this.handleGlobalDown)
+    document.addEventListener('touchstart', this.handleGlobalDown)
+
     document.addEventListener('mousemove', this.handleGlobalMove)
+    document.addEventListener('touchmove', this.handleGlobalMove)
+
     document.addEventListener('mouseup', this.handleGlobalUp)
+    document.addEventListener('touchend', this.handleGlobalUp)
     this.degenerateColor()
   }
   public componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleGlobalDown)
+    document.removeEventListener('touchstart', this.handleGlobalDown)
+
     document.removeEventListener('mousemove', this.handleGlobalMove)
+    document.removeEventListener('touchmove', this.handleGlobalMove)
+
     document.removeEventListener('mouseup', this.handleGlobalUp)
+    document.removeEventListener('touchend', this.handleGlobalUp)
   }
   public render({ }, {
     name, showName, color, ignoreMode, includeAnon, whitelist, blacklist,
@@ -143,19 +153,19 @@ class IdentityTab extends Component<IdentityProps, IdentityState> {
             ref={s(this, "colorEl")}
             class="color-selector_container">
             <div class="color-selector color-selector_inner-container">
-              <div class="color-selector color-selector_hue"></div>
+              <div data-sel="hue" class="color-selector color-selector_hue"></div>
               <div class="color-picker_cursor_container">
                 <div data-sel="hue" style={{ left: hue }} class="color-picker_cursor"></div>
               </div>
             </div>
             <div class="color-selector color-selector_inner-container">
-              <div class="color-selector color-selector_saturation"></div>
+              <div data-sel="saturation" class="color-selector color-selector_saturation"></div>
               <div class="color-picker_cursor_container">
                 <div data-sel="saturation" style={{ left: saturation }} class="color-picker_cursor"></div>
               </div>
             </div>
             <div class="color-selector color-selector_inner-container">
-              <div class="color-selector color-selector_brightness"></div>
+              <div data-sel="brightness" class="color-selector color-selector_brightness"></div>
               <div class="color-picker_cursor_container">
                 <div data-sel="brightness" style={{ left: brightness }} class="color-picker_cursor"></div>
               </div>
@@ -360,13 +370,16 @@ class IdentityTab extends Component<IdentityProps, IdentityState> {
     this.setState({ values })
   }
 
-  private handleGlobalDown = (e: MouseEvent) => {
-    this.handleBlur(e);
+  private handleGlobalDown = (e: MouseEvent | TouchEvent ) => {
+    const eTouch = (e as TouchEvent);
+    const eMouse = (e as MouseEvent);
+    this.handleBlur(eMouse);
     const target = e.target as HTMLElement;
     const { colorEl } = this;
     if (!colorEl) return;
-    const { clientX } = e;
-    if (target.closest(COLOR_PICKER_CURSOR)) {
+
+    const { clientX } = eTouch.touches ? eTouch.touches[0] : eMouse;
+    if (target.closest(COLOR_PICKER_CURSOR) || target.closest(COLOR_SELECTOR_SEL)) {
       const { sel } = target.dataset;
       const { values } = this.state;
       const { left } = colorEl.getBoundingClientRect()
@@ -376,17 +389,21 @@ class IdentityTab extends Component<IdentityProps, IdentityState> {
       this.setState({ moving: sel })
     }
   }
-  private handleGlobalMove = (e: MouseEvent) => {
+
+  private handleGlobalMove = (e: MouseEvent | TouchEvent) => {
     const { moving, values } = this.state;
+    const eTouch = (e as TouchEvent);
+    const eMouse = (e as MouseEvent);
     if (!moving) return;
     const { colorEl } = this;
-    const { clientX } = e;
+    const { clientX } = eTouch.touches ? eTouch.touches[0] : eMouse;
     const { left } = colorEl.getBoundingClientRect()
     this.baseX = (clientX - left) - 1;
     values[moving] = this.fixBoundaries(this.baseX);
     this.generateColor(values)
   }
-  private handleGlobalUp = (e: MouseEvent) => {
+
+  private handleGlobalUp = (e: MouseEvent | TouchEvent) => {
     this.setState({ moving: "" })
   }
 
