@@ -120,9 +120,6 @@ class RenderVideo extends Component<any, PopupState> {
         <video
           crossOrigin="use-credential"
           onTimeUpdate={this.setDuration} // use onTimeUpdate for mobile devices
-          // onPlay={!isMobile ? this.requestAnimation : null} // use requestAnimationFrame for rest
-          // onPlay={this.initPlay}
-          // onPlay={true ? null : this.requestAnimation} // use requestAnimationFrame for rest
           class="popup-item popup-video-item"
           ref={this.props.setRef}
           style={{ width, height, backgroundImage }}
@@ -205,8 +202,8 @@ class RenderVideo extends Component<any, PopupState> {
               </span>
             </span>
             <span class="player-controls_container playback">
-                <span onClick={this.slowDown} class="player-control playback_backward" ><i class="fa fa-backward"></i></span>
-                <span onClick={this.speedUp} class="player-control playback_forward" ><i class="fa fa-forward"></i></span>
+                <span onClick={() => this.handlePlaybackRate(-1)} class="player-control playback_backward" ><i class="fa fa-backward"></i></span>
+                <span onClick={() => this.handlePlaybackRate(1)} class="player-control playback_forward" ><i class="fa fa-forward"></i></span>
             </span>
             <span
               onMouseMove={!isMobile ? this.handleSeekHover : null}
@@ -261,20 +258,11 @@ class RenderVideo extends Component<any, PopupState> {
     );
   }
 
-  private slowDown = () => {
+  private handlePlaybackRate = (n: number) => {
     const { itemEl } = this.props;
     let { playbackRate } = itemEl;
-    playbackRate = playbackRate - 0.25;
-    if (playbackRate >= 0.25) itemEl.playbackRate = playbackRate;
-    this.playbackInfo(itemEl.playbackRate);
-    
-  }
-
-  private speedUp = () => {
-    const { itemEl } = this.props;
-    let { playbackRate } = itemEl;
-    playbackRate = playbackRate + 0.25;
-    if (playbackRate <= 2.5) itemEl.playbackRate = playbackRate;
+    playbackRate = playbackRate + 0.25 * n;
+    if (playbackRate >= 0.25 && playbackRate <= 2.5) itemEl.playbackRate = playbackRate;
     this.playbackInfo(itemEl.playbackRate);
   }
 
