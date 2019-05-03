@@ -2,7 +2,7 @@ import * as cx from "classnames";
 import { Component, h } from "preact";
 import options from "../options";
 import { duration as readableDuration } from "../templates";
-import { isMobile, FULLSCREEN_CHANGE_SUPPORT } from "../vars";
+import { isMobile, FULLSCREEN_CHANGE_SUPPORT, PLAYER_VOLUME_SEL } from "../vars";
 import { PopupState } from "./popup";
 import _ from "../lang";
 import { HOOKS, on, trigger } from "../util";
@@ -484,11 +484,31 @@ class RenderVideo extends Component<any, PopupState> {
       }
     }, 1500);
   }
+  
   private handleMediaWheel = (e: WheelEvent) => {
-    if (this.isFullscreen()) return;
+    const { onStateChange, itemEl, onVolumeChange } = this.props;
+    const { volume } = this.props;
+    const target = e.target as HTMLElement;
+
+    if ((target).closest(PLAYER_VOLUME_SEL)) {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 1 : -1; 
+      let value = volume + 10 * delta;
+      value = Math.max(0, Math.min(100, value));
+
+      onStateChange({ volume: value, muted: false })
+      itemEl.volume = value / 100;
+      onVolumeChange()
+      return;
+    }
+    
+    if (this.isFullscreen()) {
+      return
+    };
     // e.preventDefault();
     this.props.onMediaWheel(e);
   }
+
   public fullscreenChange() {
     if (this.isFullscreen()) {
       this.setState({ fullscreen: true });
