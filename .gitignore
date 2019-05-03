@@ -25,3 +25,4 @@ tags
 .exclude
 .include
 .vscode/settings.json
+logfile

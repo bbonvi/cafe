@@ -183,7 +183,7 @@ func GetBluredThumbnail(inPath string, outPath string, sha string) {
 	root := imageRoot()
 	dir := "." + root + "/blur/" + sha[:2]
 	os.MkdirAll(dir, os.ModePerm)
-	cmd := exec.Command("go/bin/cmd", "-in", "./"+inPath, "-out", "./"+outPath, "-radius", "40")
+	cmd := exec.Command("go/bin/stackblur", "-in", "./"+inPath, "-out", "./"+outPath, "-radius", "40")
 	// cmd.Stderr = os.Stderr
 	// in, err := cmd.StdinPipe()
 	// if err != nil {

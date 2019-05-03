@@ -6,29 +6,29 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	// "time"
+	"time"
 
 	"meguca/common"
 )
 
 // Serve uploads directory. Only makes sense for dev server, on
 // production you normally use nginx or CDN.
-// func serveFiles(w http.ResponseWriter, r *http.Request) {
-// 	path := getParam(r, "path")
-// 	file, err := os.Open(cleanJoin(common.ImageWebRoot, path))
-// 	if err != nil {
-// 		serve404(w, r)
-// 		return
-// 	}
-// 	defer file.Close()
+func serveFiles(w http.ResponseWriter, r *http.Request) {
+	path := getParam(r, "path")
+	file, err := os.Open(cleanJoin(common.ImageWebRoot, path))
+	if err != nil {
+		serve404(w, r)
+		return
+	}
+	defer file.Close()
 
-// 	head := w.Header()
-// 	for key, val := range imageHeaders {
-// 		head.Set(key, val)
-// 	}
+	head := w.Header()
+	for key, val := range imageHeaders {
+		head.Set(key, val)
+	}
 
-// 	http.ServeContent(w, r, path, time.Time{}, file)
-// }
+	http.ServeContent(w, r, path, time.Time{}, file)
+}
 
 func cleanJoin(parts ...string) string {
 	return filepath.Clean(filepath.Join(parts...))

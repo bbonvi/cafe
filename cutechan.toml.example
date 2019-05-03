@@ -8,7 +8,7 @@ host = "127.0.0.1"
 port = 8090
 
 # PostgreSQL connection string.
-conn = "user=postgres password=123 dbname=test sslmode=disable"
+conn = "user=postgres password=1 dbname=cafe sslmode=disable"
 
 # Assume server is behind reverse proxy when resolving client IPs.
 rproxy = true

@@ -4,9 +4,9 @@
   "private": true,
   "license": "AGPL-3.0",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/nunuju/bonacafe.git"
-    },
+    "type": "git",
+    "url": "https://github.com/nunuju/bonacafe.git"
+  },
   "scripts": {
     "test": "tslint '{app,ts/**/*}.ts?(x)'"
   },
@@ -25,6 +25,7 @@
     "dom4": "^2.0.1",
     "events": "^2.0.0",
     "font-awesome": "^4.7.0",
+    "gulp-cli": "^2.2.0",
     "mustache": "^2.3.0",
     "normalize.css": "^8.0.0",
     "preact": "^8.2.7",
@@ -37,6 +38,8 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.3",
+    "@types/color-convert": "1.9.0",
+    "color-convert": "2.0.0",
     "@types/mustache": "^0.8.30",
     "@types/node": "^9.4.7",
     "ajv": "^6.3.0",

@@ -69,7 +69,7 @@ func createRouter(debugRoutes bool) http.Handler {
 
 	// Assets.
 	r.GET("/static/*path", serveStatic)
-	// r.GET("/uploads/*path", serveFiles)
+	r.GET("/uploads/*path", serveFiles)
 	// Not yet in /etc/mime.types
 	mime.AddExtensionType(".wasm", "application/wasm")
 
