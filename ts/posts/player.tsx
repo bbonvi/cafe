@@ -58,6 +58,7 @@ class RenderVideo extends Component<any, PopupState> {
     // }
   // }
   private timer = null as any;
+  private playbackTimer = null as any;
   private seekX = 0;
   private seekY = 0;
   public componentDidMount() {
@@ -94,8 +95,9 @@ class RenderVideo extends Component<any, PopupState> {
       seekPosition,
       minimized,
       fullscreen,
-      duration
-      
+      duration,
+      playbackRateShow,
+      playbackRate
     } = this.state;
     const {
       width,
@@ -119,6 +121,7 @@ class RenderVideo extends Component<any, PopupState> {
           crossOrigin="use-credential"
           onTimeUpdate={this.setDuration} // use onTimeUpdate for mobile devices
           // onPlay={!isMobile ? this.requestAnimation : null} // use requestAnimationFrame for rest
+          // onPlay={this.initPlay}
           // onPlay={true ? null : this.requestAnimation} // use requestAnimationFrame for rest
           class="popup-item popup-video-item"
           ref={this.props.setRef}
@@ -153,6 +156,7 @@ class RenderVideo extends Component<any, PopupState> {
           onWheel={this.handleMediaWheel}
           onClick={this.handleMaximize}>
           <div class={"player-controls_container"}>
+            {playbackRateShow && <div class="playback-info">{playbackRate}</div>}
             <span
               class={cx(
                 "player-control player-control_state",
@@ -178,7 +182,7 @@ class RenderVideo extends Component<any, PopupState> {
                 <span class="progress-bar_radius">
                   <span
                     class="progress-bar_full player-volume"
-                    style={`width:${volume}%`}
+                    style={`width:${muted ? 0 : volume}%`}
                   />
                 </span>
                 <input
@@ -191,7 +195,7 @@ class RenderVideo extends Component<any, PopupState> {
                 />
               </span>
             </span>
-            <span class="player-control player-timer">
+            <span class=" player-timer">
               <span
                 class={"player-timer_current"}>{readableDuration(curTime || 0, true).toString()}
               </span>
@@ -200,7 +204,10 @@ class RenderVideo extends Component<any, PopupState> {
                 {readableDuration(duration || durationProp, true)}
               </span>
             </span>
-
+            <span class="player-controls_container playback">
+                <span onClick={this.slowDown} class="player-control playback_backward" ><i class="fa fa-backward"></i></span>
+                <span onClick={this.speedUp} class="player-control playback_forward" ><i class="fa fa-forward"></i></span>
+            </span>
             <span
               onMouseMove={!isMobile ? this.handleSeekHover : null}
               onMouseEnter={() => this.setState({ seekHover: true })}
@@ -253,6 +260,32 @@ class RenderVideo extends Component<any, PopupState> {
       </div>
     );
   }
+
+  private slowDown = () => {
+    const { itemEl } = this.props;
+    let { playbackRate } = itemEl;
+    playbackRate = playbackRate - 0.25;
+    if (playbackRate >= 0.25) itemEl.playbackRate = playbackRate;
+    this.playbackInfo(itemEl.playbackRate);
+    
+  }
+
+  private speedUp = () => {
+    const { itemEl } = this.props;
+    let { playbackRate } = itemEl;
+    playbackRate = playbackRate + 0.25;
+    if (playbackRate <= 2.5) itemEl.playbackRate = playbackRate;
+    this.playbackInfo(itemEl.playbackRate);
+  }
+
+  private playbackInfo = (playbackRate: number) => {
+    this.setState({ playbackRateShow: true, playbackRate });
+    clearTimeout(this.playbackTimer);
+    this.playbackTimer = setTimeout(() => {
+      this.setState({ playbackRateShow: false });
+    }, 1000);
+  }
+  
   private handleSnapshot = async (e: any) => {
     trigger(HOOKS.openReply);
     let canvas = document.createElement("canvas");
@@ -280,7 +313,7 @@ class RenderVideo extends Component<any, PopupState> {
     this.seekY = top;
     const inputPos = mouseOnRange / width;
     const seek = duration * inputPos;
-    const seekPosition = Math.round(seek <= 0 ? 0 : seek >= duration ? duration : seek);
+    const seekPosition = seek <= 0 ? 0 : seek >= duration ? duration : seek;
     // seekPosition = parseFloat(seekPosition);
     if (oldPosition !== seekPosition) this.setState({ seekPosition });
   }

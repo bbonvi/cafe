@@ -78,6 +78,8 @@ export interface PopupState {
   nextWheelEdge?: boolean;
   mult?: number;
   showBG: boolean;
+  playbackRateShow: boolean;
+  playbackRate: number;
 }
 
 class Popup extends Component<PopupProps, PopupState> {
@@ -128,6 +130,8 @@ class Popup extends Component<PopupProps, PopupState> {
       duration: 0,
       nextWheelEdge: false,
       showBG: true,
+      playbackRateShow: false,
+      playbackRate: 1,
     };
   }
   public componentDidMount() {
