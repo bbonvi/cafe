@@ -110,7 +110,6 @@ class RenderVideo extends Component<any, PopupState> {
       durationProp
     } = this.props;
     const backgroundImage = showBG ? `url(${blur})` : '';
-    // console.log('rerendered');
     return (
 
       <div
@@ -371,8 +370,8 @@ class RenderVideo extends Component<any, PopupState> {
   }
   private handleVolumeChange = (e: any) => {
     const { onStateChange, itemEl, onVolumeChange } = this.props;
-    const { value } = e.target;
-
+    const value = Number(e.target.value);
+    
     onStateChange({ volume: value, muted: false })
     itemEl.volume = value / 100;
     onVolumeChange()
@@ -501,7 +500,7 @@ class RenderVideo extends Component<any, PopupState> {
       onVolumeChange()
       return;
     }
-    
+
     if (this.isFullscreen()) {
       return
     };
