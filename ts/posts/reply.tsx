@@ -21,6 +21,7 @@ import {
   scrollToTop,
   setter as s,
   unhook,
+  trigger,
 } from "../util";
 import {
   HEADER_HEIGHT_PX,
@@ -220,17 +221,17 @@ class FilePreview extends Component<FilePreviewProps, {}> {
             <i class="reply-file-thumb-icon fa fa-music" />
           </div>
         ) : (
-          <img
-            ref={s(this, "thumb")}
-            style={this.style}
-            onMouseDown={this.handleMouseDown}
-            // onMouseMove={this.handleMove}
-            // onMouseUp={this.handleMouseUp}
-            class="reply-file-thumb"
-            src={thumb}
-            thumb-id={index}
-          />
-        )}
+            <img
+              ref={s(this, "thumb")}
+              style={this.style}
+              onMouseDown={this.handleMouseDown}
+              // onMouseMove={this.handleMove}
+              // onMouseUp={this.handleMouseUp}
+              class="reply-file-thumb"
+              src={thumb}
+              thumb-id={index}
+            />
+          )}
         <div class="reply-file-info" title={infoText}>
           {infoText}
         </div>
@@ -338,18 +339,6 @@ interface FWrap {
 
 type FWraps = FWrap[];
 
-window.onbeforeunload = () => {
-  const bodyInner = document.querySelectorAll(
-    ".reply-container_thread .reply-body-inner",
-  )[0];
-  const bodyInnerPreview = document.querySelectorAll(
-    ".reply-container_thread .reply-body p",
-  )[0];
-  if ((bodyInner && (bodyInner as HTMLInputElement).value !== "") || bodyInnerPreview) {
-    return "?";
-  }
-};
-
 class Reply extends Component<any, any> {
   public state = {
     float: false,
@@ -408,11 +397,12 @@ class Reply extends Component<any, any> {
     document.addEventListener("touchmove", this.handleGlobalMove);
     document.addEventListener("mouseup", this.handleGlobalUp);
     document.addEventListener("touchend", this.handleGlobalUp);
+    window.addEventListener('beforeunload', this.reloadAlert)
     this.focusAndScroll();
     const caret = this.state.body.length;
     this.bodyEl.setSelectionRange(caret, caret);
-
   }
+
   public componentWillUnmount() {
     unhook(HOOKS.openReply, this.focusAndScroll);
     unhook(HOOKS.dropFile, this.handleFiles);
@@ -426,7 +416,20 @@ class Reply extends Component<any, any> {
     document.removeEventListener("touchmove", this.handleGlobalMove);
     document.removeEventListener("mouseup", this.handleGlobalUp);
     document.removeEventListener("touchend", this.handleGlobalUp);
+    window.removeEventListener('beforeunload', this.reloadAlert)
   }
+
+  public reloadAlert = (e: any) => {
+    const { body, fwraps, thread } = this.state;
+    
+    if (thread && (fwraps.length > 0 || body.length > 0)) {
+      trigger(HOOKS.openReply);
+      e.preventDefault();
+      e.returnValue = '';
+      return "Reload?";
+    }
+  }
+
   public componentWillReceiveProps({ quoted, dropped }: any) {
     if (quoted !== this.props.quoted) {
       if (quoted) {
@@ -446,7 +449,7 @@ class Reply extends Component<any, any> {
   //     this.setBodyScroll();
   //   }
   // }
-  public render({}, { float, fwraps, showBadge }: any) {
+  public render({ }, { float, fwraps, showBadge }: any) {
     const manyf = fwraps.length > 1;
     return (
       <div
@@ -520,10 +523,10 @@ class Reply extends Component<any, any> {
           : 220
         : 350
       : isMobile
-      ? isTablet
-        ? 200
-        : 100
-      : 200;
+        ? isTablet
+          ? 200
+          : 100
+        : 200;
   }
   private get style() {
     const manyf = this.state.fwraps.length > 1;
@@ -1184,8 +1187,8 @@ class Reply extends Component<any, any> {
         <div
           /* class="reply-dragger" */
           style="flex: 1;"
-          /* onMouseDown={this.handleMoveDown}
-          onTouchStart={this.handleMoveDown} */
+        /* onMouseDown={this.handleMoveDown}
+        onTouchStart={this.handleMoveDown} */
         />
         {this.valid && (
           <Progress
@@ -1233,8 +1236,8 @@ class RenderBody extends Component<any, any> {
         <div class="reply-body-coverbar" ref={s(this, "coverEl")} />
       </div>
     ) : (
-      <BodyPreview body={body} />
-    );
+        <BodyPreview body={body} />
+      );
   }
 }
 
@@ -1300,7 +1303,7 @@ class ReplyContainer extends Component<any, any> {
       }
     });
   }
-  public render({}, { show, quoted, dropped }: any) {
+  public render({ }, { show, quoted, dropped }: any) {
     return show ? (
       <Reply quoted={quoted} dropped={dropped} onHide={this.handleHide} />
     ) : null;
