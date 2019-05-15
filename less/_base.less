@@ -682,7 +682,6 @@ body {
   }
 }
 
-
 .playback-info {
   position: absolute;
   left: 0;
@@ -697,15 +696,24 @@ body {
   border-radius: 4px;
 }
 
+.playback {
+  font-size: 11px;
+  padding: 0 2px;
+  line-height: 5;
+  .player-control {
+    padding: 0 1px;
+  }
+}
+
 .playback_backward {
   margin-right: -5px;
-  font-size: 13px;
 }
 
 .playback_forward {
   margin-left: 0;
-  font-size: 13px;
 }
+
+
 
 .player-control:not(.slider):not(.player-timer) {
   cursor: pointer;

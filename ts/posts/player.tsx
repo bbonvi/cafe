@@ -201,8 +201,12 @@ class RenderVideo extends Component<any, PopupState> {
               </span>
             </span>
             <span class="player-controls_container playback">
-                <span onClick={() => this.handlePlaybackRate(-1)} class="player-control playback_backward" ><i class="fa fa-backward"></i></span>
-                <span onClick={() => this.handlePlaybackRate(1)} class="player-control playback_forward" ><i class="fa fa-forward"></i></span>
+                <span onClick={() => this.handlePlaybackRate(-1)} class="player-control playback_backward" >
+                  <i class="fa fa-step-backward"/>
+                </span>
+                <span onClick={() => this.handlePlaybackRate(1)} class="player-control playback_forward" >
+                <i class="fa fa-step-forward"/>
+                </span>
             </span>
             <span
               onMouseMove={!isMobile ? this.handleSeekHover : null}
