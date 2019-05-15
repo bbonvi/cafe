@@ -23,7 +23,6 @@ function handleShortcut(e: KeyboardEvent) {
   if (keyCode === 9 && document.activeElement.tagName.toLowerCase() !== "input") e.preventDefault();
   let caught = false;
   if (e.altKey) {
-    e.preventDefault();
     switch (e.which) {
     // case options.newPost:
     //   caught = true;
