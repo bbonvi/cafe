@@ -230,12 +230,9 @@ function renderPostImagePreview(thumb: HTMLImageElement): any {
   const post = getModel(thumb);
   const file = post.getFileByHash(thumb.dataset.sha1);
   const blurSrc = file.blur;
-  // console.log(`file.src ${file.src}`);
   const [width, height] = file.dims;
   const fileType = file.fileType;
   const transparent = file.transparent;
-  // console.log(thumbSrc);
-  // console.log(sourcePath(fileType,thumb.dataset.sha1))
   showImage(file.src, width, height, blurSrc, fileType, transparent, post.id);
 
 }
@@ -253,15 +250,15 @@ function renderPostEmbedPreview(link: HTMLElement): any {
 function renderImagePreview(event: MouseEvent | TouchEvent) {
   if (isMobile) return;
   clearImagePreview();
-  if (!options.imageHover) return;
+  const { imageHover } = options;
   const target = event.target as HTMLElement;
   if (!target.matches) return;
   if (!target.matches(TRIGGER_MEDIA_HOVER_SEL) && !target.matches(POST_FILE_THUMB_BG_SEL)) return;
-  if (target.matches(POST_FILE_THUMB_SEL)) {
+  if (target.matches(POST_FILE_THUMB_SEL) && imageHover) {
     renderPostImagePreview(target as HTMLImageElement);
   } else if (target.matches(POST_EMBED_SEL)) {
     renderPostEmbedPreview(target);
-  } else if (target.matches(POST_FILE_THUMB_BG_SEL)) {
+  } else if (target.matches(POST_FILE_THUMB_BG_SEL) && imageHover) {
     const target_ = target.parentElement.firstChild;
     if ((target_ as HTMLImageElement).matches(TRIGGER_MEDIA_HOVER_SEL)) renderPostImagePreview(target_ as HTMLImageElement);
   }
