@@ -13,6 +13,7 @@ const (
 	SVG
 	MP4
 	MP3
+	FLAC
 	OGG
 	ZIP
 	SevenZip
@@ -27,6 +28,7 @@ var Extensions = map[uint8]string{
 	PNG:      "png",
 	GIF:      "gif",
 	MP3:      "mp3",
+	FLAC:     "flac",
 	MP4:      "mp4",
 	WEBM:     "webm",
 	OGG:      "ogg",

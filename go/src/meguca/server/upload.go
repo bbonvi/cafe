@@ -32,6 +32,7 @@ var (
 		"application/ogg": common.OGG,
 		"video/mp4":       common.MP4,
 		"audio/mpeg":      common.MP3,
+		"audio/flac":      common.FLAC,
 	}
 )
 

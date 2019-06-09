@@ -206,3 +206,8 @@ export function rotateRecent<T>(list: T[], item: T, max: number): T[] {
 export function printf(s: string, ...args: any[]): string {
   return s.replace(/%s/g, () => args.shift());
 }
+
+// Gives a negative modulus
+export function mod(n: number, m:number) {
+  return ((n % m) + m) % m;
+};

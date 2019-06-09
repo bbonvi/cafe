@@ -46,6 +46,7 @@ export interface ImageData {
   SHA1: string;
   size: number;
   video: boolean;
+  image: boolean;
   audio: boolean;
   apng: boolean;
   fileType: fileTypes;
@@ -59,7 +60,7 @@ export interface ImageData {
 /** Possible file types of a post image. */
 // MUST BE KEPT IN SYNC WITH go/src/meguca/common/images.go!
 export enum fileTypes {
-  jpg, png, gif, webm, pdf, svg, mp4, mp3, ogg, zip, "7z", "tar.gz", "tar.xz",
+  jpg, png, gif, webm, pdf, svg, mp4, mp3, flac, ogg, zip, "7z", "tar.gz", "tar.xz",
 }
 
 export const thumbSize = 200;

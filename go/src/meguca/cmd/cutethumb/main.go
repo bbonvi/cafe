@@ -23,12 +23,14 @@ const (
 
 var (
 	allowedMimeTypes = map[string]bool{
-		"image/jpeg": true,
-		"image/png":  true,
-		"image/gif":  true,
-		"video/webm": true,
-		"video/mp4":  true,
-		"audio/mpeg": true,
+		"image/jpeg":   true,
+		"image/png":    true,
+		"image/gif":    true,
+		"video/webm":   true,
+		"video/mp4":    true,
+		"audio/mpeg":   true,
+		"audio/flac":   true,
+		"audio/x-flac": true,
 	}
 )
 
@@ -74,9 +76,9 @@ func getThumbnail(srcData []byte) (ithumb *ipc.Thumb, err error) {
 	}
 
 	isMp3 := src.Mime == "audio/mpeg"
-
+	isFlac := src.Mime == "audio/x-flac"
 	// Thumbnail is skipped only for MP3.
-	if isMp3 {
+	if isMp3 || isFlac {
 		thumb.Data = nil
 	} else if thumb.Data == nil {
 		err = ipc.ErrThumbProcess
@@ -85,7 +87,7 @@ func getThumbnail(srcData []byte) (ithumb *ipc.Thumb, err error) {
 
 	// Allow only MP3 audios currently.
 	if src.HasAudio {
-		if !src.HasVideo && !isMp3 {
+		if !src.HasVideo && !isMp3 && !isFlac {
 			err = ipc.ErrThumbTracks
 			return
 		}

@@ -116,7 +116,7 @@ function getFileInfo(file: File | Blob): Promise<Dict> {
   let skipCopy = false;
   if (file.type.startsWith("video/")) {
     fn = getVideoInfo;
-  } else if (file.type === "audio/mpeg" || file.type === "audio/mp3") {
+  } else if (file.type === "audio/mpeg" || file.type === "audio/mp3" || file.type === "audio/flac") {
     fn = getAudioInfo;
   } else if (file.type.startsWith("image/")) {
     fn = getImageInfo;
@@ -486,7 +486,7 @@ class Reply extends Component<any, any> {
           class="reply-files-input"
           ref={s(this, "fileEl")}
           type="file"
-          accept="image/*,video/*,audio/mpeg,audio/mp3"
+          accept="image/*,video/*,audio/mpeg,audio/mp3,audio/flac"
           multiple
           onChange={this.handleFileChange}
         />
@@ -1278,6 +1278,7 @@ class ReplyContainer extends Component<any, any> {
     on(document, "drop", (e: Event) => {
       e.preventDefault();
       const files = (e as DragEvent).dataTransfer.files;
+      console.log(files);
       if (files.length) {
         this.setState({ show: true, dropped: files });
       }
