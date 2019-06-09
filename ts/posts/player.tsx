@@ -126,10 +126,8 @@ class RenderVideo extends Component<any, PopupState> {
           muted={muted}
           autoPlay
           controls={false}
-          onLoadedMetadata={() => {
-            this.handleStartPlaying()
-            this.props.onStateChange({ showBG: false });
-          }}
+          onPlay={this.handleOnPlay}
+          onLoadedMetadata={this.handleStartPlaying}
           onVolumeChange={this.props.handleMediaVolume}
         />
         <div
@@ -259,6 +257,11 @@ class RenderVideo extends Component<any, PopupState> {
         </div>
       </div>
     );
+  }
+
+  private handleOnPlay = () => {
+    const { onStateChange, showBG } = this.props;
+    if (showBG) onStateChange({ showBG: false });
   }
 
   private handlePlaybackRate = (n: number) => {
