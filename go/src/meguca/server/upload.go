@@ -33,6 +33,7 @@ var (
 		"video/mp4":       common.MP4,
 		"audio/mpeg":      common.MP3,
 		"audio/flac":      common.FLAC,
+		"audio/x-flac":    common.FLAC,
 	}
 )
 

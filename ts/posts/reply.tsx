@@ -1278,7 +1278,6 @@ class ReplyContainer extends Component<any, any> {
     on(document, "drop", (e: Event) => {
       e.preventDefault();
       const files = (e as DragEvent).dataTransfer.files;
-      console.log(files);
       if (files.length) {
         this.setState({ show: true, dropped: files });
       }

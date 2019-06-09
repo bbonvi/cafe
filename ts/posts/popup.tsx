@@ -525,8 +525,8 @@ class Popups extends Component<any, PopupsState> {
         return this.files[index];
       };
 
-      if (left) this.handleOpen(getNextElement(-1));
-      if (right) this.handleOpen(getNextElement(+1));
+      if (left) this.handleOpen(getNextElement(-1), true);
+      if (right) this.handleOpen(getNextElement(+1), true);
     })
   }
 
@@ -555,7 +555,7 @@ class Popups extends Component<any, PopupsState> {
     this.handleOpen(target);
   }
 
-  public handleOpen (target: HTMLElement) {
+  public handleOpen (target: HTMLElement, omitSameSkip = false) {
     const props = {
       video: false,
       image: false,
@@ -629,7 +629,7 @@ class Popups extends Component<any, PopupsState> {
 
     const hasSameFile = popups.find(p => p.url == props.url);
 
-    if (hasSameFile) {
+    if (hasSameFile && !omitSameSkip) {
       popups = popups.filter(p => p.url !== props.url)
     }
 
