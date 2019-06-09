@@ -6,7 +6,7 @@ import * as cx from "classnames";
 import { Component, h, render } from "preact";
 import options from "../options";
 import { getModel } from "../state";
-import { HOOKS, on, setter as s, trigger } from "../util";
+import { HOOKS, on, setter as s, trigger, mod } from "../util";
 import {
   POPUP_CONTAINER_SEL,
   POST_EMBED_INSTAGRAM_SEL,
@@ -45,6 +45,7 @@ export interface PopupProps {
   image: boolean;
   audio: boolean;
   record: boolean;
+  audioFile: boolean;
   embed: boolean;
   instagram?: boolean;
   transparent: boolean;
@@ -164,7 +165,8 @@ class Popup extends Component<PopupProps, PopupState> {
       fn = this.renderVideo;
     } else if (record) {
       cls = "popup_record";
-      fn = this.renderRecord;
+      // fn = this.renderRecord;
+      fn = this.renderVideo;
     } else if (instagram) {
       cls = "popup_embed popup_embed_instagram";
       fn = this.renderEmbedInstagram;
@@ -187,6 +189,7 @@ class Popup extends Component<PopupProps, PopupState> {
       <RenderVideo
         {...this.props}
         {...this.state}
+        
         realHeight={this.props.height}
         realWidth={this.props.width}
         onMediaWheel={this.handleMediaWheel}
@@ -197,18 +200,9 @@ class Popup extends Component<PopupProps, PopupState> {
         onStateChange={(state: {}) => this.setState({ ...state })} 
 
         itemEl={this.itemEl}
-        // ref={s(this, "itemEl")}
         setRef={(itemEl: HTMLVideoElement) => (this.itemEl = itemEl)}
       />
       );
-  // private copyToClipboard = (str: any) => {
-  //   const el = document.createElement("textarea");
-  //   el.value = str;
-  //   document.body.appendChild(el);
-  //   el.select();
-  //   document.execCommand("copy");
-  //   document.body.removeChild(el);
-  // }
   }
 
   private renderImage() {
@@ -217,8 +211,6 @@ class Popup extends Component<PopupProps, PopupState> {
     const thumbUrl = url.replace(/src/, "blur").replace(/png/, "jpg");
     const isGif = (/gif/).test(thumbUrl);
     const backgroundImage = (transparent || !showBG || isGif) ? '' : `url(${thumbUrl})`;
-    // const hash = url.replace(/.*src\//, '').replace(/\.\w{1,5}$/, '').replace('/', '')
-
     // https://github.com/developit/preact/issues/663
     return (
       <img
@@ -249,20 +241,20 @@ class Popup extends Component<PopupProps, PopupState> {
       preload = null;
     };
   }
-  private renderRecord() {
-    return (
-      <div class="popup-record" onMouseDown={this.handleMediaDown}>
-        <i class="popup-record-icon fa fa-music" />
-        <audio
-          class="popup-item popup-record-item"
-          ref={s(this, "itemEl")}
-          autoPlay
-          controls
-          onVolumeChange={this.handleMediaVolume}
-        />
-      </div>
-    );
-  }
+  // private renderRecord() {
+  //   return (
+  //     <div class="popup-record" onMouseDown={this.handleMediaDown}>
+  //       <i class="popup-record-icon fa fa-music" />
+  //       <audio
+  //         class="popup-item popup-record-item"
+  //         ref={s(this, "itemEl")}
+  //         autoPlay
+  //         controls
+  //         onVolumeChange={this.handleMediaVolume}
+  //       />
+  //     </div>
+  //   );
+  // }
   private renderEmbed() {
     const { width, height, moving, resizing } = this.state;
     const pointerEvents = moving || resizing ? "none" : "auto";
@@ -287,7 +279,6 @@ class Popup extends Component<PopupProps, PopupState> {
       <iframe
         class="popup-item instagram-media instagram-media-rendered"
         id="instagram-embed-17"
-        // tslint:disable-next-line:max-line-length
         src={url}
         allowTransparency={true}
         frameBorder={0}
@@ -316,10 +307,10 @@ class Popup extends Component<PopupProps, PopupState> {
   }
 
   private handleGlobalKey = (e: KeyboardEvent) => {
-    if (e.keyCode === 27) {
-      this.props.onClose();
+    // if (e.keyCode === 27) {
+    //   this.props.onClose();
       // this.setState({ fullscreen: false });
-    }
+    // }
   }
   private handleMediaDrag = (e: DragEvent) => {
     // NOTE(Kagami): Note that both draggable AND ondragstart are
@@ -501,6 +492,11 @@ class Popups extends Component<any, PopupsState> {
   public state = {
     popups: [] as PopupProps[],
   };
+
+  public index = 0;
+  public files = [] as any[];
+  public curElement = null as HTMLElement;
+
   public componentDidMount() {
     on(document, "click", this.open, {
       selector: TRIGGER_MEDIA_POPUP_SEL,
@@ -508,7 +504,39 @@ class Popups extends Component<any, PopupsState> {
     on(document, "click", this.open, {
       selector: POST_FILE_THUMB_BG_SEL,
     });
+    document.addEventListener('keydown', this.handleKey);
   }
+
+  public handleKey = (e: KeyboardEvent) => {
+    const { key } = e;
+    const left = key === 'ArrowLeft';
+    const right = key === 'ArrowRight';
+    const { popups } = this.state;
+    if (e.keyCode === 27) {
+      const lastPopup = popups[popups.length - 1];
+      this.makeHandleClose(lastPopup.url)();
+      return;
+    }
+    if (!left && !right) return;
+    if (!popups.find(p => p.video || p.image)) return;
+    this.initFileList(() => {
+      const getNextElement = (n: number) => {
+        const index = mod(this.index + n, this.files.length);
+        return this.files[index];
+      };
+
+      if (left) this.handleOpen(getNextElement(-1));
+      if (right) this.handleOpen(getNextElement(+1));
+    })
+  }
+
+  public initFileList = (callback?: () => void) => {
+    const { curElement } = this;
+    this.files = [...document.querySelectorAll('.post-file-thumb:not(.fa-music)')];
+    this.index = this.files.indexOf(curElement);
+    if (callback) callback();
+  }
+
   public render({ }, { popups }: PopupsState) {
     return (
       <div class="popup-container-inner">
@@ -518,14 +546,19 @@ class Popups extends Component<any, PopupsState> {
       </div>
     );
   }
+  
   private open = (e: Event) => {
     let target = e.target as HTMLElement;
     if (!target.matches) return;
     if ((e as MouseEvent).button !== 0) return;
     e.preventDefault();
+    this.handleOpen(target);
+  }
 
+  public handleOpen (target: HTMLElement) {
     const props = {
       video: false,
+      image: false,
       audio: false,
       record: false,
       embed: false,
@@ -536,13 +569,24 @@ class Popups extends Component<any, PopupsState> {
       height: 0,
       duration: 0,
     } as PopupProps;
+    let { popups } = this.state;
+
     const isThumbBG = target.matches(POST_FILE_THUMB_BG_SEL);
-    if (target.matches(POST_FILE_THUMB_SEL) || isThumbBG) {
+    const IS_FILE = target.matches(POST_FILE_THUMB_SEL) || isThumbBG;
+    const IS_EMBED = target.matches(POST_EMBED_SEL);
+    const IS_EMBED_INSTAGRAM = target.matches(POST_EMBED_INSTAGRAM_SEL);
+    // const IS_AUDIO = target.closest('.post-file_record');
+
+    if (IS_FILE) {
       if (isThumbBG) target = target.parentElement.firstChild as HTMLElement;
       const post = getModel(target);
-      const file = post.getFileByHash((target as HTMLImageElement).dataset.sha1);
+      this.curElement = target as HTMLElement;
+      const { sha1 } = (target as HTMLImageElement).dataset;
+      const file = post.getFileByHash(sha1);
+
       Object.assign(props, {
         video: file.video,
+        image: !file.video,
         blur: file.blur || '',
         audio: file.audio,
         record: file.audio && !file.video,
@@ -553,16 +597,7 @@ class Popups extends Component<any, PopupsState> {
         height: file.dims[1] || 200,
         duration: file.length,
       });
-    } else if (target.matches(POST_EMBED_INSTAGRAM_SEL)) {
-      Object.assign(props, {
-        embed: true,
-        instagram: true,
-        url: (target as HTMLLinkElement).href,
-        html: target.dataset.html,
-        width: +target.dataset.width,
-        height: +target.dataset.height,
-      });
-    } else if (target.matches(POST_EMBED_SEL)) {
+    } else if (IS_EMBED) {
       Object.assign(props, {
         embed: true,
         url: (target as HTMLLinkElement).href,
@@ -573,25 +608,42 @@ class Popups extends Component<any, PopupsState> {
     } else {
       return;
     }
-    let { popups } = this.state;
-    if (!props.video && !props.embed && !props.record) {
-      // const { popups: list } = this.state
-      popups = popups.filter((p) => p.video || p.embed || p.record || p.url === props.url);
-      // this.setState({ popups })
+
+    if (IS_EMBED_INSTAGRAM) props.instagram = true;
+    const isAudioFile = props.record;
+
+    if (isAudioFile) {
+      props.width = 250;
+      props.height = 40;
+      props.image = false;
+      props.audioFile = true;
     }
+
     if (props.video) {
-      // const { popups: list } = this.state
-      popups = popups.filter((p) => !p.video || p.url === props.url);
-      // this.setState({ popups })
+      let { width, height } = props;
+      props.width = Math.max(width, 400);
+      props.height = Math.max(height, 400);
     }
-    const was = popups.length;
-    popups = popups.filter((p) => p.url !== props.url);
-    if (popups.length === was) {
-      popups = popups.concat(props);
+
+    const isVisualFile = props.image || props.video;
+
+    const hasSameFile = popups.find(p => p.url == props.url);
+
+    if (hasSameFile) {
+      popups = popups.filter(p => p.url !== props.url)
     }
+
+    if (!hasSameFile) {
+      if (isVisualFile) popups = popups.filter(p => !p.video && !p.image)
+      if (isAudioFile) popups = popups.filter(p => !p.record)
+      popups = popups.concat(props)
+    };
+
     this.setState({ popups });
+    this.initFileList();
   }
-  private makeHandleClose(url: string) {
+
+  public makeHandleClose(url: string) {
     return () => {
       let { popups } = this.state;
       popups = popups.filter((p) => p.url !== url);

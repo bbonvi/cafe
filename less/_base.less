@@ -958,6 +958,10 @@ body {
   }
 }
 
+.reduced2x .playback {
+  display: none;
+}
+
 .player-download {
   padding: 0 5px 0 5px; // margin-right: 10px;
   flex: 0;
@@ -967,6 +971,25 @@ body {
     padding: 0;
     margin-right: 7px;
   }
+}
+
+.popup-record {
+  .popup-player {
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  .popup-video-overlay {
+    display: none;
+  }
+  .player-download {
+    margin-right: 20px;
+  }
+  .player-control.player-volume.slider {
+    display: flex;
+    height: unset;
+  }
+  
 }
 
 .fullscreen .popup-video-item {
@@ -1085,8 +1108,8 @@ body {
 
 .popup-record {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 40px;
 }
 
 .popup-record-icon {

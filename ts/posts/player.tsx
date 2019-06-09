@@ -100,21 +100,26 @@ class RenderVideo extends Component<any, PopupState> {
       playbackRate
     } = this.state;
     const {
-      width,
-      height,
       blur,
       showBG,
       muted,
       volume,
       itemEl,
-      durationProp
+      durationProp,
+      record,
     } = this.props;
-    const backgroundImage = showBG ? `url(${blur})` : '';
+    let { width, height, } = this.props;
+    let backgroundImage;
+    if (!record) backgroundImage = showBG ? `url(${blur})` : '';
+    if (record) {
+      width = 0;
+      height = 0;
+    };
     return (
 
       <div
-        class={cx("popup-video", { fullscreen })}
-        onMouseEnter={!isMobile ? this.handleMaximize : null}
+        class={cx("popup-video", { "popup-record": record, fullscreen  })}
+        onMouseEnter={this.handleMaximize}
       >
         <video
           crossOrigin="use-credential"
@@ -138,18 +143,23 @@ class RenderVideo extends Component<any, PopupState> {
           onWheel={this.handleMediaWheel}
           onClick={!isMobile ? null : this.handleMobileMediaTouches}
         />
+
         <div
           class={cx(
             "popup-player",
-            { reduced2x: width < 330 && !fullscreen },
+            { reduced2x: width < 370 && !fullscreen },
             { reduced3x: width < 270 && !fullscreen },
-            { minimized },
+            { minimized: minimized && !record },
             // {minimized: this.props.state.minimized && isMobile},
           )}
+          
           style={this.needVideoControls ? "" : "display: none;"}
           onWheel={this.handleMediaWheel}
           onClick={this.handleMaximize}>
-          <div class={"player-controls_container"}>
+          <div 
+            class={"player-controls_container"}
+            onMouseDown={(e) => record ? this.handleMediaDown(e) : null}
+          >
             {playbackRateShow && <div class="playback-info">{playbackRate}</div>}
             <span
               class={cx(
@@ -198,14 +208,14 @@ class RenderVideo extends Component<any, PopupState> {
                 {readableDuration(duration || durationProp, true)}
               </span>
             </span>
-            <span class="player-controls_container playback">
+            {!record && <span class="player-controls_container playback">
                 <span onClick={() => this.handlePlaybackRate(-1)} class="player-control playback_backward" >
                   <i class="fa fa-backward"/>
                 </span>
                 <span onClick={() => this.handlePlaybackRate(1)} class="player-control playback_forward" >
                 <i class="fa fa-forward"/>
                 </span>
-            </span>
+            </span>}
             <span
               onMouseMove={!isMobile ? this.handleSeekHover : null}
               onMouseEnter={() => this.setState({ seekHover: true })}
@@ -236,23 +246,23 @@ class RenderVideo extends Component<any, PopupState> {
                 onTouchEnd={this.seekingOff}
               />
             </span>
-            <a
+            {<a
               title={_("download")}
               class="player-control player-download" href={this.props.url + "?download"}>
               <i class="fa fa-download" />
-            </a>
-            <span
+            </a>}
+            {!record && <span
               title={_("snapshot")}
               class="player-control player-snapshot"
               onClick={this.handleSnapshot}>
               <i class="fa fa-camera"></i>
-            </span>
-            <span
+            </span>}
+            {!record && <span
               title={this.isFullscreen() ? _("fullscreenExit") : _("fullscreen")}
               class="player-control player-fullscreen"
             >
               <i class="fa fa-window-maximize" />
-            </span>
+            </span>}
           </div>
         </div>
       </div>
@@ -436,11 +446,12 @@ class RenderVideo extends Component<any, PopupState> {
     }
   }
   private handleMediaDown = (e: MouseEvent) => {
-    // if (!this.state.minimized || !this.props.video) {
+    const { onMediaDown } = this.props;
     if (this.isFullscreen()) return;
     if (e.button !== 0) return;
-    this.props.onMediaDown(e);
-    // }
+    const target = e.target as HTMLElement;
+    if (target.matches('.player-controls_container')) onMediaDown(e);
+    if (target.matches('.popup-video-overlay')) onMediaDown(e);
   }
   private handleTouch = () => {
     if (!isMobile) return;

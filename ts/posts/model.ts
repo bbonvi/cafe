@@ -149,6 +149,7 @@ export class File implements ImageData {
   public SHA1: string;
   public size: number;
   public video: boolean;
+  public image: boolean;
   public audio: boolean;
   public apng: boolean;
   public fileType: fileTypes;
