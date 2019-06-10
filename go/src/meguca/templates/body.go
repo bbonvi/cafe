@@ -73,6 +73,7 @@ var policy = func() *bluemonday.Policy {
 
 var embeds = map[string]string{
 	"instagram": `https?://(?:[^\.]+\.)?(instagram.com|instagr.am)\/(p|tv)\/([a-zA-Z0-9_-]+)`,
+	"twitter":   `https?://(?:[^\.]+\.)?twitter.com/.*?/status/\d*`,
 	"soundcloud": `https?://(?:[^\.]+\.)?(soundcloud.com|snd.sc)\` +
 		`/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/?([a-zA-Z0-9_-]+)?`,
 	"vlive": `https?://(?:(?:www|m)\.)?vlive\.tv/video/([0-9]+)`,

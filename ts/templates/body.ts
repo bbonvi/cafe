@@ -83,6 +83,7 @@ class CustomParser extends ((marked as any).Parser as AnyClass) {
 
 const embeds = {
     instagram: String.raw`https?://(?:[^\.]+\.)?(instagram.com|instagr.am)\/(p|tv)\/([a-zA-Z0-9_-]+)`,
+    twitter: String.raw`https?://(?:[^\.]+\.)?twitter.com/.*?/status/\d*`,
     soundcloud:
         String.raw`https?://(?:[^\.]+\.)?(soundcloud.com|snd.sc)\/` +
         `([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/?([a-zA-Z0-9_-]+)?`,
@@ -127,6 +128,7 @@ class CustomRenderer extends ((marked as any).Renderer as AnyClass) {
         }
         let out = "<a ";
         for (const provider of Object.keys(linkEmbeds)) {
+            console.log(linkEmbeds[provider], href, linkEmbeds[provider].test(unescape(href)));
             if (linkEmbeds[provider].test(unescape(href))) {
                 out += ` class="post-embed post-${provider}-embed trigger-media-hover"`;
                 out += ` data-provider="${provider}"`;

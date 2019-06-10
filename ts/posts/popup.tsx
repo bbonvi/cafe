@@ -15,12 +15,13 @@ import {
   POST_FILE_THUMB_SEL,
   TRIGGER_MEDIA_POPUP_SEL,
   ZOOM_STEP_PX,
+  POST_EMBED_TWITTER_SEL,
+  isMobile,
 } from "../vars";
 import { findPreloadImages } from "./hover";
 import RenderVideo from './player'
+// import { recalcPosts } from ".";
 const opened: Set<string> = new Set();
-
-
 export function isOpen(url: string): boolean {
   return opened.has(url);
 }
@@ -48,6 +49,7 @@ export interface PopupProps {
   audioFile: boolean;
   embed: boolean;
   instagram?: boolean;
+  twitter?: boolean;
   transparent: boolean;
   blur: string;
   postId: number;
@@ -93,11 +95,12 @@ class Popup extends Component<PopupProps, PopupState> {
   private startY = 0;
   private startW = 0;
   private startH = 0;
+  private timeout = null as any;
 
   constructor(props: PopupProps) {
     super(props);
 
-    const { width, height } = props;
+    const { width, height, twitter } = props;
     const rect = getCenteredRect({ width, height });
     this.aspect = width / height;
 
@@ -117,7 +120,7 @@ class Popup extends Component<PopupProps, PopupState> {
 
     this.state = {
       left: rect.left,
-      top: rect.top,
+      top: isMobile && twitter ? 0 : rect.top,
       width: rect.width,
       height: rect.height,
       moving: false,
@@ -136,6 +139,7 @@ class Popup extends Component<PopupProps, PopupState> {
     };
   }
   public componentDidMount() {
+    const { twitter } = this.props;
     const { muted } = options;
     this.setState({ muted });
     opened.add(this.props.url);
@@ -147,6 +151,7 @@ class Popup extends Component<PopupProps, PopupState> {
       this.itemEl.volume = options.volume;
       this.itemEl.src = this.props.url;
     }
+    if (twitter) this.initTwitter();
   }
 
   public componentWillUnmount() {
@@ -157,7 +162,20 @@ class Popup extends Component<PopupProps, PopupState> {
     document.removeEventListener("click", this.handleGlobalClick);
   }
 
-  public render({ video, record, embed, instagram }: PopupProps, { left, top }: PopupState) {
+  componentDidUpdate() {
+    const { twitter } = this.props;
+    const { moving, resizing } = this.state;
+    if (!twitter || moving || resizing) return;
+    this.initTwitter();
+  }
+
+  shouldComponentUpdate() {
+    const { twitter } = this.props;
+    if (!twitter) return true;
+    return false;
+  }
+
+  public render({ video, record, embed, instagram, twitter }: PopupProps, { left, top }: PopupState) {
     let cls = "";
     let fn = null;
     if (video) {
@@ -167,12 +185,16 @@ class Popup extends Component<PopupProps, PopupState> {
       cls = "popup_record";
       // fn = this.renderRecord;
       fn = this.renderVideo;
+    } else if (twitter) {
+      cls = "popup_embed popup_embed_twitter";
+      fn = this.renderTwitter;
     } else if (instagram) {
       cls = "popup_embed popup_embed_instagram";
       fn = this.renderEmbedInstagram;
     } else if (embed) {
       cls = "popup_embed";
       fn = this.renderEmbed;
+
     } else {
       cls = "popup_image";
       fn = this.renderImage;
@@ -189,7 +211,7 @@ class Popup extends Component<PopupProps, PopupState> {
       <RenderVideo
         {...this.props}
         {...this.state}
-        
+
         realHeight={this.props.height}
         realWidth={this.props.width}
         onMediaWheel={this.handleMediaWheel}
@@ -197,12 +219,12 @@ class Popup extends Component<PopupProps, PopupState> {
         onKeyDown={this.handleGlobalKey}
         onMove={this.handleGlobalMove}
         onVolumeChange={this.handleMediaVolume}
-        onStateChange={(state: {}) => this.setState({ ...state })} 
+        onStateChange={(state: {}) => this.setState({ ...state })}
 
         itemEl={this.itemEl}
         setRef={(itemEl: HTMLVideoElement) => (this.itemEl = itemEl)}
       />
-      );
+    );
   }
 
   private renderImage() {
@@ -271,6 +293,46 @@ class Popup extends Component<PopupProps, PopupState> {
       />
     );
   }
+
+  public initTwitter = () => {
+    const twttr = (window as any).twttr;
+    clearTimeout(this.timeout);
+    const element = document.querySelectorAll('.popup_embed_twitter');
+    twttr.events.bind('rendered', (e: any) => {
+      const { clientWidth, clientHeight } = e.target;
+      const { left, top } = getCenteredRect({ height: clientHeight, width: clientWidth })
+      // TODO: Super dumb
+      if (e.target.nodeName === 'TWITTER-WIDGET') {
+        const { parentElement } = e.target;
+        parentElement.style.left = `${left}px`;
+        parentElement.style.top = `${top}px`;
+      }
+    }
+    );
+    twttr.widgets.load(element);
+    if (isMobile) this.setState({ top: 0 })
+  }
+
+  private renderTwitter() {
+    // const { height } = this.state;
+    const { width, url } = this.props;
+    const widthNew = isMobile ? '100vw' : width;
+    // const pointerEvents = moving || resizing ? "none" : "auto";
+    return (
+      <blockquote
+        style={{ width: widthNew, height: 200 }}
+        data-conversation="none"
+        data-dnt="true"
+        class="twitter-tweet popup-item">
+        <a href={url}></a>
+      </blockquote>
+
+      // <div style={{ width: widthNew }} dangerouslySetInnerHTML={{ __html: html }} class="popup-item">
+
+      // </div>
+    );
+  }
+
   private renderEmbedInstagram() {
     const { width, height, moving, resizing } = this.state;
     const pointerEvents = moving || resizing ? "none" : "auto";
@@ -309,7 +371,7 @@ class Popup extends Component<PopupProps, PopupState> {
   private handleGlobalKey = (e: KeyboardEvent) => {
     // if (e.keyCode === 27) {
     //   this.props.onClose();
-      // this.setState({ fullscreen: false });
+    // this.setState({ fullscreen: false });
     // }
   }
   private handleMediaDrag = (e: DragEvent) => {
@@ -422,7 +484,6 @@ class Popup extends Component<PopupProps, PopupState> {
     const innerHeight = window.innerHeight;
     const innerWidth = window.innerWidth;
     const { clientX, clientY } = e as MouseEvent;
-    // console.log(offsetX);
 
     const order = e.deltaY < 0 ? 1 : -1;
     // order = -1 — scale down
@@ -439,10 +500,10 @@ class Popup extends Component<PopupProps, PopupState> {
 
     const offsetX = clientX - itemLeft;
     const offsetY = clientY - itemTop;
-    
+
     const max = (itemHeight * itemWidth - innerHeight * innerWidth) / 1000000;
     if (max > 0) {
-        zoom = Number((zoom * (max / (order < 0 ? 8 : 3) + 1)).toFixed(0));
+      zoom = Number((zoom * (max / (order < 0 ? 8 : 3) + 1)).toFixed(0));
     }
 
     const relativePositionX = ((itemWidth / 2) / offsetX);
@@ -457,11 +518,11 @@ class Popup extends Component<PopupProps, PopupState> {
     height = Math.ceil(width / this.aspect);
 
     const isUndersized = width <= 230 || height <= 230;
-    
+
     const isOversized = width > realWidth || height > realHeight;
 
     if (isUndersized && order < 0) return;
-    
+
     if (isOversized) {
       const offsetWidth = width - this.props.width;
       const offsetHeight = height - this.props.height;
@@ -546,7 +607,7 @@ class Popups extends Component<any, PopupsState> {
       </div>
     );
   }
-  
+
   private open = (e: Event) => {
     let target = e.target as HTMLElement;
     if (!target.matches) return;
@@ -555,7 +616,7 @@ class Popups extends Component<any, PopupsState> {
     this.handleOpen(target);
   }
 
-  public handleOpen (target: HTMLElement, omitSameSkip = false) {
+  public handleOpen(target: HTMLElement, omitSameSkip = false) {
     const props = {
       video: false,
       image: false,
@@ -575,6 +636,7 @@ class Popups extends Component<any, PopupsState> {
     const IS_FILE = target.matches(POST_FILE_THUMB_SEL) || isThumbBG;
     const IS_EMBED = target.matches(POST_EMBED_SEL);
     const IS_EMBED_INSTAGRAM = target.matches(POST_EMBED_INSTAGRAM_SEL);
+    const IS_TWEET = target.matches(POST_EMBED_TWITTER_SEL);
     // const IS_AUDIO = target.closest('.post-file_record');
 
     if (IS_FILE) {
@@ -610,6 +672,10 @@ class Popups extends Component<any, PopupsState> {
     }
 
     if (IS_EMBED_INSTAGRAM) props.instagram = true;
+    if (IS_TWEET) {
+      props.twitter = true;
+      props.height = 500;
+    };
     const isAudioFile = props.record;
 
     if (isAudioFile) {

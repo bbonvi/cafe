@@ -46,7 +46,11 @@ const embedUrls: { [key: string]: (url: string) => string } = {
         const id = linkEmbeds.instagram.exec(url)[0].replace(/www\./i, "");
         const attrs = [`url=${id}`, `omitscript=true`];
         return `https://noembed.com/embed?${attrs.join("&")}`;
-        // return `https://api.instagram.com/oembed?${attrs.join("&")}`;
+    },
+    twitter: (url) => {
+        const id = linkEmbeds.twitter.exec(url)[0];
+        const attrs = [`url=${id}`, `hide_thread=true`, `omit_script=true`];
+        return `https://noembed.com/embed?${attrs.join("&")}`;
     },
 };
 // if (window.innerWidth > window.innerWidth)
@@ -139,6 +143,35 @@ const embedResponses: { [key: string]: (res: Dict) => OEmbedDoc } = {
             thumbnail_height: res.thumbnail_height,
         };
     },
+    twitter: (res) => {
+        // const item = res;
+        if (!res) throw new Error("not found");
+        if (res.type !== "rich") {
+            throw new Error("response didn't return anything useful");
+        }
+        const { url } = res;
+        let title = '';
+        let el = document.createElement('div');
+        el.innerHTML = res.html;
+        const text = el.innerText;
+        title = text.trim().replace(/\s{2,}/gmi, ' ');
+        if (title.length > 30) {
+            title = title.substring(0, 30) + "...";
+        }
+        el = null;
+        return {
+            title: `${res.author_name}: ${title}`,
+            width: 500,
+            height: 450,
+            // html: `<iframe src="${url}" frameborder="0" scrolling="no" allowtransparency="true"></iframe>`,
+            html: res.html.replace('<blockquote', '<blockquote data-conversation="none" data-dnt="true"'),
+            url: `${url}`,
+            // /tv/ urls doesn't have `/media/?size=l` and /p/ urls sometimes doesn't have thumbnail_url;
+            // thumbnail_url: tv ? res.thumbnail_url : `${url}/media/?size=l`,
+            // thumbnail_width: res.thumbnail_width,
+            // thumbnail_height: res.thumbnail_height,
+        };
+    },
 };
 
 function fetchEmbed(url: string, provider: string): Promise<OEmbedDoc> {
@@ -161,6 +194,7 @@ const embedIcons = {
     youtubepls: "fa fa-bars",
     soundcloud: "fa fa-soundcloud",
     instagram: "fa fa-instagram",
+    twitter: "fa fa-twitter",
 };
 
 /** Additional rendering of embedded media link. */
