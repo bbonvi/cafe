@@ -58,6 +58,7 @@ export interface PopupProps {
   width: number;
   height: number;
   duration: number;
+  onChangeImage: (arg0: number) => void;
   onClose: () => void;
 }
 
@@ -95,6 +96,7 @@ class Popup extends Component<PopupProps, PopupState> {
   private startY = 0;
   private startW = 0;
   private startH = 0;
+  private left = 0;
   private timeout = null as any;
 
   constructor(props: PopupProps) {
@@ -138,6 +140,7 @@ class Popup extends Component<PopupProps, PopupState> {
       playbackRate: 1,
     };
   }
+
   public componentDidMount() {
     const { twitter } = this.props;
     const { muted } = options;
@@ -146,12 +149,14 @@ class Popup extends Component<PopupProps, PopupState> {
     trigger(HOOKS.openPostPopup);
     document.addEventListener("keydown", this.handleGlobalKey);
     document.addEventListener("mousemove", this.handleGlobalMove);
+    document.addEventListener("touchend", this.handleMouseUp);
     document.addEventListener("click", this.handleGlobalClick);
     if (this.props.video || this.props.record) {
       this.itemEl.volume = options.volume;
       this.itemEl.src = this.props.url;
     }
     if (twitter) this.initTwitter();
+    this.left = this.state.left;
   }
 
   public componentWillUnmount() {
@@ -159,6 +164,7 @@ class Popup extends Component<PopupProps, PopupState> {
     opened.delete(this.props.url);
     document.removeEventListener("keydown", this.handleGlobalKey);
     document.removeEventListener("mousemove", this.handleGlobalMove);
+    document.removeEventListener("touchend", this.handleMouseUp);
     document.removeEventListener("click", this.handleGlobalClick);
   }
 
@@ -233,6 +239,10 @@ class Popup extends Component<PopupProps, PopupState> {
     const thumbUrl = url.replace(/src/, "blur").replace(/png/, "jpg");
     const isGif = (/gif/).test(thumbUrl);
     const backgroundImage = (transparent || !showBG || isGif) ? '' : `url(${thumbUrl})`;
+    const onImageLoad = () => {
+      this.preload(url, postId);
+      this.setState({ showBG: false });
+    }
     // https://github.com/developit/preact/issues/663
     return (
       <img
@@ -240,17 +250,24 @@ class Popup extends Component<PopupProps, PopupState> {
         ref={s(this, "itemEl")}
         style={{ width, height, backgroundImage }}
         src={url}
-        onLoad={() => {
-          this.preload(url, postId);
-          this.setState({ showBG: false });
-        }}
+        onLoad={onImageLoad}
         draggable={0 as any}
         onDragStart={this.handleMediaDrag}
         onMouseDown={this.handleMediaDown}
         onWheel={this.handleMediaWheel}
+        onTouchMove={this.handleGlobalMove}
+        onTouchStart={this.handleMediaDown}
+        onTouchEnd={this.handleMouseUp}
       />
     );
   }
+
+  handleMouseUp = (e: TouchEvent) => {
+    if (!isMobile) return;
+    // this.handleTouchSwipe(e)
+    this.setState({ moving: false, left: this.left })
+  }
+
   private preload(url: string, postId: number): any {
     let preload = document.createElement("img");
     preload.src = url;
@@ -263,20 +280,6 @@ class Popup extends Component<PopupProps, PopupState> {
       preload = null;
     };
   }
-  // private renderRecord() {
-  //   return (
-  //     <div class="popup-record" onMouseDown={this.handleMediaDown}>
-  //       <i class="popup-record-icon fa fa-music" />
-  //       <audio
-  //         class="popup-item popup-record-item"
-  //         ref={s(this, "itemEl")}
-  //         autoPlay
-  //         controls
-  //         onVolumeChange={this.handleMediaVolume}
-  //       />
-  //     </div>
-  //   );
-  // }
   private renderEmbed() {
     const { width, height, moving, resizing } = this.state;
     const pointerEvents = moving || resizing ? "none" : "auto";
@@ -374,6 +377,7 @@ class Popup extends Component<PopupProps, PopupState> {
     // this.setState({ fullscreen: false });
     // }
   }
+
   private handleMediaDrag = (e: DragEvent) => {
     // NOTE(Kagami): Note that both draggable AND ondragstart are
     // required:
@@ -383,19 +387,24 @@ class Popup extends Component<PopupProps, PopupState> {
     //   dragstart handler required
     e.preventDefault();
   }
+
   private handleMediaVolume = () => {
     options.volume = this.itemEl.volume;
     options.muted = this.itemEl.muted;
   }
-  private handleMediaDown = (e: MouseEvent) => {
-    if (e.button !== 0) return;
+
+  private handleMediaDown = (e: MouseEvent | TouchEvent) => {
+    const { targetTouches } = (e as TouchEvent);
+    if ((e as MouseEvent).button !== 0 && !targetTouches) return;
     this.setState({ moving: true });
-    this.baseX = e.clientX;
-    this.baseY = e.clientY;
+    const clientX = targetTouches ? targetTouches[0].clientX : (e as MouseEvent).clientX;
+    this.baseX = clientX;
+    this.baseY = (e as MouseEvent).clientY;
     this.startX = this.state.left;
     this.startY = this.state.top;
     // }
   }
+
   private handleResizerDown = (e: MouseEvent) => {
     // if (this.isFullscreen) return;
     if (e.button !== 0) return;
@@ -409,39 +418,33 @@ class Popup extends Component<PopupProps, PopupState> {
     this.startH = this.state.height;
   }
 
-  // private handleAutoMinimize = () => {
-  //   clearTimeout(this.timer);
-  //   this.timer = setTimeout(() => {
-  //     this.handleMinimize();
-  //   }, 2000);
-  // }
-  // private handleTouch = () => {
-  //   if (!isMobile) return;
-  //   this.handleAutoMinimize();
-  // }
-  private handleGlobalMove = (e: MouseEvent) => {
-    // const target = e.target as HTMLElement;
-    // if (target.matches(".popup-video-overlay") && !isMobile) {
-    //   this.handleMaximize();
-    // }
-    // if (!target.closest(".popup-video")) {
-    //   this.handleMinimize();
-    // }
-    // clearTimeout(this.timer);
-    // this.timer = setTimeout(() => {
-    //   if (!target.closest(".popup-player") && !this.state.seeking && !isMobile) {
-    //     this.handleMinimize();
-    //   }
-    // }, 1500);
-    // if (this.isFullscreen) return;
+  handleTouchSwipe = (_e: TouchEvent) => {
+    if (!this.state.moving) return;
+    if (isMobile) {
+      const { left } = this.state;
+      const offset = this.left - left;
+      if (Math.abs(offset) > 60) {
+        const { onChangeImage } = this.props;
+        this.setState({ moving: false })
+        const right = offset > 0;
+        onChangeImage({ left: !right, right } as any)
+      };
+    }
+  }
+
+  private handleGlobalMove = (e: MouseEvent | TouchEvent) => {
+    const { targetTouches } = (e as TouchEvent);
+    const clientX = targetTouches ? targetTouches[0].clientX : (e as MouseEvent).clientX;
+    e.preventDefault();
+    
+
     if (this.state.moving) {
-      this.setState({
-        left: this.startX + e.clientX - this.baseX,
-        top: this.startY + e.clientY - this.baseY,
-      });
+      const left = this.startX + clientX - this.baseX;
+      const top = this.startY + (e as MouseEvent).clientY - this.baseY;
+      this.setState({ left, top });
     } else if (this.state.resizing) {
-      const dx = e.clientX - this.baseX;
-      const dy = e.clientY - this.baseY;
+      const dx = ((e as MouseEvent).clientX) - this.baseX;
+      const dy = (e as MouseEvent).clientY - this.baseY;
       let left = this.startX + dx;
       let top = this.startY + dy;
       let width = this.startW - dx;
@@ -456,17 +459,19 @@ class Popup extends Component<PopupProps, PopupState> {
       }
       width = Math.max(width, limit);
       height = Math.max(height, limit);
-
       this.setState({ left, top, width, height });
     }
+    this.handleTouchSwipe(e as TouchEvent);
   }
+
   private handleControlsClick = (e: MouseEvent) => {
     e.stopPropagation();
     this.setState({ moving: false, resizing: false });
   }
+
   private handleGlobalClick = (e: MouseEvent) => {
-    if (e.button === 0) {
-      if (this.state.moving) {
+    if ((e.button === 0 || isMobile)) {
+      if (this.state.moving && ((!this.props.video) || !isMobile)) {
         if (e.clientX === this.baseX && e.clientY === this.baseY) {
           this.props.onClose();
         }
@@ -577,6 +582,13 @@ class Popups extends Component<any, PopupsState> {
       this.makeHandleClose(lastPopup.url)();
       return;
     }
+
+    this.handleChangeImage({ left, right });
+    
+  }
+
+  handleChangeImage = ({ left, right }: any) => {
+    const { popups } = this.state;
     if (!left && !right) return;
     if (!popups.find(p => p.video || p.image)) return;
     this.initFileList(() => {
@@ -593,6 +605,7 @@ class Popups extends Component<any, PopupsState> {
   }
 
   handlePreloadNext = (target: HTMLElement) => {
+    if (isMobile) return;
     if (target.hasAttribute('preloaded')) return;
     target.setAttribute('preloaded', '')
 
@@ -625,7 +638,7 @@ class Popups extends Component<any, PopupsState> {
     return (
       <div class="popup-container-inner">
         {popups.map((props) => (
-          <Popup {...props} key={props.url} onClose={this.makeHandleClose(props.url)} />
+          <Popup onChangeImage={this.handleChangeImage} {...props} key={props.url} onClose={this.makeHandleClose(props.url)} />
         ))}
       </div>
     );

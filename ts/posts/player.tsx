@@ -119,7 +119,7 @@ class RenderVideo extends Component<any, PopupState> {
 
       <div
         class={cx("popup-video", { "popup-record": record, fullscreen  })}
-        onMouseEnter={this.handleMaximize}
+        onMouseEnter={isMobile ? null : this.handleMaximize}
       >
         <video
           crossOrigin="use-credential"
@@ -136,12 +136,12 @@ class RenderVideo extends Component<any, PopupState> {
           onVolumeChange={this.props.handleMediaVolume}
         />
         <div
-          class={cx("popup-video-overlay", {
-            "popup-video-overlay_full": !this.needVideoControls,
-          })}
-          onMouseDown={!isMobile ? this.handleMediaDown : null}
+          class="popup-video-overlay"
+          onMouseDown={this.handleMediaDown}
+          onTouchStart={this.handleMediaDown}
+          onTouchMove={this.handleGlobalMove}
           onWheel={this.handleMediaWheel}
-          onClick={!isMobile ? null : this.handleMobileMediaTouches}
+          onClick={isMobile ? this.handleMobileMediaTouches : null}
         />
 
         <div
@@ -155,10 +155,11 @@ class RenderVideo extends Component<any, PopupState> {
           
           style={this.needVideoControls ? "" : "display: none;"}
           onWheel={this.handleMediaWheel}
-          onClick={this.handleMaximize}>
+          // onClick={this.handleMaximize}
+        >
           <div 
             class={"player-controls_container"}
-            onMouseDown={(e) => record ? this.handleMediaDown(e) : null}
+            onMouseDown={this.handleControlsMouseDown}
           >
             {playbackRateShow && <div class="playback-info">{playbackRate}</div>}
             <span
@@ -269,6 +270,13 @@ class RenderVideo extends Component<any, PopupState> {
     );
   }
 
+  private handleControlsMouseDown = (e: MouseEvent) => {
+    const { record } = this.props;
+
+    if (record && isMobile) this.handleMobileMediaTouches();
+    if (record && !isMobile) this.handleMediaDown(e);
+  }
+
   private handleOnPlay = () => {
     const { onStateChange, showBG } = this.props;
     if (showBG) onStateChange({ showBG: false });
@@ -326,7 +334,9 @@ class RenderVideo extends Component<any, PopupState> {
   }
   private handleMaximize = () => {
     const { minimized } = this.state;
-    if (minimized) this.setState({ minimized: false });
+    if (minimized) {
+      this.setState({ minimized: false })
+    };
   }
   private handleFullscreen() {
     if (this.isFullscreen()) {
@@ -445,14 +455,17 @@ class RenderVideo extends Component<any, PopupState> {
       this.props.onKeyDown(e)
     }
   }
-  private handleMediaDown = (e: MouseEvent) => {
+  
+  private handleMediaDown = (e: MouseEvent | TouchEvent) => {
     const { onMediaDown } = this.props;
     if (this.isFullscreen()) return;
-    if (e.button !== 0) return;
+    const { targetTouches } = (e as TouchEvent);
+    if ((e as MouseEvent).button !== 0 && !targetTouches) return;
     const target = e.target as HTMLElement;
     if (target.matches('.player-controls_container')) onMediaDown(e);
     if (target.matches('.popup-video-overlay')) onMediaDown(e);
   }
+
   private handleTouch = () => {
     if (!isMobile) return;
     this.handleAutoMinimize();
@@ -461,10 +474,11 @@ class RenderVideo extends Component<any, PopupState> {
   private handleAutoMinimize = () => {
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
-      this.handleMinimize();
+      if (!this.state.minimized) this.handleMinimize();
     }, 2000);
   }
-  private handleGlobalMove = (e: MouseEvent) => {
+  
+  private handleGlobalMove = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
     const { minimized } = this.state;
     if (target.matches(".popup-video-overlay") && !isMobile) {
@@ -484,16 +498,12 @@ class RenderVideo extends Component<any, PopupState> {
     this.props.onMove(e);
     
   }
-  private handleMobileMediaTouches = (e: MouseEvent) => {
-    if (this.state.minimized) {
+  private handleMobileMediaTouches = () => {
+    if (this.state.minimized && !this.props.record) {
       this.handleMaximize();
     } else {
       this.props.onClose();
     }
-    // const target = e.target as HTMLElement;
-    // if (target.matches(".popup-video-overlay")) {
-    //   this.handleMaximize();
-    // }
     clearTimeout(timer);
     timer = setTimeout(() => {
       if (!this.state.minimized && !this.state.seeking) {
