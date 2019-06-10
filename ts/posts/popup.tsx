@@ -388,8 +388,7 @@ class Popup extends Component<PopupProps, PopupState> {
     options.muted = this.itemEl.muted;
   }
   private handleMediaDown = (e: MouseEvent) => {
-    // if (!this.state.minimized || !this.props.video) {
-    // if (e.button !== 0) return;
+    if (e.button !== 0) return;
     this.setState({ moving: true });
     this.baseX = e.clientX;
     this.baseY = e.clientY;
@@ -585,10 +584,34 @@ class Popups extends Component<any, PopupsState> {
         const index = mod(this.index + n, this.files.length);
         return this.files[index];
       };
-
-      if (left) this.handleOpen(getNextElement(-1), true);
-      if (right) this.handleOpen(getNextElement(+1), true);
+      let pos = 0;
+      if (left) pos = -1
+      if (right) pos = +1
+      this.handlePreloadNext(getNextElement(pos*2))
+      this.handleOpen(getNextElement(pos), true);
     })
+  }
+
+  handlePreloadNext = (target: HTMLElement) => {
+    if (target.hasAttribute('preloaded')) return;
+    target.setAttribute('preloaded', '')
+
+    const post = getModel(target);
+    this.curElement = target as HTMLElement;
+    const { sha1 } = (target as HTMLImageElement).dataset;
+    const file = post.getFileByHash(sha1);
+    if (file.video) {
+      let vid = document.createElement('video');
+      vid.onloadedmetadata = () => vid = null;
+      vid.src = file.src;
+      vid.preload = "metadata"
+      return;
+    };
+
+    let img = document.createElement('img');
+    img.onload = () => img = null;
+    img.src = file.src;
+
   }
 
   public initFileList = (callback?: () => void) => {
