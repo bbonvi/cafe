@@ -64,6 +64,7 @@ export interface PopupProps {
 
 export interface PopupState {
   left: number;
+  translateX: number;
   top: number;
   width: number;
   height: number;
@@ -126,6 +127,7 @@ class Popup extends Component<PopupProps, PopupState> {
       width: rect.width,
       height: rect.height,
       moving: false,
+      translateX: 0,
       seeking: false,
       resizing: false,
       curTime: 0,
@@ -183,6 +185,8 @@ class Popup extends Component<PopupProps, PopupState> {
 
   public render({ video, record, embed, instagram, twitter }: PopupProps, { left, top }: PopupState) {
     let cls = "";
+    const { translateX } = this.state;
+    const transform = `translateX(${translateX}px)`
     let fn = null;
     if (video) {
       cls = "popup_video";
@@ -206,7 +210,7 @@ class Popup extends Component<PopupProps, PopupState> {
       fn = this.renderImage;
     }
     return (
-      <div class={cx("popup", cls)} style={{ left, top }}>
+      <div class={cx("popup", cls)} style={{ left, top, transform }}>
         {fn.call(this)}
         {embed ? this.renderControls() : null}
       </div>
@@ -265,7 +269,7 @@ class Popup extends Component<PopupProps, PopupState> {
   handleMouseUp = (e: TouchEvent) => {
     if (!isMobile) return;
     // this.handleTouchSwipe(e)
-    this.setState({ moving: false, left: this.left })
+    this.setState({ moving: false, left: this.left, translateX: 0 })
   }
 
   private preload(url: string, postId: number): any {
@@ -418,15 +422,13 @@ class Popup extends Component<PopupProps, PopupState> {
     this.startH = this.state.height;
   }
 
-  handleTouchSwipe = (_e: TouchEvent) => {
+  handleTouchSwipe = (n: number) => {
     if (!this.state.moving) return;
     if (isMobile) {
-      const { left } = this.state;
-      const offset = this.left - left;
-      if (Math.abs(offset) > 60) {
+      if (Math.abs(n) > 60) {
         const { onChangeImage } = this.props;
         this.setState({ moving: false })
-        const right = offset > 0;
+        const right = n < 0;
         onChangeImage({ left: !right, right } as any)
       };
     }
@@ -439,6 +441,11 @@ class Popup extends Component<PopupProps, PopupState> {
     
 
     if (this.state.moving) {
+      if (isMobile) {
+        const translateX = clientX - this.baseX;
+        this.setState({ translateX })
+        return this.handleTouchSwipe(translateX);
+      };
       const left = this.startX + clientX - this.baseX;
       const top = this.startY + (e as MouseEvent).clientY - this.baseY;
       this.setState({ left, top });
@@ -461,7 +468,6 @@ class Popup extends Component<PopupProps, PopupState> {
       height = Math.max(height, limit);
       this.setState({ left, top, width, height });
     }
-    this.handleTouchSwipe(e as TouchEvent);
   }
 
   private handleControlsClick = (e: MouseEvent) => {
