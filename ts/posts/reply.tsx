@@ -259,7 +259,7 @@ class FilePreview extends Component<FilePreviewProps, {}> {
   }
 
   private handleMouseDown = (e: MouseEvent) => {
-    // if (this.props.fwraps.length < 2) return;
+    if (e.button !== 0) return;
     if (!this.thumb) return;
     const { top } = this.thumb.getBoundingClientRect();
     e.preventDefault();
