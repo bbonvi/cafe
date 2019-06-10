@@ -575,6 +575,7 @@ class ProgressBar extends Component<any, ProgressBarState> {
   componentWillUnmount() {
     window.cancelAnimationFrame = this.cancelAnimationFrame;
     window.cancelAnimationFrame(this.animation);
+    clearTimeout(this.animation)
   }
   
 
@@ -594,7 +595,13 @@ class ProgressBar extends Component<any, ProgressBarState> {
     if (currentTime > 1000) currentTime = 1000
     if (oldTime !== currentTime) this.setState({ currentTime });
 
-    if (body.contains(video)) this.animation = window.requestAnimationFrame(this.requestAnimation);
+    if (!body.contains(video)) return;
+    
+    if (!isMobile) {
+      this.animation = window.requestAnimationFrame(this.requestAnimation)
+    } else {
+      this.animation = setTimeout(this.requestAnimation, 400)
+    };
   }
   
   public render() {
