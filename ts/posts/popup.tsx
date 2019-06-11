@@ -730,11 +730,11 @@ class Popups extends Component<any, PopupsState> {
       props.audioFile = true;
     }
 
-    if (props.video) {
-      let { width, height } = props;
-      props.width = Math.max(width, 400);
-      props.height = Math.max(height, 400);
-    }
+    // if (props.video) {
+    //   let { width, height } = props;
+    //   props.width = Math.max(width, 400);
+    //   props.height = Math.max(height, 400);
+    // }
 
     const isVisualFile = props.image || props.video;
 
