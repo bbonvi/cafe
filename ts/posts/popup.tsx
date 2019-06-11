@@ -186,7 +186,7 @@ class Popup extends Component<PopupProps, PopupState> {
   public render({ video, record, embed, instagram, twitter }: PopupProps, { left, top }: PopupState) {
     let cls = "";
     const { translateX } = this.state;
-    const transform = `translateX(${translateX}px)`
+    const transform = isMobile ? `translateX(${translateX}px)` : '';
     let fn = null;
     if (video) {
       cls = "popup_video";
@@ -437,10 +437,13 @@ class Popup extends Component<PopupProps, PopupState> {
   private handleGlobalMove = (e: MouseEvent | TouchEvent) => {
     const { targetTouches } = (e as TouchEvent);
     const clientX = targetTouches ? targetTouches[0].clientX : (e as MouseEvent).clientX;
+    const { moving, resizing } = this.state;
+
+    if (!moving && !resizing) return;
     e.preventDefault();
     
 
-    if (this.state.moving) {
+    if (moving) {
       if (isMobile) {
         const translateX = clientX - this.baseX;
         this.setState({ translateX })
@@ -449,7 +452,7 @@ class Popup extends Component<PopupProps, PopupState> {
       const left = this.startX + clientX - this.baseX;
       const top = this.startY + (e as MouseEvent).clientY - this.baseY;
       this.setState({ left, top });
-    } else if (this.state.resizing) {
+    } else if (resizing) {
       const dx = ((e as MouseEvent).clientX) - this.baseX;
       const dy = (e as MouseEvent).clientY - this.baseY;
       let left = this.startX + dx;
