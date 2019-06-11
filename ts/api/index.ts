@@ -1,3 +1,4 @@
+import { AbortError } from './../util/fetch';
 /**
  * Module with all available API methods.
  */
@@ -46,6 +47,7 @@ function handleErrorCode(res: Response): Promise<any> {
 }
 
 function handleError(err: Error) {
+  if (err instanceof AbortError) throw new AbortError();
   throw new Error(err.message || _("unknownErr"));
 }
 
