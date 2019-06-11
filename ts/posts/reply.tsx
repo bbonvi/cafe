@@ -449,8 +449,9 @@ class Reply extends Component<any, any> {
   //     this.setBodyScroll();
   //   }
   // }
-  public render({ }, { float, fwraps, showBadge }: any) {
+  public render({ }, { float, fwraps, showBadge, sending, progress }: any) {
     const manyf = fwraps.length > 1;
+    const display = (!fwraps.length && sending) || sending && progress === 100 ? 'none' : '';
     return (
       <div
         ref={s(this, "mainEl")}
@@ -459,7 +460,7 @@ class Reply extends Component<any, any> {
           reply_files: manyf,
           reply_mod: showBadge,
         })}
-        style={this.style}
+        style={{ ...this.style, display }}
         onMouseDown={this.handleFormDown}
         onMouseMove={this.handleFormMove}
       >
@@ -973,12 +974,7 @@ class Reply extends Component<any, any> {
       });
   }
   private handleSendProgress = (e: ProgressEvent) => {
-    const files = this.state.fwraps.map((f) => f.file);
-    const withFiles = !!files[0];
     let progress = Math.floor((e.loaded / e.total) * 100);
-    if (!withFiles) {
-      progress = 0;
-    }
     this.setState({ progress });
   }
   private handleSendAbort = () => {
@@ -1108,7 +1104,7 @@ class Reply extends Component<any, any> {
   }
   private renderFooterControls() {
     const { editing, sending, progress, showBadge } = this.state;
-    const sendTitle = sending ? `${progress}% (${_("clickToCancel")})` : "";
+    const sendTitle = sending ? `${_("clickToCancel")}` : "";
     return (
       <div class="reply-controls reply-footer-controls">
         <button
@@ -1195,9 +1191,10 @@ class Reply extends Component<any, any> {
             className="button reply-send-button"
             progress={progress}
             title={sendTitle}
+            sending={sending}
             onClick={sending ? this.handleSendAbort : this.handleSend}
           >
-            {sending ? "" : _("submit")}
+            {sending ? _("cancel") : _("submit")}
           </Progress>
         )}
       </div>

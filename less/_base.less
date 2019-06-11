@@ -2978,6 +2978,9 @@ html:not(.pos_moderators) {
   height: 30px;
   line-height: 0.8em;
   color: @link + #111;
+  position: relative;
+  background: transparent;
+  overflow: hidden;
 
   &:not(:disabled):hover {
     color: @link;
@@ -2985,6 +2988,26 @@ html:not(.pos_moderators) {
     box-shadow: none;
     transform: none !important;
   }
+  .progress-background {
+    background: @link;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    right: 0;
+    transition: 0.1s linear;
+  }
+  .progress-text {
+    position: relative;
+    mix-blend-mode: @sendBlendMode;
+    filter: @sendFilter;
+  }
+}
+
+.progress-sending {
+  border-color: @link;
 }
 
 .reply-files-input {

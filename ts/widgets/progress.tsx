@@ -11,18 +11,15 @@ interface Props {
   [key: string]: any;
 }
 
-export default function({ progress, className, ...props }: Props): JSX.Element {
+export default function({ progress, className, sending, children, ...props }: Props): JSX.Element {
   progress = Math.floor(progress);
   progress = Math.max(0, Math.min(progress, 100));
-  const cls = cx("progress", className);
-  const background = `
-    linear-gradient(
-      to right,
-      #388697 ${progress}%,
-      transparent ${progress}%
-    )
-  `;
+  const cls = cx("progress", className, { "progress-sending": sending });
+  const transform = `translateX(${-(100-progress)}%)`
   return (
-    <div class={cls} style={{ background }} title={`${progress}%`} {...props} />
+    <div class={cls} {...props}>
+      <div style={{ transform }} class="progress-background"></div>
+      <div class="progress-text">{children}</div>
+    </div>
   );
 }
