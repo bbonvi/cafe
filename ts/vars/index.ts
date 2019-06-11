@@ -66,11 +66,11 @@ export const PRELOAD_MAX_SIZE = 3.5 * 1000000;
 
 export const REQUEST_ANIMATION_FRAME =
     window.requestAnimationFrame || window.webkitRequestAnimationFrame;
-export const isMobile: boolean =
+export const isMobile =
     window.matchMedia("(hover: none)").matches ||
     /android|ipad|iphone|mobi/i.test(navigator.userAgent) ||
     "ontouchstart" in document.documentElement;
-export const isTablet: boolean = isMobile && window.innerWidth >= 768;
+export const isTablet = isMobile && window.innerWidth >= 768;
 export const isFirefox = /firefox/i.test(navigator.userAgent);
 export const isLinux = /X11/i.test(navigator.appVersion);
 export const isWebkit = "webkitLineBreak" in document.documentElement.style;
