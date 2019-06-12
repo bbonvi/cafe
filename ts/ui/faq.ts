@@ -1,33 +1,18 @@
 import { HeaderModal } from "../base";
 
-/* const faqTemplate = `
-cutechan is licensed under the
-<a href="https://www.gnu.org/licenses/agpl.html" target="_blank"
->GNU Affero General Public License</a>
-<br>
-
-source code repository:
-<a href="https://github.com/cutechan/cutechan" target="_blank"
->github.com/cutechan/cutechan</a>
-<br>
-
-original project:
-<a href="https://github.com/bakape/meguca" target="_blank"
->github.com/bakape/meguca</a>
-<br>
-
-contacts:
-<a href="mailto:kagami@genshiken.org"
->kagami@genshiken.org</a>
-`; */
 const faqTemplate = `
+source code repository:
+<br>
+<a href="https://github.com/bonanov/bona.cafe" target="_blank"
+>github.com/bonanov/bona.cafe</a>
+<br>
 original projects:
 <br> 
-<a href="https://github.com/bakape/meguca" target="_blank"
->github.com/bakape/meguca</a>
-<br>
 <a href="https://github.com/cutechan/cutechan" target="_blank"
 >github.com/cutechan/cutechan</a>
+<br>
+<a href="https://github.com/bakape/meguca" target="_blank"
+>github.com/bakape/meguca</a>
 <br>
 `;
 class FAQPanel extends HeaderModal {
