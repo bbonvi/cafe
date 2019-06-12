@@ -10,6 +10,8 @@
 // BASE
 //////////////////////////////
 
+
+
 html {
   // Always show vertical scrollbar for consistent layout.
   overflow-y: scroll;
@@ -1805,6 +1807,15 @@ blockquote.twitter-tweet p {
   &:last-of-type {
     margin-bottom: 0;
   }
+  &.should-anim {
+    transform: translateY(-50%) scaleY(0.0);
+    opacity: 0;
+    transition: 0.15s transform, opacity;
+  }
+  &.post_loaded {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .post:nth-of-type(2n) {
@@ -2065,7 +2076,7 @@ html.user {
   overflow: hidden;
   display: flex;
   align-items: center;
-  border-radius: 3px;
+  // border-radius: 3px;
   transition: 0.1s;
 
   .post-file-thumb_background {
@@ -2168,6 +2179,7 @@ section:not(.catalog) .visible .post-file-thumb_containter {
 .post-file-link {
   overflow: hidden;
   border-radius: 4px;
+  .border-squircle(5%, 5%);
 }
 
 // .post-file-thumb, .post-file-link {

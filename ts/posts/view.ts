@@ -27,11 +27,18 @@ export default class PostView extends View<Post> {
 
     this.model.view = this;
     this.model.seenOnce = !!el;
+    this.animate = !el;
+    if (this.animate) this.el.classList.add('should-anim')
   }
 
   // Apply client-specific formatting to post rendered on server-side.
   public afterRender(): Promise<void> {
     this.renderTime();
+    if (this.animate) {
+      requestAnimationFrame(() =>{
+        this.el.classList.add('post_loaded')
+      })
+    }
     return renderEmbeds(this.el);
   }
 

@@ -18,6 +18,7 @@ export default class View<M> {
   public model: M;
   public el: HTMLElement;
   public id: string | number;
+  public animate?: boolean;
 
   // Creates a new View and binds it to the target model, id any. If no
   // element supplied, creates a new one from the attributes.
