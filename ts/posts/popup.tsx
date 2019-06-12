@@ -588,6 +588,7 @@ class Popups extends Component<any, PopupsState> {
     const { popups } = this.state;
     if (e.keyCode === 27) {
       const lastPopup = popups[popups.length - 1];
+      if (!lastPopup) return;
       this.makeHandleClose(lastPopup.url)();
       return;
     }

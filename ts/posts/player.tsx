@@ -41,27 +41,12 @@ export interface RenderVideoState {
 }
 let timer: any;
 class RenderVideo extends Component<any, PopupState> {
-  // constructor() {
-  //   super()
-    // this.state = {
-    //   seeking: false,
-    //   resizing: false,
-    //   curTime: 0,
-    //   seekPosition: 0,
-    //   seekHover: false,
-    //   pause: false,
-    //   fullscreen: false,
-    //   minimized: false,
-    //   duration: 0,
-    //   mult: 1,
-    //   showBG: true,
-    // }
-  // }
   private timer = null as any;
   private playbackTimer = null as any;
   private seekX = 0;
   private seekY = 0;
   public componentDidMount() {
+    this.setState({ minimized: true })
     document.addEventListener("keydown", this.handleGlobalKey);
     document.addEventListener("click", this.handleTouch);
     document.addEventListener("mousemove", this.handleGlobalMove);
@@ -482,7 +467,6 @@ class RenderVideo extends Component<any, PopupState> {
     const target = e.target as HTMLElement;
     const { minimized } = this.state;
     if (target.matches(".popup-video-overlay") && !isMobile) {
-
       if (minimized) this.handleMaximize();
     }
     if (!target.closest(".popup-video")) {
@@ -597,10 +581,11 @@ class ProgressBar extends Component<any, ProgressBarState> {
 
     if (!body.contains(video)) return;
     
+    const raf = () => window.requestAnimationFrame(this.requestAnimation)
     if (!isMobile) {
-      this.animation = window.requestAnimationFrame(this.requestAnimation)
+      this.animation = raf()
     } else {
-      this.animation = setTimeout(this.requestAnimation, 400)
+      this.animation = setTimeout(raf, 1000/24)
     };
   }
   
