@@ -47,11 +47,10 @@ interface Posts {
 
 let coordinates: Array<Posts> = [];
 let { innerHeight } = window;
-export function initCalc() {
+function initCalc_() {
   innerHeight = window.innerHeight;
   const elements = document.getElementsByClassName('post_file');
   coordinates = [];
-  // console.log(elements);
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i];
     if (!element) continue;
@@ -59,8 +58,9 @@ export function initCalc() {
     const { offsetTop: top, id} = (element as HTMLElement);
     coordinates.push({ top, id });
   }
-  recalcPosts()
+  recalcPosts();
 }
+export const initCalc = () => requestAnimationFrame(initCalc_);
 initCalc()
 
 // let recalcPending = false;
@@ -89,7 +89,6 @@ export function recalcPosts(callback?: () => void) {
     }
   }
   if (callback) callback()
-  
 }
 
 export function replaceSrcs(post: HTMLElement) {

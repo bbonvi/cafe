@@ -615,7 +615,7 @@ class Popups extends Component<any, PopupsState> {
   }
 
   handlePreloadNext = (target: HTMLElement) => {
-    if (isMobile) return;
+    // if (isMobile) return;
     if (target.hasAttribute('preloaded')) return;
     target.setAttribute('preloaded', '')
 

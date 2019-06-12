@@ -65,6 +65,7 @@ function personalizeLinks(post: Post) {
     if (!mine.has(id)) {
       continue;
     }
+    post.view.el.classList.add('has-yous')
     isReply = true;
 
     // Don't query DOM, until we know we need it

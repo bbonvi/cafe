@@ -76,6 +76,7 @@ export class Post extends Model implements PostData {
   // handlers. Set and render backlinks on any linked posts.
   public propagateLinks() {
     if (this.isReply()) {
+      this.view.el.classList.add('has-yous')
       notifyAboutReply(this);
     }
     if (this.links) {
