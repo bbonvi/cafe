@@ -6,7 +6,6 @@ define("loader", [
   "preact",
   "textarea-caret",
   "vmsg",
-  "ruhangul",
   "color-convert",
 ], function () {
   var scriptCount = 0;

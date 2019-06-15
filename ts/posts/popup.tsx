@@ -599,7 +599,11 @@ class Popups extends Component<any, PopupsState> {
 
   handleChangeImage = ({ left, right }: any) => {
     const { popups } = this.state;
+    const activeElement = document.activeElement.tagName.toLowerCase();
+    
     if (!left && !right) return;
+    if (activeElement === 'input' || activeElement === 'textarea') return;
+    
     if (!popups.find(p => p.video || p.image)) return;
     this.initFileList(() => {
       const getNextElement = (n: number) => {

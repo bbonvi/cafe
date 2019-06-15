@@ -8,34 +8,36 @@
       <span class="post-file-info-item post-file-length">&nbsp{{ Length }}</span>
     {{/HasLength}}
   </figcaption>
-  <a class="post-file-link" href="{{ SourcePath }}" target="_blank">
-    {{^Record}}
-      <figure class="post-file-badges">
-        {{#HasVideo}}
-          <i class="fa fa-play-circle-o post-file-badge post-file-video-badge"></i>
-        {{/HasVideo}}{{#HasAudio}}
-          <i class="fa fa-volume-up post-file-badge post-file-audio-badge"></i>
-        {{/HasAudio}}{{#HasTitle}}
-        <i class="fa fa-sticky-note post-file-badge post-file-title-badge" to-copy="{{ Title }}" title="({{ LCopy }}) {{ Title }}"></i>
-        {{/HasTitle}}
-      </figure>
-
-      <noscript>
-        <img class="post-file-thumb" src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}">
-      </noscript>
-      
-      <div class="post-file-thumb_containter {{ #ThumbPng }}thumb-png{{ /ThumbPng }}">
-      <img class="post-file-thumb{{^HasVideo}} trigger-media-hover{{/HasVideo}} trigger-media-popup "
+  <a class="post-file-link post-file-thumb_containter {{ #ThumbPng }}thumb-png{{ /ThumbPng }}" href="{{ SourcePath }}" target="_blank">
+    <img
+      class="post-file-thumb{{^HasVideo}} trigger-media-hover{{/HasVideo}} trigger-media-popup "
       src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" data-src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}"
       style="{{ #ThumbPng }} box-shadow: none {{ /ThumbPng }}"
       data-sha1="{{ SHA1 }}" file-size="{{ Size }}">
 
-      <img
-        class="post-file-thumb_background"
-        style="{{ #ThumbPng }} display: none {{ /ThumbPng }}"
-        src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-        data-src="{{ BlurPath }}"
-      >
+    <img
+      class="post-file-thumb_background"
+      style="{{ #ThumbPng }} display: none {{ /ThumbPng }}"
+      src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+      data-src="{{ BlurPath }}"
+    >
+    {{^Record}}
+      {{#HasVideo}}
+        <figure class="post-file-badges">
+          {{#HasVideo}}
+            <i class="fa fa-play-circle-o post-file-badge post-file-video-badge"></i>
+          {{/HasVideo}}{{#HasAudio}}
+            <i class="fa fa-volume-up post-file-badge post-file-audio-badge"></i>
+          {{/HasAudio}}{{#HasTitle}}
+          <i class="fa fa-sticky-note post-file-badge post-file-title-badge" to-copy="{{ Title }}" title="({{ LCopy }}) {{ Title }}"></i>
+          {{/HasTitle}}
+        </figure>
+      {{/HasVideo}}
+
+      <noscript>
+        <img class="post-file-thumb" src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}">
+      </noscript>
+        
       
     {{/Record}}{{#Record}}
       <i class="post-file-thumb trigger-media-popup fa fa-music" data-sha1="{{ SHA1 }}"></i>
