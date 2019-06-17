@@ -380,6 +380,13 @@ body {
   }
 }
 
+.notification-status {
+  display: none;
+  &.enabled { 
+    display: unset;
+  }
+}
+
 .header-status>.fa:not(.fa-spinner) {
   display: none;
 }
@@ -1387,7 +1394,7 @@ blockquote.twitter-tweet p {
 
 .option-label {
   display: inline-block;
-  min-width: 65px;
+  min-width: 75px;
   cursor: pointer;
   user-select: none;
   line-height: 1.5;

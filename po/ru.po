@@ -132,10 +132,19 @@ msgid "staffBadge"
 msgstr "Отобразить лычку модератора"
 
 msgid "notification"
-msgstr "Уведомление"
+msgstr "Уведомления рабочего стола"
 
 msgid "notificationTitle"
 msgstr "Получать уведомления на рабочий стол при цитировании ваших постов"
+
+msgid "notificationDisabled"
+msgstr "Уведомления отключены"
+
+msgid "doNotDisturb"
+msgstr "Режим «Не беспокоить»"
+
+msgid "doNotDisturbTitle"
+msgstr "Скрыть все уведомления"
 
 msgid "oldPassword"
 msgstr "Старый пароль"
@@ -563,8 +572,11 @@ msgstr "Ответы"
 msgid "mustMatch"
 msgstr "Пароли должны совпадать"
 
-msgid "quoted"
-msgstr "Вас процитировали"
+msgid "replied"
+msgstr "Вам ответили"
+
+msgid "repliedBy"
+msgstr "ответил вам"
 
 msgid "refresh"
 msgstr "Обновить"

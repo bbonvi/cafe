@@ -5,6 +5,7 @@
 import { connSM, connState } from "../connection";
 import { Post } from "../posts";
 import { posts } from "../state";
+import options from "../options";
 
 // Hardcoded because needs to be available without connectivity.
 // tslint:disable-next-line:max-line-length
@@ -129,6 +130,7 @@ function onScroll() {
 // Update unseen post count based on post visibility and scroll
 // position.
 export function postAdded(post: Post) {
+  if (options.doNotDisturb) return;
   // Async batch processing since visibility calculations force a
   // layout.
   if (!queue.length) {
@@ -140,6 +142,7 @@ export function postAdded(post: Post) {
 
 // Add unseen reply indicator to tab header.
 export function repliedToMe(post: Post) {
+  if (options.doNotDisturb) return;
   if (!post.seen()) {
     unseenReplies = true;
     resolve();

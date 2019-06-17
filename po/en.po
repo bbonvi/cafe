@@ -48,7 +48,7 @@ msgid "imageRootOverrideTitle"
 msgstr "If you wish to host images from a separate location like a CDN, enter the full root address here. Leave empty to use the default address. Example: 'https://images.meguca.org'"
 
 msgid "lang"
-msgstr "Язык"
+msgstr "Language"
 
 msgid "langTitle"
 msgstr "Change interface language"
@@ -132,10 +132,19 @@ msgid "staffBadge"
 msgstr "Show staff badge"
 
 msgid "notification"
-msgstr "Notification"
+msgstr "Desktop notifications"
 
 msgid "notificationTitle"
 msgstr "Get desktop notifications when quoted"
+
+msgid "notificationDisabled"
+msgstr "Notifications disabled"
+
+msgid "doNotDisturb"
+msgstr "Do Not Disturb"
+
+msgid "doNotDisturbTitle"
+msgstr "Hide all notification "
 
 msgid "oldPassword"
 msgstr "Old password"
@@ -557,8 +566,11 @@ msgstr "Replies"
 msgid "mustMatch"
 msgstr "Passwords must match"
 
-msgid "quoted"
-msgstr "You have been quoted"
+msgid "replied"
+msgstr "you have been replied"
+
+msgid "repliedBy"
+msgstr "replied to you"
 
 msgid "refresh"
 msgstr "Refresh"

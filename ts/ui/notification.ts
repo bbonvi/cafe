@@ -9,6 +9,7 @@ import { repliedToMe } from "./tab";
 // Notify the user that one of their posts has been replied to.
 export default function notifyAboutReply(post: Post) {
   // Ignore my replies to me (lol samefag).
+  if (options.doNotDisturb) return;
   if (mine.has(post.id)) return;
 
   // Check if already seen.
@@ -24,24 +25,28 @@ export default function notifyAboutReply(post: Post) {
   ) return;
 
   // Finally display sticky notification.
-  let icon = "";
-  if (!options.workModeToggle) {
-    if (post.files) {
-      icon = post.getFileByIndex(0).thumb;
-    } else {
-      icon = DEFAULT_NOTIFICATION_IMAGE_URL;
-    }
+  let image = "";
+  if (!options.workModeToggle && post.files) {
+    image = post.getFileByIndex(0).thumb;
   }
-  const n = new Notification(_("quoted"), {
+  const { userName } = post;
+  const title = userName ? `${userName} ${_("repliedBy")}` : _("repliedBy");
+  const n = new Notification(title, {
     body: post.body,
-    icon,
+    requireInteraction: false,
+    renotify: false,
+    icon: DEFAULT_NOTIFICATION_IMAGE_URL,
+    image,
     vibrate: true,
-  });
+  } as any);
   n.onclick = () => {
     n.close();
     window.focus();
     location.hash = "#" + post.id;
   };
+  setTimeout(() => {
+    n.close();
+  }, 5000);
 }
 
 // Textual notification at the top of the page

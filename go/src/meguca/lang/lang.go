@@ -77,6 +77,6 @@ func DefaultFromReq(r *http.Request) string {
 	case "RU", "BY", "UA", "KZ":
 		return "ru"
 	default:
-		return "ru"
+		return "en"
 	}
 }

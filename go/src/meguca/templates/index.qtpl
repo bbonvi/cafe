@@ -16,6 +16,9 @@
 		<span class="header-item header-status" title="{%s lang.Get(l, "sync") %}">
 			<i class="fa fa-spinner fa-pulse fa-fw"></i>
 		</span>
+		<span class="header-item notification-status" title="{%s lang.Get(l, "notificationDisabled") %}">
+			<i class="fa fa-bell-slash"></i>
+		</span>
 		{% endif %}
 		<a class="header-item header-icon header-faq-icon" title="{%s lang.Get(l, "FAQ") %}">
 			<i class="fa fa-info-circle"></i>

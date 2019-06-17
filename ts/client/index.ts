@@ -6,7 +6,6 @@ import { initCalc } from './../posts/index';
 import { showAlert } from "../alerts";
 import { PostData } from "../common";
 import { connEvent, connSM, handlers, message } from "../connection";
-import options from "../options";
 import { isHoverActive, Post, PostView } from "../posts";
 import { page, posts } from "../state";
 import { postAdded } from "../ui";
@@ -20,6 +19,26 @@ function handle(id: number, fn: (m: Post) => void) {
     fn(model);
   }
 }
+
+// let tabInFocus = true;
+
+// window.addEventListener('visibilitychange', () => tabInFocus = !tabInFocus)
+// window.addEventListener('focus', () => tabInFocus = true)
+
+var vis = () => {
+  var stateKey: any, keys = {
+      hidden: "visibilitychange",
+      webkitHidden: "webkitvisibilitychange",
+      mozHidden: "mozvisibilitychange",
+      msHidden: "msvisibilitychange"
+  };
+  for (stateKey in keys) {
+      if (stateKey in document) {
+          break;
+      }
+  }
+  return !document[stateKey]
+};
 
 // Insert a post into the models and DOM
 export function insertPost(data: PostData) {
@@ -38,7 +57,9 @@ export function insertPost(data: PostData) {
   last.after(view.el);
   postAdded(model);
   smileLineOffset(view.el.querySelectorAll(".post-message p"));
-  if (options.scrollToBottom && atBottom && !isHoverActive()) {
+  const tabInFocus = vis();
+  // options.scrollToBottom && 
+  if (tabInFocus && atBottom && !isHoverActive()) {
     scrollToBottom();
   }
   initCalc()

@@ -11,8 +11,9 @@ interface Options extends ChangeEmitter {
   imageHover: boolean;
   relativeTime: boolean;
   notification: boolean;
-  scrollToBottom: boolean;
+  // scrollToBottom: boolean;
   workModeToggle: boolean;
+  doNotDisturb: boolean;
   workMode: number;
   // newPost: number;
   cancelPost: number;
@@ -60,6 +61,13 @@ const specs: { [id: string]: OptionSpec } = {
     },
     type: optionType.checkbox,
   },
+  doNotDisturb: {
+    default: false,
+    exec: (on) => {
+      const element = document.querySelector('.notification-status') as HTMLElement;
+      element.classList.toggle('enabled', on);
+    },
+  },
   // // Backdrop clicking
   // popupBackdrop: {
   //   default: false,
@@ -85,14 +93,13 @@ const specs: { [id: string]: OptionSpec } = {
     default: true,
   },
   // Scroll to bottom
-  scrollToBottom: {
-    default: false,
-  },
+  // scrollToBottom: {
+  //   default: false,
+  // },
   // Change language
   lang: {
     get default() {
-      /*return (window as any).lang; */
-      return "ru";
+      return (window as any).lang;
     },
     exec(l: string) {
       const d = new Date();
@@ -152,10 +159,10 @@ const specs: { [id: string]: OptionSpec } = {
     default: "P",
     type: optionType.shortcut,
   },
-  idolSearch: {
-    default: "F",
-    type: optionType.shortcut,
-  },
+  // idolSearch: {
+  //   default: "F",
+  //   type: optionType.shortcut,
+  // },
   // Other settings.
   volume: {
     default: 1,

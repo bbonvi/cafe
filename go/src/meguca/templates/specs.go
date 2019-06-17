@@ -132,8 +132,9 @@ var optionSpecs = [...][]inputSpec{
 		// {ID: "popupBackdrop"},
 		{ID: "imageHover"},
 		{ID: "relativeTime"},
-		{ID: "scrollToBottom"},
+		// {ID: "scrollToBottom"},
 		{ID: "notification"},
+		{ID: "doNotDisturb"},
 		{ID: "workModeToggle"},
 	},
 	{
