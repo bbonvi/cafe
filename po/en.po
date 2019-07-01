@@ -144,7 +144,7 @@ msgid "doNotDisturb"
 msgstr "Do Not Disturb"
 
 msgid "doNotDisturbTitle"
-msgstr "Hide all notification "
+msgstr "Hide all notifications"
 
 msgid "oldPassword"
 msgstr "Old password"
