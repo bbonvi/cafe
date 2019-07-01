@@ -115,21 +115,26 @@ class RenderVideo extends Component<any, PopupState> {
           loop
           muted={muted}
           autoPlay
-          controls={false}
+          controls={isMobile}
+          poster={blur}
           onPlay={this.handleOnPlay}
           onLoadedMetadata={this.handleStartPlaying}
           onVolumeChange={this.props.handleMediaVolume}
-        />
-        <div
-          class="popup-video-overlay"
-          onMouseDown={this.handleMediaDown}
+          
           onTouchStart={this.handleMediaDown}
           onTouchMove={this.handleGlobalMove}
-          onWheel={this.handleMediaWheel}
-          onClick={isMobile ? this.handleMobileMediaTouches : null}
         />
-
-        <div
+          {!isMobile && <div
+            style={{ bottom: isMobile ? 80 : 0 }}
+            class="popup-video-overlay"
+            onMouseDown={this.handleMediaDown}
+            onTouchStart={this.handleMediaDown}
+            onTouchMove={this.handleGlobalMove}
+            onWheel={this.handleMediaWheel}
+            // onClick={isMobile ? this.handleMobileMediaTouches : null}
+          />}
+        {!isMobile && 
+          <div
           class={cx(
             "popup-player",
             { reduced2x: width < 370 && !fullscreen },
@@ -251,6 +256,7 @@ class RenderVideo extends Component<any, PopupState> {
             </span>}
           </div>
         </div>
+        }  
       </div>
     );
   }
@@ -449,6 +455,7 @@ class RenderVideo extends Component<any, PopupState> {
     const target = e.target as HTMLElement;
     if (target.matches('.player-controls_container')) onMediaDown(e);
     if (target.matches('.popup-video-overlay')) onMediaDown(e);
+    if (target.matches('.popup-video-item')) onMediaDown(e);
   }
 
   private handleTouch = () => {

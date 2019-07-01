@@ -213,6 +213,7 @@ class Popup extends Component<PopupProps, PopupState> {
       <div class={cx("popup", cls)} style={{ left, top, transform }}>
         {fn.call(this)}
         {embed ? this.renderControls() : null}
+        {video && isMobile ? this.renderControls() : null}
       </div>
     );
   }
@@ -690,7 +691,7 @@ class Popups extends Component<any, PopupsState> {
     // const IS_AUDIO = target.closest('.post-file_record');
 
     if (IS_FILE) {
-      if (isThumbBG) target = target.parentElement.firstChild as HTMLElement;
+      if (isThumbBG) target = target.parentElement.firstElementChild as HTMLElement;
       const post = getModel(target);
       this.curElement = target as HTMLElement;
       const { sha1 } = (target as HTMLImageElement).dataset;
