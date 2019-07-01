@@ -24,7 +24,7 @@ import { HOOKS, on, trigger } from "../util";
 //   duration: number;
 //   onClose: () => void;
 // }
- 
+
 export interface RenderVideoState {
   seeking: boolean;
   resizing: boolean;
@@ -40,6 +40,7 @@ export interface RenderVideoState {
   showBG: boolean;
 }
 let timer: any;
+
 class RenderVideo extends Component<any, PopupState> {
   private timer = null as any;
   private playbackTimer = null as any;
@@ -72,7 +73,67 @@ class RenderVideo extends Component<any, PopupState> {
       { selector: [".player-fullscreen", ".fa-window-maximize"] },
     );
   }
+
   render() {
+    const { fullscreen } = this.state;
+    const { record } = this.props;
+    return (
+      <div
+        class={cx("popup-video", { "popup-record": record, fullscreen })}
+        onMouseEnter={isMobile ? null : this.handleMaximize}
+      >
+        {this.renderVideoElement()}
+        {this.renderOverlay()}
+        {this.renderPlayer()}
+      </div>
+    );
+  }
+
+  public renderVideoElement() {
+    const { blur, showBG, muted, record } = this.props;
+    let { width, height, } = this.props;
+    let backgroundImage;
+    if (!record) backgroundImage = showBG ? `url(${blur})` : '';
+    if (record) {
+      width = 0;
+      height = 0;
+    };
+    return (
+      <video
+        crossOrigin="use-credential"
+        onTimeUpdate={this.setDuration}
+        class="popup-item popup-video-item"
+        ref={this.props.setRef}
+        style={{ width, height, backgroundImage }}
+        loop
+        muted={muted}
+        autoPlay
+        controls={isMobile}
+        poster={blur}
+        onPlay={this.handleOnPlay}
+        onLoadedMetadata={this.handleStartPlaying}
+        onVolumeChange={this.props.handleMediaVolume}
+        onTouchStart={this.handleMediaDown}
+        onTouchMove={this.handleGlobalMove}
+      />
+    )
+  }
+
+  public renderOverlay() {
+    if (isMobile) return null;
+    return (
+      <div
+        class="popup-video-overlay"
+        onMouseDown={this.handleMediaDown}
+        onTouchStart={this.handleMediaDown}
+        onTouchMove={this.handleGlobalMove}
+        onWheel={this.handleMediaWheel}
+      />
+    )
+  }
+
+  public renderPlayer = () => {
+    if (isMobile) return null;
     const {
       curTime,
       pause,
@@ -84,181 +145,132 @@ class RenderVideo extends Component<any, PopupState> {
       playbackRateShow,
       playbackRate
     } = this.state;
-    const {
-      blur,
-      showBG,
-      muted,
-      volume,
-      itemEl,
-      durationProp,
-      record,
-    } = this.props;
-    let { width, height, } = this.props;
-    let backgroundImage;
-    if (!record) backgroundImage = showBG ? `url(${blur})` : '';
-    if (record) {
-      width = 0;
-      height = 0;
-    };
-    return (
+    const { muted, volume, itemEl, durationProp, record } = this.props;
+    let { width } = this.props;
+    if (record) width = 0;
 
+    return (
       <div
-        class={cx("popup-video", { "popup-record": record, fullscreen  })}
-        onMouseEnter={isMobile ? null : this.handleMaximize}
+        class={cx(
+          "popup-player",
+          { reduced2x: width < 370 && !fullscreen },
+          { reduced3x: width < 270 && !fullscreen },
+          { minimized: minimized && !record },
+        )}
+
+        style={this.needVideoControls ? "" : "display: none;"}
+        onWheel={this.handleMediaWheel}
       >
-        <video
-          crossOrigin="use-credential"
-          onTimeUpdate={this.setDuration} // use onTimeUpdate for mobile devices
-          class="popup-item popup-video-item"
-          ref={this.props.setRef}
-          style={{ width, height, backgroundImage }}
-          loop
-          muted={muted}
-          autoPlay
-          controls={isMobile}
-          poster={blur}
-          onPlay={this.handleOnPlay}
-          onLoadedMetadata={this.handleStartPlaying}
-          onVolumeChange={this.props.handleMediaVolume}
-          
-          onTouchStart={this.handleMediaDown}
-          onTouchMove={this.handleGlobalMove}
-        />
-          {!isMobile && <div
-            style={{ bottom: isMobile ? 80 : 0 }}
-            class="popup-video-overlay"
-            onMouseDown={this.handleMediaDown}
-            onTouchStart={this.handleMediaDown}
-            onTouchMove={this.handleGlobalMove}
-            onWheel={this.handleMediaWheel}
-            // onClick={isMobile ? this.handleMobileMediaTouches : null}
-          />}
-        {!isMobile && 
-          <div
-          class={cx(
-            "popup-player",
-            { reduced2x: width < 370 && !fullscreen },
-            { reduced3x: width < 270 && !fullscreen },
-            { minimized: minimized && !record },
-            // {minimized: this.props.state.minimized && isMobile},
-          )}
-          
-          style={this.needVideoControls ? "" : "display: none;"}
-          onWheel={this.handleMediaWheel}
-          // onClick={this.handleMaximize}
+        <div
+          class={"player-controls_container"}
+          onMouseDown={this.handleControlsMouseDown}
         >
-          <div 
-            class={"player-controls_container"}
-            onMouseDown={this.handleControlsMouseDown}
+          {playbackRateShow && <div class="playback-info">{playbackRate}</div>}
+          <span
+            class={cx(
+              "player-control player-control_state",
+              { "player-control_play": pause },
+              { "player-control_pause": !pause },
+            )}
+            onClick={this.handlePause}
+            title={pause ? _("play") : _("pause")}
           >
-            {playbackRateShow && <div class="playback-info">{playbackRate}</div>}
-            <span
-              class={cx(
-                "player-control player-control_state",
-                { "player-control_play": pause },
-                { "player-control_pause": !pause },
-              )}
-              onClick={this.handlePause}
-              title={pause ? _("play") : _("pause")}
-            >
-              <i class={cx("fa", { "fa-play": pause }, { "fa-pause": !pause })} />
-            </span>
-            <span
-              class="player-control player-volume"
-              style={!this.props.audio ? "display: none;" : ""}
-              onClick={this.mute}>
-              <i class={muted ? "fa fa-volume-off" : "fa fa-volume-up"} />
-              {muted && <i class="fa fa-times" />}
-            </span>
-            <span
-              class="player-control player-volume slider"
-              style={!this.props.audio || isMobile ? "display: none;" : ""}>
-              <span class="progress-bar_container player-volume">
-                <span class="progress-bar_radius">
-                  <span
-                    class="progress-bar_full player-volume"
-                    style={`width:${muted ? 0 : volume}%`}
-                  />
-                </span>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={`${volume}`}
-                  class="progress-bar_range player-volume"
-                  onInput={this.handleVolumeChange}
-                />
-              </span>
-            </span>
-            <span class=" player-timer">
-              <span
-                class={"player-timer_current"}>{readableDuration(curTime || 0, true).toString()}
-              </span>
-              <span class={"player-timer_duration"}>
-                {" / "}
-                {readableDuration(duration || durationProp, true)}
-              </span>
-            </span>
-            {!record && <span class="player-controls_container playback">
-                <span onClick={() => this.handlePlaybackRate(-1)} class="player-control playback_backward" >
-                  <i class="fa fa-backward"/>
-                </span>
-                <span onClick={() => this.handlePlaybackRate(1)} class="player-control playback_forward" >
-                <i class="fa fa-forward"/>
-                </span>
-            </span>}
-            <span
-              onMouseMove={!isMobile ? this.handleSeekHover : null}
-              onMouseEnter={() => this.setState({ seekHover: true })}
-              onMouseLeave={() => this.setState({ seekHover: false })}
-              class="player-control progress-bar_container player-seek">
-              {seekHover && !isMobile && !minimized && (
-                <span
-                  class="player-seek_hover"
-                  onMouseLeave={() => this.setState({ seekHover: false })}
-                  style={{ left: this.seekX - 23, top: this.seekY - 30 }}>
-                  {readableDuration(seekPosition, true)}
-                </span>
-              )}
+            <i class={cx("fa", { "fa-play": pause }, { "fa-pause": !pause })} />
+          </span>
+          <span
+            class="player-control player-volume"
+            style={!this.props.audio ? "display: none;" : ""}
+            onClick={this.mute}>
+            <i class={muted ? "fa fa-volume-off" : "fa fa-volume-up"} />
+            {muted && <i class="fa fa-times" />}
+          </span>
+          <span
+            class="player-control player-volume slider"
+            style={!this.props.audio || isMobile ? "display: none;" : ""}>
+            <span class="progress-bar_container player-volume">
               <span class="progress-bar_radius">
-                {/* <span class="progress-bar_full" style={"width:" + this.curPosition() / 10 + "%"} /> */}
-                {itemEl && <ProgressBar pause={pause} video={itemEl} duration={duration}/>}
+                <span
+                  class="progress-bar_full player-volume"
+                  style={`width:${muted ? 0 : volume}%`}
+                />
               </span>
               <input
                 type="range"
                 min="0"
-                max="1000"
-                value={this.curPosition()}
-                class="progress-bar_range"
-                onMouseDown={this.pause}
-                onMouseUp={this.play}
-                onInput={this.handleSeek}
-                onTouchStart={this.seekingOn}
-                onTouchEnd={this.seekingOff}
+                max="100"
+                value={`${volume}`}
+                class="progress-bar_range player-volume"
+                onInput={this.handleVolumeChange}
               />
             </span>
-            {<a
-              title={_("download")}
-              class="player-control player-download" href={this.props.url + "?download"}>
-              <i class="fa fa-download" />
-            </a>}
-            {!record && <span
-              title={_("snapshot")}
-              class="player-control player-snapshot"
-              onClick={this.handleSnapshot}>
-              <i class="fa fa-camera"></i>
-            </span>}
-            {!record && <span
-              title={this.isFullscreen() ? _("fullscreenExit") : _("fullscreen")}
-              class="player-control player-fullscreen"
-            >
-              <i class="fa fa-window-maximize" />
-            </span>}
-          </div>
+          </span>
+          <span class=" player-timer">
+            <span
+              class={"player-timer_current"}>{readableDuration(curTime || 0, true).toString()}
+            </span>
+            <span class={"player-timer_duration"}>
+              {" / "}
+              {readableDuration(duration || durationProp, true)}
+            </span>
+          </span>
+          {!record && <span class="player-controls_container playback">
+            <span onClick={() => this.handlePlaybackRate(-1)} class="player-control playback_backward" >
+              <i class="fa fa-backward" />
+            </span>
+            <span onClick={() => this.handlePlaybackRate(1)} class="player-control playback_forward" >
+              <i class="fa fa-forward" />
+            </span>
+          </span>}
+          <span
+            onMouseMove={!isMobile ? this.handleSeekHover : null}
+            onMouseEnter={() => this.setState({ seekHover: true })}
+            onMouseLeave={() => this.setState({ seekHover: false })}
+            class="player-control progress-bar_container player-seek">
+            {seekHover && !isMobile && !minimized && (
+              <span
+                class="player-seek_hover"
+                onMouseLeave={() => this.setState({ seekHover: false })}
+                style={{ left: this.seekX - 23, top: this.seekY - 30 }}>
+                {readableDuration(seekPosition, true)}
+              </span>
+            )}
+            <span class="progress-bar_radius">
+              {/* <span class="progress-bar_full" style={"width:" + this.curPosition() / 10 + "%"} /> */}
+              {itemEl && <ProgressBar pause={pause} video={itemEl} duration={duration} />}
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="1000"
+              value={this.curPosition()}
+              class="progress-bar_range"
+              onMouseDown={this.pause}
+              onMouseUp={this.play}
+              onInput={this.handleSeek}
+              onTouchStart={this.seekingOn}
+              onTouchEnd={this.seekingOff}
+            />
+          </span>
+          {<a
+            title={_("download")}
+            class="player-control player-download" href={this.props.url + "?download"}>
+            <i class="fa fa-download" />
+          </a>}
+          {!record && <span
+            title={_("snapshot")}
+            class="player-control player-snapshot"
+            onClick={this.handleSnapshot}>
+            <i class="fa fa-camera"></i>
+          </span>}
+          {!record && <span
+            title={this.isFullscreen() ? _("fullscreenExit") : _("fullscreen")}
+            class="player-control player-fullscreen"
+          >
+            <i class="fa fa-window-maximize" />
+          </span>}
         </div>
-        }  
       </div>
-    );
+    )
   }
 
   private handleControlsMouseDown = (e: MouseEvent) => {
@@ -288,7 +300,7 @@ class RenderVideo extends Component<any, PopupState> {
       this.setState({ playbackRateShow: false });
     }, 1000);
   }
-  
+
   private handleSnapshot = async (e: any) => {
     trigger(HOOKS.openReply);
     let canvas = document.createElement("canvas");
@@ -389,7 +401,7 @@ class RenderVideo extends Component<any, PopupState> {
   private handleVolumeChange = (e: any) => {
     const { onStateChange, itemEl, onVolumeChange } = this.props;
     const value = Number(e.target.value);
-    
+
     onStateChange({ volume: value, muted: false })
     itemEl.volume = value / 100;
     onVolumeChange()
@@ -446,7 +458,7 @@ class RenderVideo extends Component<any, PopupState> {
       this.props.onKeyDown(e)
     }
   }
-  
+
   private handleMediaDown = (e: MouseEvent | TouchEvent) => {
     const { onMediaDown } = this.props;
     if (this.isFullscreen()) return;
@@ -469,7 +481,7 @@ class RenderVideo extends Component<any, PopupState> {
       if (!this.state.minimized) this.handleMinimize();
     }, 2000);
   }
-  
+
   private handleGlobalMove = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
     const { minimized } = this.state;
@@ -487,7 +499,7 @@ class RenderVideo extends Component<any, PopupState> {
     }, 1500);
     if (this.isFullscreen()) return;
     this.props.onMove(e);
-    
+
   }
   private handleMobileMediaTouches = () => {
     if (this.state.minimized && !this.props.record) {
@@ -502,7 +514,7 @@ class RenderVideo extends Component<any, PopupState> {
       }
     }, 1500);
   }
-  
+
   private handleMediaWheel = (e: WheelEvent) => {
     const { onStateChange, itemEl, onVolumeChange } = this.props;
     const { volume } = this.props;
@@ -510,7 +522,7 @@ class RenderVideo extends Component<any, PopupState> {
 
     if ((target).closest(PLAYER_VOLUME_SEL)) {
       e.preventDefault();
-      const delta = e.deltaY < 0 ? 1 : -1; 
+      const delta = e.deltaY < 0 ? 1 : -1;
       let value = volume + 10 * delta;
       value = Math.max(0, Math.min(100, value));
 
@@ -541,7 +553,7 @@ class RenderVideo extends Component<any, PopupState> {
     );
   }
 }
- 
+
 export default RenderVideo;
 
 interface ProgressBarState {
@@ -550,7 +562,7 @@ interface ProgressBarState {
 
 class ProgressBar extends Component<any, ProgressBarState> {
   state = {
-      currentTime: 0,
+    currentTime: 0,
   }
   private requestAnimationFrame =
     (window as any).mozRequestAnimationFrame ||
@@ -568,7 +580,7 @@ class ProgressBar extends Component<any, ProgressBarState> {
     window.cancelAnimationFrame(this.animation);
     clearTimeout(this.animation)
   }
-  
+
 
   private requestAnimation = () => {
     const { body } = document;
@@ -579,7 +591,7 @@ class ProgressBar extends Component<any, ProgressBarState> {
 
     const { currentTime: oldTime } = this.state;
     if (!body.contains(video)) return;
-    
+
     let { currentTime } = video;
     currentTime = ((currentTime / duration) * 100);
     currentTime = Number(currentTime.toFixed(3))
@@ -587,18 +599,18 @@ class ProgressBar extends Component<any, ProgressBarState> {
     if (oldTime !== currentTime) this.setState({ currentTime });
 
     if (!body.contains(video)) return;
-    
+
     const raf = () => window.requestAnimationFrame(this.requestAnimation)
     if (!isMobile) {
       this.animation = raf()
     } else {
-      this.animation = setTimeout(raf, 1000/24)
+      this.animation = setTimeout(raf, 1000 / 24)
     };
   }
-  
+
   public render() {
     const { currentTime } = this.state;
-    const transform = `translateX(-${ 100 - currentTime}% )`;
+    const transform = `translateX(-${100 - currentTime}% )`;
 
     return (
       <span class="progress-bar_full" style={{ transform }} />
