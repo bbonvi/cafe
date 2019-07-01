@@ -8,19 +8,23 @@
       <span class="post-file-info-item post-file-length">&nbsp{{ Length }}</span>
     {{/HasLength}}
   </figcaption>
-  <a class="post-file-link post-file-thumb_containter {{ #ThumbPng }}thumb-png{{ /ThumbPng }}" href="{{ SourcePath }}" target="_blank">
+  <a class="post-file-link {{^Record}}post-file-thumb_containter{{/Record}} {{ #ThumbPng }}thumb-png{{ /ThumbPng }}" href="{{ SourcePath }}" target="_blank">
+  {{^Record}}
     <img
       class="post-file-thumb{{^HasVideo}} trigger-media-hover{{/HasVideo}} trigger-media-popup "
       src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" data-src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}"
       style="{{ #ThumbPng }} box-shadow: none {{ /ThumbPng }}"
       data-sha1="{{ SHA1 }}" file-size="{{ Size }}">
-
-    <img
+    <div
       class="post-file-thumb_background"
       style="{{ #ThumbPng }} display: none {{ /ThumbPng }}"
       src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
       data-src="{{ BlurPath }}"
-    >
+    ></div>
+    <noscript>
+      <img class="post-file-thumb" src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}">
+    </noscript>
+  {{/Record}}
     {{^Record}}
       {{#HasVideo}}
         <figure class="post-file-badges">
@@ -33,12 +37,6 @@
           {{/HasTitle}}
         </figure>
       {{/HasVideo}}
-
-      <noscript>
-        <img class="post-file-thumb" src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}">
-      </noscript>
-        
-      
     {{/Record}}{{#Record}}
       <i class="post-file-thumb trigger-media-popup fa fa-music" data-sha1="{{ SHA1 }}"></i>
     {{/Record}}

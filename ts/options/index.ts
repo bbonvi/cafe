@@ -65,6 +65,7 @@ const specs: { [id: string]: OptionSpec } = {
     default: false,
     exec: (on) => {
       const element = document.querySelector('.notification-status') as HTMLElement;
+      if (!element) return;
       element.classList.toggle('enabled', on);
     },
   },

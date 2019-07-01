@@ -30,7 +30,7 @@ export default function notifyAboutReply(post: Post) {
     image = post.getFileByIndex(0).thumb;
   }
   const { userName } = post;
-  const title = userName ? `${userName} ${_("repliedBy")}` : _("repliedBy");
+  const title = userName ? `${userName} ${_("repliedBy")}` : _("replied");
   const n = new Notification(title, {
     body: post.body,
     requireInteraction: false,

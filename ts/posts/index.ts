@@ -97,11 +97,11 @@ export function replaceSrcs(post: HTMLElement) {
   for (let i = 0; i < containers.length; i++ ) {
     const container = containers[i];
 
-    const thumb = container.firstChild as HTMLImageElement;
+    const thumb = container.firstElementChild as HTMLImageElement;
     const blur = thumb.nextElementSibling as HTMLImageElement;
-
     thumb.src = thumb.dataset.src;
-    blur.src = blur.dataset.src;
+    if (!thumb) return;
+    blur.style.backgroundImage = `url("${blur.dataset.src}")`;
   }
 }
 

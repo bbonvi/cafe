@@ -2090,8 +2090,8 @@ html.user {
   transition: 0.1s;
 
   .post-file-thumb_background {
-    // background-size: cover;
-    // background-position: center;
+    background-size: cover;
+    background-position: center;
     position: absolute;
     width: 100%;
     height: 100%;
@@ -2129,8 +2129,14 @@ html.user {
 
 
 
-html:not(.page-loaded) .post-file-thumb_containter {
-  display: none;
+html:not(.page-loaded) {
+  .post-file-thumb_background, .trigger-media-popup:not(.fa-music) {
+    display: none;
+  }
+  .post-file-thumb_containter {
+    width: unset;
+    height: unset;
+  }
 }
 
 html.page-loaded {
@@ -2202,10 +2208,11 @@ section:not(.catalog) .visible .post-file-thumb_containter {
   max-width: unset !important;
 
   .post-file-thumb {
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
     text-align: center;
-    line-height: 100px;
+    line-height: 3.8;
+    background-color: @spoiler;
     font-size: 50px;
     color: @control;
   }
@@ -2220,12 +2227,14 @@ section:not(.catalog) .visible .post-file-thumb_containter {
 }
 
 html.work-mode {
-  .post-file-thumb {
-    opacity: @workmode;
-
-    &:hover {
+  .post-file-thumb_containter:hover {
+    .post-file-thumb {
       opacity: 1;
     }
+  }
+  .post-file-thumb:not(.fa-music) {
+    opacity: 0;
+    transition: 0.1s;
   }
 
   .smile {

@@ -260,7 +260,7 @@ function renderImagePreview(event: MouseEvent | TouchEvent) {
   } else if (target.matches(POST_EMBED_SEL)) {
     renderPostEmbedPreview(target);
   } else if (target.matches(POST_FILE_THUMB_BG_SEL) && imageHover) {
-    const target_ = target.parentElement.firstChild;
+    const target_ = target.parentElement.firstElementChild;
     if ((target_ as HTMLImageElement).matches(TRIGGER_MEDIA_HOVER_SEL)) renderPostImagePreview(target_ as HTMLImageElement);
   }
 }
