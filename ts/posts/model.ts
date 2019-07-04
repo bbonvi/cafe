@@ -1,3 +1,4 @@
+import { addHasReplyClass } from './../page/common';
 import { Model } from "../base";
 import { fileTypes, ImageData, PostData, PostLink } from "../common";
 import { mine, page, posts } from "../state";
@@ -76,7 +77,7 @@ export class Post extends Model implements PostData {
   // handlers. Set and render backlinks on any linked posts.
   public propagateLinks() {
     if (this.isReply()) {
-      this.view.el.classList.add('has-yous')
+      addHasReplyClass(this.view.el);
       notifyAboutReply(this);
     }
     if (this.links) {
@@ -89,8 +90,9 @@ export class Post extends Model implements PostData {
     }
   }
 
-  // Returns, if post is a reply to one of the user's posts.
+  // Returns, if post is a reply to one of the user's posts or has '@everyone'
   public isReply() {
+    if (this.isEveryone()) return true;
     if (!this.links) return false;
     for (const [id] of this.links) {
       if (mine.has(id)) {
@@ -98,6 +100,11 @@ export class Post extends Model implements PostData {
       }
     }
     return false;
+  }
+
+  // Returns, if post has '@everyone'
+  public isEveryone() {
+    return (/@everyone/).test(this.view.el.innerText);
   }
 
   // Insert data about another post linking this post into the model.

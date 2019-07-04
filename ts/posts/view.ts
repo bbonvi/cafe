@@ -29,6 +29,15 @@ export default class PostView extends View<Post> {
     this.model.seenOnce = !!el;
     this.animate = !el;
     if (this.animate) this.el.classList.add('should-anim')
+    this.model.view.el.innerHTML = this.getEveryoneHTML();
+  }
+
+  private getEveryoneHTML() {
+    let { innerHTML } = this.model.view.el;
+    const everyoneHTML = `<a class="everyone">@everyone ${_("you")}</a>`;
+    const everyone = new RegExp('@everyone', 'g')
+    innerHTML = innerHTML.replace(everyone, everyoneHTML);
+    return innerHTML;
   }
 
   // Apply client-specific formatting to post rendered on server-side.

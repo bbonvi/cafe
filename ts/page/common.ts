@@ -53,9 +53,17 @@ function addYous(id: number, el: HTMLElement) {
   }
 }
 
+export function addHasReplyClass(el: HTMLElement) {
+  el.classList.add('has-reply');
+}
+
 // Add (You) to posts linking to the user's posts. Appends to array of posts,
 // that might need to register a new reply to one of the user's posts.
 function personalizeLinks(post: Post) {
+  const postEl = post.view.el;
+
+  const isEveryone = (/@everyone/).test(postEl.innerText);
+  if (isEveryone) addHasReplyClass(postEl);
   if (!post.links) {
     return;
   }
@@ -65,12 +73,12 @@ function personalizeLinks(post: Post) {
     if (!mine.has(id)) {
       continue;
     }
-    post.view.el.classList.add('has-yous')
+    addHasReplyClass(postEl);
     isReply = true;
 
     // Don't query DOM, until we know we need it
     if (!el) {
-      el = post.view.el.querySelector("blockquote");
+      el = postEl.querySelector("blockquote");
     }
     addYous(id, el);
   }
