@@ -34,7 +34,7 @@ export default class PostView extends View<Post> {
 
   private getEveryoneHTML() {
     let { innerHTML } = this.model.view.el;
-    const everyoneHTML = `<a class="everyone">@everyone ${_("you")}</a>`;
+    const everyoneHTML = `<a class="everyone">@everyone</a>`;
     const everyone = new RegExp('@everyone', 'g')
     innerHTML = innerHTML.replace(everyone, everyoneHTML);
     return innerHTML;
