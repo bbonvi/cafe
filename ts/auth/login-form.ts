@@ -7,6 +7,9 @@ import { inputElement, sendJSON } from "../util";
 export function validatePasswordMatch(parent: Element, name1: string, name2: string) {
   const el1 = inputElement(parent, name1);
   const el2 = inputElement(parent, name2);
+  if (!el1 || !el2) {
+    return
+  }
   el1.onchange = el2.onchange = () => {
     const s = el2.value !== el1.value ? _("mustMatch") : "";
     el2.setCustomValidity(s);

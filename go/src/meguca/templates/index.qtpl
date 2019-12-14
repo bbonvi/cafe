@@ -113,7 +113,10 @@
 		</style>
 
 		<script>
-			var lang="{%s l %}",config={%z= confJSON %},boards={%z= boardsJSON %},session={%z= sessionJSON %};
+			var lang="{%s l %}";
+			var config={%z= confJSON %};
+			var boards={%z= boardsJSON %};
+			var session={%z= sessionJSON %} || null;
 			if (localStorage.theme !== config.DefaultCSS) {
 				document.getElementById("theme-css").href = "/static/css/" + localStorage.theme + ".css";
 			}

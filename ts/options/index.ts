@@ -114,7 +114,7 @@ const specs: { [id: string]: OptionSpec } = {
   // Change theme
   theme: {
     get default() {
-      return config.defaultCSS;
+      return config ? config.defaultCSS : '';
     },
     exec(theme: string) {
       if (!theme) {

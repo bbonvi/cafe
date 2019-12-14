@@ -421,7 +421,7 @@ class Reply extends Component<any, any> {
 
   public reloadAlert = (e: any) => {
     const { body, fwraps, thread } = this.state;
-    
+
     if (thread && (fwraps.length > 0 || body.length > 0)) {
       trigger(HOOKS.openReply);
       e.preventDefault();

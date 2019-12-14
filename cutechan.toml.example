@@ -5,7 +5,7 @@
 host = "127.0.0.1"
 
 # Port to listen on.
-port = 8090
+port = 4567
 
 # PostgreSQL connection string.
 conn = "user=postgres password=1 dbname=cafe sslmode=disable"
