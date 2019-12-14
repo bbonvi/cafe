@@ -37,6 +37,7 @@ import {
   TRIGGER_OPEN_REPLY_SEL,
   TRIGGER_QUOTE_POST_SEL,
   MIN_SIZE_TO_COMPRESS_PNG,
+  CLIENT_IMAGE_COMPRESSION_QUALITY,
 } from "../vars";
 import { Progress } from "../widgets";
 import * as signature from "./signature";
@@ -1305,7 +1306,7 @@ class ReplyContainer extends Component<any, any> {
           let output: File | Blob = file;
           if (shouldCompress(file)) {
             // TODO: Move to WebWorker
-            output = await imageConversion.compress(file, { quality: 0.95, type: "image/jpeg" }) as Blob
+            output = await imageConversion.compress(file, { quality: CLIENT_IMAGE_COMPRESSION_QUALITY, type: "image/jpeg" }) as Blob
           }
 
           this.setState({ show: true, dropped: [output] });

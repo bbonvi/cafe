@@ -65,6 +65,7 @@ export const EMBED_CACHE_EXPIRY_MS = 30 * DAY_MS;
 export const PRELOAD_MAX_SIZE = 3.5 * 1000000;
 
 export const MIN_SIZE_TO_COMPRESS_PNG = 2
+export const CLIENT_IMAGE_COMPRESSION_QUALITY = 0.93
 
 export const REQUEST_ANIMATION_FRAME =
     window.requestAnimationFrame || window.webkitRequestAnimationFrame;
