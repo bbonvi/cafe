@@ -5,3 +5,5 @@ declare module "textarea-caret" {
     {top: number, left: number};
   export = getCaretCoordinates;
 }
+
+declare module "image-conversion"

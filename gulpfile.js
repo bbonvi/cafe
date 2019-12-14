@@ -490,6 +490,7 @@ createTask("loader", "loader.js", src =>
                     events: "node_modules/events/events",
                     mustache: "node_modules/mustache/mustache",
                     classnames: "node_modules/classnames/index",
+                    "image-conversion": "node_modules/image-conversion/src/conversion",
                     "color-convert": "node_modules/color-convert/index",
                     "route": "node_modules/color-convert/route",
                     "conversions": "node_modules/color-convert/conversions",

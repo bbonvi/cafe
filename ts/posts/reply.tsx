@@ -7,6 +7,7 @@ import { isModerator } from "../auth";
 import { smileLineOffset } from "../client";
 import { PostData } from "../common";
 import _ from "../lang";
+const imageConversion = require("image-conversion")
 import { boards, config, page, storeMine } from "../state";
 import { duration, fileSize, renderBody } from "../templates";
 import {
@@ -35,6 +36,7 @@ import {
   REPLY_THREAD_WIDTH_PX,
   TRIGGER_OPEN_REPLY_SEL,
   TRIGGER_QUOTE_POST_SEL,
+  MIN_SIZE_TO_COMPRESS_PNG,
 } from "../vars";
 import { Progress } from "../widgets";
 import * as signature from "./signature";
@@ -1239,6 +1241,14 @@ class RenderBody extends Component<any, any> {
   }
 }
 
+function shouldCompress(file: File) {
+  const isPng = file.type.includes('image/png')
+  const isBigEnough = file.size / 1024 / 1024 > MIN_SIZE_TO_COMPRESS_PNG
+
+  return isBigEnough && isPng
+}
+
+
 class ReplyContainer extends Component<any, any> {
   public state = {
     show: false,
@@ -1280,7 +1290,8 @@ class ReplyContainer extends Component<any, any> {
         this.setState({ show: true, dropped: files });
       }
     });
-    on(document, "paste", (e: Event) => {
+    on(document, "paste", async (e: Event) => {
+
       const data = (e as ClipboardEvent).clipboardData;
       const items = data.items;
       // const textData = data.getData("text");
@@ -1289,8 +1300,15 @@ class ReplyContainer extends Component<any, any> {
         const activeElement = document.activeElement.tagName.toLowerCase();
         const item = items[index];
         if (item.kind === "file") {
-          const blob = item.getAsFile();
-          this.setState({ show: true, dropped: [blob] });
+          const file = item.getAsFile();
+
+          let output: File | Blob = file;
+          if (shouldCompress(file)) {
+            // TODO: Move to WebWorker
+            output = await imageConversion.compress(file, { quality: 0.95, type: "image/jpeg" }) as Blob
+          }
+
+          this.setState({ show: true, dropped: [output] });
         } else if (
           item.type === "text/plain" &&
           activeElement !== "input" &&
