@@ -70,6 +70,7 @@ function getVideoInfo(file: File | Blob): Promise<Dict> {
     };
     vid.onerror = reject;
     vid.src = src;
+    vid.play();
   });
 }
 
