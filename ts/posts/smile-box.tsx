@@ -15,7 +15,7 @@ const thingSmiles = new Set(
   scarf hat_red hat_red2 horns hand_up hand_up2 thumbs_up shovel hat2
   confetti hat_green cocktail heart heart2 heart3 heart4 cigarette cigarette2 snowman scarf2 sweater
   sweater2 fire tophat wine coffee cola chips goose nogoose gun gun2 karandash knife
-  ovsyanka ramyun umbrella chocolate mug mug2 snow space mandarin
+  ovsyanka ramyun umbrella chocolate mug mug2 snow space mandarin tree
 `
     .trim()
     .split(/\s+/),
