@@ -61,7 +61,7 @@ function initCalc_() {
   recalcPosts();
 }
 export const initCalc = () => requestAnimationFrame(initCalc_);
-initCalc()
+initCalc();
 
 // let recalcPending = false;
 export function recalcPosts(callback?: () => void) {
@@ -69,40 +69,37 @@ export function recalcPosts(callback?: () => void) {
   const height = innerHeight * 2;
   const top = scrollTop - height;
   const bottom = scrollTop + height;
-  // const isVisible = (el: Posts) => top < el.top && el.top < bottom;
-  // const visiblePosts = coordinates.filter(el => isVisible(el))
-  // const invisiblePosts = coordinates.filter(el => !isVisible(el))
-  
-  for (let i = 0; i < coordinates.length; i++) {
-    const postElement = coordinates[i];
+
+  coordinates.forEach((postElement) => {
     const { id } = postElement;
-    const post = document.getElementById(id)
+    const post = document.getElementById(id);
     const isVisible = top < postElement.top && bottom > postElement.top;
     if (isVisible) {
       try {
-        if (!post) continue;
-        post.classList.add('visible');
+        if (!post) return;
+        post.classList.add("visible");
         if (!post.dataset.loaded) replaceSrcs(post);
-      } catch (error) {console.log(error)}
+      } catch (error) { console.log(error); }
     } else {
-      if (post) post.classList.remove('visible')
+      if (post) post.classList.remove("visible");
     }
-  }
-  if (callback) callback()
+  });
+  if (callback) callback();
 }
 
 export function replaceSrcs(post: HTMLElement) {
   post.dataset.loaded = "true";
-  const containers = post.getElementsByClassName('post-file-thumb_containter');
-  for (let i = 0; i < containers.length; i++ ) {
-    const container = containers[i];
+  const containers = post.getElementsByClassName("post-file-thumb_containter");
 
+  [...containers].forEach((container) => {
     const thumb = container.firstElementChild as HTMLImageElement;
     const blur = thumb.nextElementSibling as HTMLImageElement;
     thumb.src = thumb.dataset.src;
-    if (!thumb) return;
-    blur.style.backgroundImage = `url("${blur.dataset.src}")`;
-  }
+    thumb.srcset = thumb.dataset.srcset;
+    if (thumb) {
+      blur.style.backgroundImage = `url("${blur.dataset.src}")`;
+    }
+  });
 }
 
 let recalcPending: boolean;
@@ -112,9 +109,9 @@ function onScroll() {
   recalcPending = true;
   throttle(() => {
     recalcPosts(() => {
-      recalcPending = false
+      recalcPending = false;
     });
-  }, time)
+  }, time);
   // throttle(() => {
     // recalcPosts();
     // recalcPending = false
@@ -137,7 +134,7 @@ function throttle(callback: () => void, time: number) {
   //   callback()
   //   t1 = currentTime;
   // } else {
-    
+
     // window.web/kitRequestAnimationFrame(() => throttle(callback, time))
   // }
 }
@@ -156,7 +153,7 @@ function throttle(callback: () => void, time: number) {
 //           /// increase the count
 //           calledCount++;
 //           callback(); /// call the function
-//       } 
+//       }
 //       else console.log('not calling because the limit has exeeded');
 //   };
 // }

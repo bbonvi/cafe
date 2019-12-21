@@ -3,7 +3,7 @@
 /dist/
 /smiles-pp/
 /labels-pp/
-
+/ssl/
 *_easyjson.go
 easyjson-*
 bin_data.go

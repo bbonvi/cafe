@@ -1,18 +1,11 @@
 <figure class="post-file{{#Record}} post-file_record{{/Record}}">
-  <!-- <figcaption class="post-file-info">
-    {{^Record}}
-      <span class="post-file-info-item post-file-dims">{{ Width }}×{{ Height }}</span>
-    {{/Record}}
-    <span class="post-file-info-item post-file-size">&nbsp{{ Size }}</span>
-    {{#HasLength}}
-      <span class="post-file-info-item post-file-length">&nbsp{{ Length }}</span>
-    {{/HasLength}}
-  </figcaption> -->
   <a class="post-file-link {{^Record}}post-file-thumb_containter{{/Record}} {{ #ThumbPng }}thumb-png{{ /ThumbPng }}"
     href="{{ SourcePath }}" target="_blank">
     {{^Record}}
-    <img class="post-file-thumb{{^HasVideo}} trigger-media-hover{{/HasVideo}} trigger-media-popup "
+    <img
       src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+      data-srcset="{{ ThumbPath }} 1x, {{ SourcePath }}?retina=true 2x"
+      class="post-file-thumb{{^HasVideo}} trigger-media-hover{{/HasVideo}} trigger-media-popup "
       data-src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}"
       style="{{ #ThumbPng }} box-shadow: none {{ /ThumbPng }}" data-sha1="{{ SHA1 }}" file-size="{{ Size }}">
     <div class="post-file-thumb_background" style="{{ #ThumbPng }} display: none {{ /ThumbPng }}"
