@@ -7,6 +7,7 @@ import (
 	"meguca/auth"
 	"meguca/config"
 	"meguca/util"
+	"meguca/db"
 )
 
 // Ensure API user is not banned.
@@ -50,10 +51,68 @@ func checkReadOnly(board string, ss *auth.Session) bool {
 	return ss.Positions.CurBoard >= auth.Moderator
 }
 
-// Eunsure only mods and above can post at read-only boards.
+func checkRegisteredOnly(board string, ss *auth.Session) bool {
+	if !config.IsRegisteredOnlyBoard(board) {
+		return true
+	}
+	if ss == nil {
+		return false
+	}
+	return true
+	// fmt.Print("\nposition:\n")
+	// fmt.Print(ss.Positions)
+	// pos, err = getUserPositions(board, ss.UserID)
+	// fmt.Print(pos)
+	// return ss.Positions.CurBoard >= auth.Moderator
+}
+
+func checkBlacklisted(board string, ss *auth.Session) bool {
+	if ss == nil {
+		return false
+	}
+	boards := make([]string, 1)
+	boards = append(boards, board)
+
+
+	staff, err := db.GetStaff(nil, boards)
+
+	if err != nil {
+		return false
+	}
+
+	blacklisted := false
+	for _, curStaff := range staff {
+		if curStaff.UserID == ss.UserID {
+			blacklisted = curStaff.Position == 1
+		}
+	}
+
+	return blacklisted
+}
+
+// Ensure only mods and above can post at read-only boards.
 func assertNotReadOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
 	if !checkReadOnly(board, ss) {
 		text403(w, errReadOnly)
+		return false
+	}
+	return true
+}
+
+// Ensure only registered users can post.
+func assertNotRegisteredOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
+	if !checkRegisteredOnly(board, ss) {
+		text403(w, errOnlyRegistered)
+		return false
+	}
+	return true
+}
+
+
+// Ensure user not blacklisted.
+func assertNotBlacklisted(w http.ResponseWriter, board string, ss *auth.Session) bool {
+	if checkBlacklisted(board, ss) {
+		text403(w, errBannedBoard)
 		return false
 	}
 	return true
@@ -69,7 +128,7 @@ func checkModOnly(board string, ss *auth.Session) bool {
 	return ss.Positions.CurBoard >= auth.Moderator
 }
 
-// Eunsure only mods and above can view mod-only boards.
+// Ensure only mods and above can view mod-only boards.
 func assertNotModOnly(w http.ResponseWriter, r *http.Request, board string, ss *auth.Session) bool {
 	if !checkModOnly(board, ss) {
 		serve404(w, r)
@@ -78,7 +137,7 @@ func assertNotModOnly(w http.ResponseWriter, r *http.Request, board string, ss *
 	return true
 }
 
-// Eunsure only mods and above can post at mod-only boards.
+// Ensure only mods and above can post at mod-only boards.
 func assertNotModOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
 	if !checkModOnly(board, ss) {
 		text400(w, errInvalidBoard)
@@ -94,7 +153,7 @@ func checkPowerUser(ss *auth.Session) bool {
 	return ss.Positions.IsPowerUser()
 }
 
-// Eunsure only power users can pass.
+// Ensure only power users can pass.
 func assertPowerUserAPI(w http.ResponseWriter, ss *auth.Session) bool {
 	if !checkPowerUser(ss) {
 		text403(w, aerrPowerUserOnly)

@@ -155,6 +155,13 @@ func IsReadOnlyBoard(b string) bool {
 	return ok && conf.ReadOnly
 }
 
+func IsRegisteredOnlyBoard(b string) bool {
+	boardMu.RLock()
+	defer boardMu.RUnlock()
+	conf, ok := boardConfigs[b]
+	return ok && conf.AccessMode == 0 && conf.IncludeAnon
+}
+
 func IsModOnlyBoard(b string) bool {
 	boardMu.RLock()
 	defer boardMu.RUnlock()

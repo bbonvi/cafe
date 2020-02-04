@@ -20,7 +20,7 @@ const (
 
 var (
 	// The poster is almost certainly spamming
-	ErrSpamDected = errors.New("spam detected")
+	ErrSpamDected = errors.New("Spam detected")
 
 	spamCounters = spamCounterMap{
 		m: make(map[string]*spamCounter, 64),

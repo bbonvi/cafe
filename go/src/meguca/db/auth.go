@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	ErrUserNameTaken = errors.New("user name already taken")
+	ErrUserNameTaken = errors.New("User name already taken")
 	ErrContrast      = errors.New("Color must be distinguishable in both themes. Increase contrast.")
 )
 

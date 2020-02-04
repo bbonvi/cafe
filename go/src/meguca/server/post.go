@@ -145,6 +145,14 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	if !assertNotModOnlyAPI(w, board, ss) {
 		return
 	}
+	if !assertNotRegisteredOnlyAPI(w, board, ss){
+		return
+	}
+
+	if !assertNotBlacklisted(w, board, ss) {
+		return
+	}
+
 	if !assertNotReadOnlyAPI(w, board, ss) {
 		return
 	}

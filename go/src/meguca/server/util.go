@@ -48,13 +48,15 @@ func logError(r *http.Request, err error) {
 // Text-only 400 response
 // TODO(Kagami): User ApiError instead.
 func text400(w http.ResponseWriter, err error) {
-	http.Error(w, fmt.Sprintf("400 %s", err), 400)
+	// http.Error(w, fmt.Sprintf("400 %s", err), 400)
+	http.Error(w, fmt.Sprintf("%s", err), 400)
 }
 
 // Text-only 403 response
 // TODO(Kagami): User ApiError instead.
 func text403(w http.ResponseWriter, err error) {
-	http.Error(w, fmt.Sprintf("403 %s", err), 403)
+	// http.Error(w, fmt.Sprintf("403 %s", err), 403)
+	http.Error(w, fmt.Sprintf("%s", err), 403)
 }
 
 // Text-only 500 response

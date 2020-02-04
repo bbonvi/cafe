@@ -28,9 +28,9 @@ const (
 // )
 
 var (
-	ErrThumbProcess     = errors.New("error generating thumbnail")
-	ErrThumbUnsupported = errors.New("unsupported file format")
-	ErrThumbTracks      = errors.New("unsupported track set")
+	ErrThumbProcess     = errors.New("Error generating thumbnail")
+	ErrThumbUnsupported = errors.New("Unsupported file format")
+	ErrThumbTracks      = errors.New("Unsupported track set")
 )
 
 type Thumb struct {
