@@ -100,6 +100,7 @@ var (
 	errInvalidBoard     = errors.New("Invalid board")
 	errReadOnly         = errors.New("Read only board")
 	errOnlyRegistered   = errors.New("Only registered users are allowed")
+	errOnlyWhitelist    = errors.New("This board is whitelist only")
 	errBanned           = errors.New("You are banned")
 	errBannedBoard      = errors.New("You are banned on this board")
 	errNoImage          = errors.New("Post has no image")

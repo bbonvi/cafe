@@ -51,22 +51,7 @@ func checkReadOnly(board string, ss *auth.Session) bool {
 	return ss.Positions.CurBoard >= auth.Moderator
 }
 
-func checkRegisteredOnly(board string, ss *auth.Session) bool {
-	if !config.IsRegisteredOnlyBoard(board) {
-		return true
-	}
-	if ss == nil {
-		return false
-	}
-	return true
-	// fmt.Print("\nposition:\n")
-	// fmt.Print(ss.Positions)
-	// pos, err = getUserPositions(board, ss.UserID)
-	// fmt.Print(pos)
-	// return ss.Positions.CurBoard >= auth.Moderator
-}
-
-func checkBlacklisted(board string, ss *auth.Session) bool {
+func checkPosition(board string, ss *auth.Session, position auth.ModerationLevel) bool {
 	if ss == nil {
 		return false
 	}
@@ -80,14 +65,40 @@ func checkBlacklisted(board string, ss *auth.Session) bool {
 		return false
 	}
 
-	blacklisted := false
+	inPosition := false
 	for _, curStaff := range staff {
 		if curStaff.UserID == ss.UserID {
-			blacklisted = curStaff.Position == 1
+			inPosition = curStaff.Position == position
 		}
 	}
 
-	return blacklisted
+	return inPosition
+}
+
+func checkWhitelistOnly(board string, ss *auth.Session) bool {
+	if !config.IsWhitelistOnlyBoard(board) {
+		return true
+	}
+	if ss == nil {
+		return false
+	}
+	return checkPosition(board, ss, 2) || ss.Positions.CurBoard >= auth.Moderator
+}
+
+
+func checkRegisteredOnly(board string, ss *auth.Session) bool {
+	if !config.IsRegisteredOnlyBoard(board) {
+		return true
+	}
+	if ss == nil {
+		return false
+	}
+	return true
+	// fmt.Print("\nposition:\n")
+	// fmt.Print(ss.Positions)
+	// pos, err = getUserPositions(board, ss.UserID)
+	// fmt.Print(pos)
+	// return ss.Positions.CurBoard >= auth.Moderator
 }
 
 // Ensure only mods and above can post at read-only boards.
@@ -108,10 +119,19 @@ func assertNotRegisteredOnlyAPI(w http.ResponseWriter, board string, ss *auth.Se
 	return true
 }
 
+// Ensure only registered users can post.
+func assertNotWhitelistOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
+	if !checkWhitelistOnly(board, ss) {
+		text403(w, errOnlyWhitelist)
+		return false
+	}
+	return true
+}
+
 
 // Ensure user not blacklisted.
 func assertNotBlacklisted(w http.ResponseWriter, board string, ss *auth.Session) bool {
-	if checkBlacklisted(board, ss) {
+	if checkPosition(board, ss, 1) {
 		text403(w, errBannedBoard)
 		return false
 	}
