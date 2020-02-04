@@ -301,13 +301,13 @@ body {
 .header {
   position: fixed;
   top: 0px;
-  width: calc(~"100% - 140px");
+  // width: calc(~"100% - 140px");
   width: 100%;
   height: @headerHeight;
   display: flex;
   font-size: @headerFontSize;
   box-sizing: border-box;
-  border-bottom: @headerBorder;
+  // border-bottom: @headerBorder;
   border-bottom: none;
   background: @headerBG;
   box-shadow: @headerShadow;
@@ -315,8 +315,8 @@ body {
   user-select: none;
   z-index: 100;
   padding: 0 100px;
-  .christmas();
-  
+  // .christmas();
+
 }
 
 .header-item {
@@ -363,8 +363,7 @@ body {
   background-position: 50%;
   background-repeat: no-repeat;
   background-image: @logoBase;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
+  // background-position: 50% 50%;
   background-size: 100%;
 }
 
@@ -384,7 +383,8 @@ body {
 
 .notification-status {
   display: none;
-  &.enabled { 
+
+  &.enabled {
     display: unset;
   }
 }
@@ -609,12 +609,15 @@ body {
 .popup_embed_twitter {
   background: white;
   transition: 0.05s;
-  .popup-resize-control, .popup-move-control {
+
+  .popup-resize-control,
+  .popup-move-control {
     display: none;
   }
-  
-  blockquote, blockquote a {
-    color: transparent!important;
+
+  blockquote,
+  blockquote a {
+    color: transparent !important;
   }
 }
 
@@ -624,6 +627,7 @@ body {
     font-size: 1.2em;
     vertical-align: -1px;
   }
+
   blockquote {
     background: #fff;
     height: 150px;
@@ -631,7 +635,7 @@ body {
 }
 
 twitter-widget {
-  margin: 0!important;
+  margin: 0 !important;
 }
 
 blockquote.twitter-tweet {
@@ -1028,17 +1032,20 @@ blockquote.twitter-tweet p {
     right: 0;
     bottom: 0;
   }
+
   .popup-video-overlay {
     display: none;
   }
+
   .player-download {
     margin-right: 20px;
   }
+
   .player-control.player-volume.slider {
     display: flex;
     height: unset;
   }
-  
+
 }
 
 .fullscreen .popup-video-item {
@@ -1553,10 +1560,10 @@ blockquote.twitter-tweet p {
 .color-selector_hue {
   background: rgb(255, 0, 0);
   background: linear-gradient(90deg, rgba(255, 0, 0, 1) 0%, rgba(255, 128, 0, 1) 8%,
-    rgba(255, 255, 0, 1) 16%, rgba(128, 255, 0, 1) 24%, rgba(0, 255, 0, 1) 32%,
-    rgba(0, 255, 128, 1) 40%, rgba(0, 255, 255, 1) 48%, rgba(0, 128, 255, 1) 56%,
-    rgba(0, 0, 255, 1) 64%, rgba(128, 0, 255, 1) 72%, rgba(255, 0, 255, 1) 81%,
-    rgba(255, 0, 128, 1) 90%, rgba(255, 0, 0, 1) 100%);
+      rgba(255, 255, 0, 1) 16%, rgba(128, 255, 0, 1) 24%, rgba(0, 255, 0, 1) 32%,
+      rgba(0, 255, 128, 1) 40%, rgba(0, 255, 255, 1) 48%, rgba(0, 128, 255, 1) 56%,
+      rgba(0, 0, 255, 1) 64%, rgba(128, 0, 255, 1) 72%, rgba(255, 0, 255, 1) 81%,
+      rgba(255, 0, 128, 1) 90%, rgba(255, 0, 0, 1) 100%);
 }
 
 .color-selector_saturation {
@@ -1702,7 +1709,7 @@ blockquote.twitter-tweet p {
   margin-left: 5px;
   padding: 5px 5px;
   /* display: inline-block;
-  
+
   margin-right: 5px;
   opacity: 0.3; */
   box-shadow: none;
@@ -1816,15 +1823,18 @@ blockquote.twitter-tweet p {
   &:last-of-type {
     margin-bottom: 0;
   }
+
   &.should-anim {
     transform: translateY(-50%) scaleY(0.0);
     opacity: 0;
     transition: 0.15s transform, opacity;
   }
+
   &.post_loaded {
     opacity: 1;
     transform: none;
   }
+
   &.has-reply {
     border-left: 5px solid @yous;
   }
@@ -2134,9 +2144,12 @@ html.user {
 
 
 html:not(.page-loaded) {
-  .post-file-thumb_background, .trigger-media-popup:not(.fa-music) {
+
+  .post-file-thumb_background,
+  .trigger-media-popup:not(.fa-music) {
     display: none;
   }
+
   .post-file-thumb_containter {
     width: unset;
     height: unset;
@@ -2236,6 +2249,7 @@ html.work-mode {
       opacity: 1;
     }
   }
+
   .post-file-thumb:not(.fa-music) {
     opacity: 0;
     transition: 0.1s;
@@ -2263,6 +2277,7 @@ html.work-mode {
   & br:last-child {
     display: none
   }
+
   .everyone {
     color: #388697;
   }
@@ -3026,6 +3041,7 @@ html:not(.pos_moderators) {
     box-shadow: none;
     transform: none !important;
   }
+
   .progress-background {
     background: @link;
     position: absolute;
@@ -3037,6 +3053,7 @@ html:not(.pos_moderators) {
     right: 0;
     transition: 0.1s linear;
   }
+
   .progress-text {
     position: relative;
     mix-blend-mode: @sendBlendMode;
@@ -3544,9 +3561,10 @@ html:not(.pos_moderators) {
 .smiles-offset {
   position: relative;
 }
+
 .smile.smile-snow {
-  background-image: url('/static/img/snow.gif')!important;
-  background-position: 0!important;
+  background-image: url('/static/img/snow.gif') !important;
+  background-position: 0 !important;
   // margin-left: -36px;
   // width: 36px;
 
@@ -3558,6 +3576,7 @@ html:not(.pos_moderators) {
   width: unset;
   height: unset;
   opacity: @snowOpacity;
+
   &.smiles-icon {
     opacity: 1;
     margin-left: 0;
@@ -3572,9 +3591,10 @@ html:not(.pos_moderators) {
   display: none;
 }
 
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
   .smile.smile-snow {
-    background-image: url(http://127.0.0.1:4567/static/img/snow@2x.gif)!important;
+    background-image: url(http://127.0.0.1:4567/static/img/snow@2x.gif) !important;
     background-size: unset;
   }
 }
