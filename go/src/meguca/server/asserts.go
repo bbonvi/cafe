@@ -6,9 +6,20 @@ import (
 
 	"meguca/auth"
 	"meguca/config"
+	"meguca/common"
 	"meguca/util"
 	"meguca/db"
 )
+
+func assertHasWSConnection(w http.ResponseWriter, ip string, board string) bool {
+	for _, cl := range common.GetByIPAndBoard(ip, board) {
+		if cl.IP() != "" {
+			return true
+		}
+	}
+	text403(w, errNotConnected)
+	return false
+}
 
 // Ensure API user is not banned.
 func assertNotBannedAPI(w http.ResponseWriter, r *http.Request, board string) (ip string, ok bool) {
@@ -94,11 +105,6 @@ func checkRegisteredOnly(board string, ss *auth.Session) bool {
 		return false
 	}
 	return true
-	// fmt.Print("\nposition:\n")
-	// fmt.Print(ss.Positions)
-	// pos, err = getUserPositions(board, ss.UserID)
-	// fmt.Print(pos)
-	// return ss.Positions.CurBoard >= auth.Moderator
 }
 
 // Ensure only mods and above can post at read-only boards.

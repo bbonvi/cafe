@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"crypto/sha256"
+	"encoding/base64"
 
 	"meguca/auth"
 	"meguca/config"
@@ -36,6 +38,23 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	default:
 		respondToJSONError(w, r, err)
 	}
+}
+
+func getHashedHeaders(r *http.Request) string {
+	str := strings.Join(r.Header["User-Agent"][:], "")
+	str += strings.Join(r.Header["Accept"], "")
+	str += strings.Join(r.Header["Accept-Language"], "")
+	str += strings.Join(r.Header["Accept-Encoding"], "")
+	str += strings.Join(r.Header["Sec-Fetch-Site"], "")
+	str += strings.Join(r.Header["Connection"], "")
+
+	hasher := sha256.New()
+	_, err := hasher.Write([]byte(str))
+	if err != nil {
+		return ""
+	}
+
+	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 }
 
 // Client should get token and solve challenge in order to post.
@@ -126,6 +145,9 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	req websockets.PostCreationRequest, ok bool,
 ) {
+	// sha := getHashedHeaders(r)
+	// fmt.Print("\n", sha[:10])
+
 	f, m, err := parseUploadForm(w, r)
 	if err != nil {
 		serveErrorJSON(w, r, err)
@@ -160,10 +182,16 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	if !assertNotReadOnlyAPI(w, board, ss) {
 		return
 	}
+
 	ip, allowed := assertNotBannedAPI(w, r, board)
 	if !allowed {
 		return
 	}
+
+	// TODO: Move to config
+	// if !assertHasWSConnection(w, ip, board) {
+	// 	return
+	// }
 
 	fhs := m.File["files[]"]
 	if len(fhs) > config.Get().MaxFiles {

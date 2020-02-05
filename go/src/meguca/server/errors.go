@@ -104,6 +104,7 @@ var (
 	errBanned           = errors.New("You are banned")
 	errBannedBoard      = errors.New("You are banned on this board")
 	errNoImage          = errors.New("Post has no image")
+	errNotConnected     = errors.New("You are not connected to the board")
 	errNoNews           = errors.New("Can't get news")
 	errPageOverflow     = errors.New("Page not found")
 	errInvalidBoardName = errors.New("Invalid board name")
