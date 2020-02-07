@@ -157,7 +157,17 @@ export default class extends Component<any, any> {
   public componentDidMount() {
     document.addEventListener("keydown", this.handleGlobalKey);
     document.addEventListener("click", this.handleGlobalClick);
+    this.handleInitialPosition()
   }
+  public handleInitialPosition() {
+    if (!this.props.positionElement) {
+      return;
+    }
+
+    const rect = (this.props.positionElement as HTMLElement).getBoundingClientRect()
+    this.setState({ left: rect.left, top: rect.top })
+  }
+
   public componentWillUnmount() {
     document.removeEventListener("keydown", this.handleGlobalKey);
     document.removeEventListener("click", this.handleGlobalClick);
@@ -263,7 +273,10 @@ export default class extends Component<any, any> {
   }
   // tslint:disable-next-line:member-ordering
   public render({ acList }: any, { left, top }: any) {
-    const style = acList ? { left, top } : null;
+    let style = acList ? { left, top } : null as any;
+    style = this.props.positionElement ?
+      { left, top, bottom: "unset", position: "fixed", zIndex: "100000" } :
+      null;
     return (
       <div
         class={cx("smile-box", {

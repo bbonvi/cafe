@@ -1,4 +1,4 @@
-import { isMobile, TRIGGER_REACT_SEL } from './../vars/index';
+import { isMobile, TRIGGER_REACT_SEL, TRIGGER_REACT_ADD_SEL } from './../vars/index';
 export { Thread, Post, Backlinks } from "./model";
 export { default as PostView } from "./view";
 export { getFilePrefix, thumbPath, sourcePath } from "./images";
@@ -11,9 +11,9 @@ import { copyToClipboard, on } from "../util";
 import { RELATIVE_TIME_PERIOD_SECS} from "../vars";
 import { POST_FILE_TITLE_SEL } from "../vars";
 import { init as initHover } from "./hover";
-import { init as initPopup } from "./popup";
-import { init as initReply } from "./reply";
 import API from "../api";
+import { init as initPopup, handleNewReaction } from "./popup";
+import { init as initReply } from "./reply";
 
 
 
@@ -46,7 +46,12 @@ document.addEventListener("click", (e: MouseEvent) => {
   if (!target) {
     return;
   }
-  const element = target.closest(TRIGGER_REACT_SEL) as HTMLElement
+  const newReaction = target.closest(TRIGGER_REACT_ADD_SEL)  as HTMLElement;
+  if (newReaction) {
+    return handleNewReaction(newReaction.dataset.postId, newReaction);
+  }
+
+  const element = target.closest(TRIGGER_REACT_SEL) as HTMLElement;
   if (!element) {
     return;
   }
@@ -62,7 +67,7 @@ document.addEventListener("click", (e: MouseEvent) => {
 
   // Disable button for a second
   disabledButton();
-  setTimeout(enableButton, 600);
+  setTimeout(enableButton, 500);
 
   preemptivelyIncreaseCounter();
   API.post.react(reaction).catch(decreaseCounterOnError);

@@ -41,6 +41,7 @@ export const COLOR_PICKER_B_CURSOR = ".color-picker_cursor_brightness";
 export const TRIGGER_OPEN_REPLY_SEL = ".trigger-open-reply";
 export const TRIGGER_QUOTE_POST_SEL = ".trigger-quote-post";
 export const TRIGGER_REACT_SEL = ".trigger-react-post";
+export const TRIGGER_REACT_ADD_SEL = ".trigger-react-post-add";
 export const TRIGGER_DELETE_POST_SEL = ".trigger-delete-post";
 export const TRIGGER_BAN_BY_POST_SEL = ".trigger-ban-by-post";
 export const TRIGGER_IGNORE_USER_SEL = ".trigger-ignore-user";

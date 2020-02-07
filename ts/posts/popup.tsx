@@ -20,6 +20,8 @@ import {
 } from "../vars";
 import { findPreloadImages } from "./hover";
 import RenderVideo from './player'
+import SmileBox from "./smile-box";
+import API from "../api";
 // import { recalcPosts } from ".";
 const opened: Set<string> = new Set();
 export function isOpen(url: string): boolean {
@@ -442,7 +444,7 @@ class Popup extends Component<PopupProps, PopupState> {
 
     if (!moving && !resizing) return;
     e.preventDefault();
-    
+
 
     if (moving) {
       if (isMobile) {
@@ -500,8 +502,8 @@ class Popup extends Component<PopupProps, PopupState> {
     const { clientX, clientY } = e as MouseEvent;
 
     const order = e.deltaY < 0 ? 1 : -1;
-    // order = -1 — scale down
-    // order = 1 — scale up
+    // order = -1 ï¿½ scale down
+    // order = 1 ï¿½ scale up
     let zoom = ZOOM_STEP_PX;
     let { left, top, width, height } = this.state;
     let { width: realWidth, height: realHeight } = this.props;
@@ -595,16 +597,16 @@ class Popups extends Component<any, PopupsState> {
     }
 
     this.handleChangeImage({ left, right });
-    
+
   }
 
   handleChangeImage = ({ left, right }: any) => {
     const { popups } = this.state;
     const activeElement = document.activeElement.tagName.toLowerCase();
-    
+
     if (!left && !right) return;
     if (activeElement === 'input' || activeElement === 'textarea') return;
-    
+
     if (!popups.find(p => p.video || p.image)) return;
     this.initFileList(() => {
       const getNextElement = (n: number) => {
@@ -773,5 +775,29 @@ export function init() {
   const container = document.querySelector(POPUP_CONTAINER_SEL);
   if (container) {
     render(<Popups />, container);
+  }
+}
+
+export function handleNewReaction(postId: string, buttonElement: HTMLElement) {
+  const container = document.body;
+  let element: Element = null;
+  if (container) {
+    element = render(
+      <SmileBox
+        positionElement={buttonElement}
+        onSelect={handleSelect}
+        onClose={handleClose}
+      />,
+      container);
+  }
+  function handleClose() {
+    element.remove();
+  }
+  function handleSelect(id: string) {
+    handleClose();
+    API.post.react({
+      smile: id,
+      post: parseInt(postId, 10),
+    });
   }
 }

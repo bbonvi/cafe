@@ -81,7 +81,7 @@ export default class PostView extends View<Post> {
 
     this.model.reacts.forEach((reaction) => {
       this.renderReaction(reaction);
-    })
+    });
   }
 
   public renderReaction(reaction: SmileReact) {
