@@ -108,9 +108,6 @@ func ReactToPost(id uint64, smileName string, count uint64) {
 		return
 	}
 	return
-	// return sendIfExists(op, func(f *Feed) {
-	// 	f.banPost(id, msg)
-	// })
 }
 
 // ClosePost closes a post in a feed, if it exists
