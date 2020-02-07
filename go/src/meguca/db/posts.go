@@ -289,6 +289,23 @@ func InsertPost(tx *sql.Tx, p Post) (err error) {
 	return
 }
 
+// InsertPostReaction inserts a post's reaction with relation to post.
+func InsertPostReaction(postID uint64, smileName string) (err error) {
+	err = execPrepared("write_post_react", postID, smileName)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func UpdateReactionCount(postID uint64, smileName string, count uint64) (err error) {
+	err = execPrepared("update_post_react", count, postID, smileName)
+	if err != nil {
+		return
+	}
+	return
+}
+
 // Write post files in current transaction.
 func InsertFiles(tx *sql.Tx, p Post) (err error) {
 	for _, f := range p.Files {

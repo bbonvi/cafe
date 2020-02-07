@@ -321,6 +321,61 @@ func GetThread(id uint64, lastN int) (t common.Thread, err error) {
 	return
 }
 
+// GetPostReactCount reads a single post reaction from the database.
+func GetPostReactCount(id uint64, smile_name string) (count uint64, err error) {
+	err = prepared["get_post_react_count"].QueryRow(id, smile_name).Scan(&count)
+	return
+}
+
+type PostReaction struct {
+	SmileName 		string	`json:"smileName"`
+	Count 			uint64	`json:"count"`
+	PostID   		uint64	`json:"postId"`
+}
+// GetThreadReacts reads a list of thread reaction
+func GetThreadReacts(id uint64) (reacts []PostReaction, err error) {
+	rows, err := prepared["get_thread_reacts"].Query(id)
+	if err != nil {
+		return nil, err
+	}
+
+	reacts = make([]PostReaction, 0, 64)
+	var p PostReaction
+
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID)
+		if err != nil {
+			return
+		}
+		reacts = append(reacts, p)
+	}
+	err = rows.Err()
+	return
+}
+
+// GetPostReacts reads a list of post reactions
+func GetPostReacts(id uint64) (reacts []PostReaction, err error) {
+	rows, err := prepared["get_post_reacts"].Query(id)
+	if err != nil {
+		return nil, err
+	}
+
+	reacts = make([]PostReaction, 0, 64)
+	var p PostReaction
+
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID)
+		if err != nil {
+			return
+		}
+		reacts = append(reacts, p)
+	}
+	err = rows.Err()
+	return
+}
+
 // GetPost reads a single post from the database.
 func GetPost(id uint64) (p common.StandalonePost, err error) {
 	// Read all data in single transaction.
@@ -342,6 +397,8 @@ func GetPost(id uint64) (p common.StandalonePost, err error) {
 		return
 	}
 	p.Post = ps.Val()
+
+
 	// Get post files.
 	r, err := tx.Stmt(prepared["get_post_files"]).Query(id)
 	if err != nil {
@@ -359,7 +416,34 @@ func GetPost(id uint64) (p common.StandalonePost, err error) {
 		img := fs.Val()
 		p.Files = append(p.Files, img)
 	}
+
+
+	// Get post reactions
+	// pr, err := tx.Stmt(prepared["get_post_reacts"]).Query(id)
+	// if err != nil {
+	// 	return
+	// }
+	// defer pr.Close()
+	// // Fill post files.
+	// var rs reactionScanner
+	// args = rs.ScanArgs()
+	// for pr.Next() {
+	// 	err = pr.Scan(args...)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	reaction := rs.Val()
+	// 	p.Reacts = append(p.Reacts, reaction)
+	// }
+
+
 	err = r.Err()
+
+	// t, _ := db.GetPostReacts(id)
+	// p, err := json.Marshal(t)
+	// if err != nil {
+	// 	fmt.Print(err)
+	// }
 	return
 }
 

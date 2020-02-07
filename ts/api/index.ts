@@ -76,6 +76,7 @@ export const API = {
   post: {
     create: emit.POST.Form("post"),
     createToken: emit.POST.JSON("post/token"),
+    react: emit.POST.Form("post/react"),
     delete: emit.POST.JSON("delete-post"),
     get: (id: number) => emit.GET.JSON(`post/${id}`)(),
   },

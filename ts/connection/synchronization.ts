@@ -4,6 +4,8 @@ import { insertPost } from "../client";
 import { page, posts } from "../state";
 import { handlers, message } from "./messages";
 import { connEvent, connSM, send } from "./state";
+import { SmileReact } from "../common";
+
 
 // Passed from the server to allow the client to synchronise state, before
 // consuming any incoming update messages.
@@ -13,6 +15,7 @@ interface SyncData {
   deleted: number[]; // Posts deleted
   deletedImage: number[]; // Posts deleted in this thread
   banned: number[]; // Posts banned in this thread
+  reacts: SmileReact[]
 }
 
 // State of an open post
@@ -55,7 +58,7 @@ handlers[message.synchronise] = async (data: SyncData) => {
 
   // Board pages currently have no sync data
   if (data) {
-    const { recent, deleted } = data;
+    const { recent = [], deleted = [], reacts = [] } = data;
     const proms: Array<Promise<void>> = [];
 
     for (const id of recent) {
@@ -69,6 +72,13 @@ handlers[message.synchronise] = async (data: SyncData) => {
       const post = posts.get(id);
       if (post && !post.deleted) {
         post.setDeleted();
+      }
+    }
+
+    for (const react of reacts) {
+      const post = posts.get(react.postId);
+      if (post && !post.deleted) {
+        post.setReaction(react);
       }
     }
 

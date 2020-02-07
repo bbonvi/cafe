@@ -103,6 +103,20 @@ create index bumpTime on threads (bumpTime);
 create index replyTime on threads (replyTime);
 create index sticky on threads (sticky);
 
+-- create table smiles (
+--   name text not null,
+--   board text not null,
+--   fileType smallint not null,
+--   id bigint primary key,
+--   file_hash char(40)
+-- );
+
+create table post_reacts (
+  smile_name text not null,
+  count bigint default 0,
+  post_id bigint references posts on delete set null
+);
+
 create table posts (
   editing boolean,
   deleted boolean,

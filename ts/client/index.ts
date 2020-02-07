@@ -43,6 +43,9 @@ var vis = () => {
 // Insert a post into the models and DOM
 export function insertPost(data: PostData) {
   const atBottom = isAtBottom();
+  if (data.reacts) {
+    data.reacts = JSON.parse(data.reacts.toString());
+  }
   const model = new Post(data);
   model.op = page.thread;
   model.board = page.board;
@@ -58,7 +61,7 @@ export function insertPost(data: PostData) {
   postAdded(model);
   smileLineOffset(view.el.querySelectorAll(".post-message p"));
   const tabInFocus = vis();
-  // options.scrollToBottom && 
+  // options.scrollToBottom &&
   if (tabInFocus && atBottom && !isHoverActive()) {
     scrollToBottom();
   }

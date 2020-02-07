@@ -179,33 +179,16 @@ func imageRoot() string {
 
 func GetBluredThumbnail(inPath string, outPath string, sha string) {
 	// Start process.
-	// name, args := getCmdLineBlur(user)
 	root := imageRoot()
 	dir := "." + root + "/blur/" + sha[:2]
 	os.MkdirAll(dir, os.ModePerm)
 	cmd := exec.Command("go/bin/stackblur", "-in", "./"+inPath, "-out", "./"+outPath, "-radius", "40")
-	// cmd.Stderr = os.Stderr
-	// in, err := cmd.StdinPipe()
-	// if err != nil {
-	// 	err = fmt.Errorf("stackblur error: %v", err)
-	// 	return
-	// }
-	// out, err := cmd.StdoutPipe()
-	// if err != nil {
-	// 	err = fmt.Errorf("stackblur error: %v", err)
-	// 	return
-	// }
+
 	err := cmd.Start()
 	if err != nil {
 		err = fmt.Errorf("stackblur error: %v", err)
 		return
 	}
-	// Pass input and get output.
-	// in.Write(srcData)
-	// in.Close()
-	// Don't need to process error here because it will be handled later.
-	// data, _ := ioutil.ReadAll(out)
-
 	// Wait for exit and decode error.
 	if err = cmd.Wait(); err != nil {
 		err = fmt.Errorf("stackblur error: %v", err)

@@ -1,4 +1,4 @@
-import { isMobile } from './../vars/index';
+import { isMobile, TRIGGER_REACT_SEL } from './../vars/index';
 export { Thread, Post, Backlinks } from "./model";
 export { default as PostView } from "./view";
 export { getFilePrefix, thumbPath, sourcePath } from "./images";
@@ -13,6 +13,7 @@ import { POST_FILE_TITLE_SEL } from "../vars";
 import { init as initHover } from "./hover";
 import { init as initPopup } from "./popup";
 import { init as initReply } from "./reply";
+import API from "../api";
 
 
 
@@ -40,9 +41,57 @@ function initFileTitle() {
   }, {selector: POST_FILE_TITLE_SEL});
 }
 
+document.addEventListener("click", (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (!target) {
+    return;
+  }
+  const element = target.closest(TRIGGER_REACT_SEL) as HTMLElement
+  if (!element) {
+    return;
+  }
+
+  const reaction = {
+    smile: element.dataset.smileName,
+    post: element.dataset.postId,
+  };
+
+  if (!reaction.smile) {
+    return;
+  }
+
+  // Disable button for a second
+  disabledButton();
+  setTimeout(enableButton, 600);
+
+  preemptivelyIncreaseCounter();
+  API.post.react(reaction).catch(decreaseCounterOnError);
+
+  function disabledButton() {
+    element.classList.add("post-react--disabled");
+  }
+  function enableButton() {
+    element.classList.remove("post-react--disabled");
+  }
+
+  function getCounter() {
+    return element.lastElementChild as HTMLElement;
+  }
+
+  function preemptivelyIncreaseCounter() {
+    const counter = getCounter();
+    counter.innerText = (parseInt(counter.innerText, 10) + 1).toString();
+  }
+  function decreaseCounterOnError() {
+    const counter = getCounter();
+    const n = Math.max(parseInt(counter.innerText, 10) - 1, 1);
+    counter.innerText = n.toString();
+  }
+});
+
 interface Posts {
-  top?: number
-  id?: string
+  top?: number;
+  id?: string;
 }
 
 let coordinates: Array<Posts> = [];

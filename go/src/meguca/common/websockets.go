@@ -24,6 +24,7 @@ const (
 	MessageDeletePost
 	MessageBanned
 	MessageDeleteImage
+	MessageReacted
 )
 
 // >= 30 are miscellaneous and do not write to post models

@@ -9,7 +9,10 @@ import (
 	"strconv"
 	"strings"
 	"crypto/sha256"
+	"errors"
 	"encoding/base64"
+	"smiles"
+	"encoding/json"
 
 	"meguca/auth"
 	"meguca/config"
@@ -18,6 +21,11 @@ import (
 	"meguca/websockets"
 )
 
+type React struct {
+	SmileName 		string	`json:"smileName"`
+	Count 			uint64	`json:"count"`
+	PostID   		uint64	`json:"postId"`
+}
 // Serve a single post as JSON
 func servePost(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(getParam(r, "post"), 10, 64)
@@ -26,13 +34,49 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// s := `{ "votes": { "option_A": "3" } }`
+    // reacts := &common.Reacts{
+    //     Votes: &Votes{},
+    // }
+    // err := json.Unmarshal([]byte(s), reacts)
+    // fmt.Println(err)
+    // fmt.Println(data.Votes)
+    // s2, _ := json.Marshal(data)
+    // fmt.Println(string(s2))
+    // data.Count = "2"
+    // s3, _ := json.Marshal(data)
+    // fmt.Println(string(s3))
+
+	t, _ := db.GetPostReacts(id)
+	p, err := json.Marshal(t)
+	if err != nil {
+		fmt.Print(err)
+	}
+	// reacts := common.Reacts{}
+	// reacts := &common.Reacts{
+	// 	React: &React{},
+	// }
+	// err = json.Unmarshal([]byte(p), reacts)
+	// print(string)
+
 	switch post, err := db.GetPost(id); err {
 	case nil:
 		ss, _ := getSession(r, post.Board)
 		if !assertNotModOnly(w, r, post.Board, ss) {
 			return
 		}
+
+		post.Reacts = string(p)
+		// print(post.Reacts)
+
 		serveJSON(w, r, post)
+
+		// if p != nil {
+			// b := make([]byte, 0, 1<<10)
+			// b = append(b,  `30{ "reacts": ` + string(p) + `}`...)
+			// feeds.SendTo(1, b)
+		// }
+
 	case sql.ErrNoRows:
 		serve404(w, r)
 	default:
@@ -103,6 +147,67 @@ func createThread(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res := map[string]uint64{"id": post.ID}
+	serveJSON(w, r, res)
+}
+
+func reactToPost(w http.ResponseWriter, r *http.Request) {
+	f, _, _ := parseUploadForm(w, r)
+
+	id := f.Get("post")
+	smileName := f.Get("smile")
+
+	// ss, _ := getSession(r, "")
+	// if ss != nil {
+	// 	text403(w, errOnlyRegistered)
+	// 	return
+	// }
+
+	if !smiles.Smiles[smileName] {
+		err := errors.New("Smile not found")
+		text400(w, err)
+		return
+	}
+
+	postID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		text400(w, err)
+		return
+	}
+
+	count, err := db.GetPostReactCount(postID, smileName)
+	if err != nil {
+		count = 0
+	}
+
+	count++
+	if count == 1 {
+		err = db.InsertPostReaction(postID, smileName)
+		if err != nil {
+			text500(w, r, err)
+			return
+		}
+	} else {
+		err = db.UpdateReactionCount(postID, smileName, count)
+		if err != nil {
+			text500(w, r, err)
+			return
+		}
+	}
+
+	msg := `30{ "reacts":[{ "postId":`
+	msg += id
+	msg += `, "smileName": "`
+	msg += smileName
+	msg += `", "count": `
+	msg += fmt.Sprint(count)
+	msg += `}] }`
+
+	b := make([]byte, 0, 1<<10)
+	b = append(b, msg...)
+
+	feeds.SendTo(1, b)
+
+	res := map[string]string{ "post": id, "smile": smileName, "count": fmt.Sprint(count) }
 	serveJSON(w, r, res)
 }
 
