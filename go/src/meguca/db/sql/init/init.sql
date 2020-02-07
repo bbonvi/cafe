@@ -114,7 +114,8 @@ create index sticky on threads (sticky);
 create table post_reacts (
   smile_name text not null,
   count bigint default 0,
-  post_id bigint references posts on delete set null
+  post_id bigint references posts on delete set null,
+  timestamp timestamp default current_timestamp
 );
 
 create table posts (
