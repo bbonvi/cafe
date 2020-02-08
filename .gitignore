@@ -9,6 +9,7 @@ easyjson-*
 bin_data.go
 *.qtpl.go
 /mustache-pp/
+/go/go-build*
 /go/src/*
 /go/bin/
 /go/pkg/
