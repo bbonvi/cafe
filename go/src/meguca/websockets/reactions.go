@@ -58,7 +58,7 @@ func createMap(reactQueue reactRequests) ThreadMap {
 	t := make(ThreadMap)
 	p := make(PostMap)
 
-	// Create PostID to SmileMap map
+	// SmileMap to PostIDs
 	for _, r := range reactQueue {
 		PostID := r.Post
 		SmileID := r.Smile
@@ -77,7 +77,7 @@ func createMap(reactQueue reactRequests) ThreadMap {
 		p[PostID][SmileID] = count
 	}
 
-	// Create ThreadID to PostMap
+	// Map PostMap to ThreadID
 	for postID, m := range p {
 		// fmt.Println(o, r)
 		threadID, err := db.GetPostOP(postID)
@@ -94,8 +94,8 @@ func createMap(reactQueue reactRequests) ThreadMap {
 
 func (c *Client) reactToPost(data []byte) error {
 	if started != true {
-		go syncReacts()
 		started = true
+		go syncReacts()
 	}
 
 	var msg reactRequest

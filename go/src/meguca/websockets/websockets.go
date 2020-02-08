@@ -231,9 +231,15 @@ func (c *Client) sendMessage(typ common.MessageType, msg interface{}) error {
 	return c.send(encoded)
 }
 
+func getTimestamp() int64 {
+	return time.Now().UnixNano() / int64(time.Millisecond)
+}
+
 // receiverLoop proxies the blocking conn.ReadMessage() into the main client
 // select loop.
 func (c *Client) receiverLoop() {
+	t := getTimestamp()
+	c := 0
 	for {
 		var (
 			err error
@@ -245,6 +251,17 @@ func (c *Client) receiverLoop() {
 			return
 		}
 
+		// Check if client tries to abuse.
+		now := getTimestamp()
+		if now-t < 90 {
+			c++
+		}
+		if c > 50 {
+			c.Close(nil)
+			return
+		}
+		t = now
+
 		select {
 		case <-c.close:
 			return
@@ -252,6 +269,8 @@ func (c *Client) receiverLoop() {
 		}
 	}
 }
+
+// func checkAbuse(c *Client) {}
 
 // handleMessage parses a message received from the client through websockets
 func (c *Client) handleMessage(msgType int, msg []byte) error {
