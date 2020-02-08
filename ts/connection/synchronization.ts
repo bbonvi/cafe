@@ -32,6 +32,13 @@ export function synchronise() {
   });
 }
 
+export function reactToPost(smileName: string, postId: string) {
+  send(message.reactToPost, {
+    smile: smileName,
+    post: parseInt(postId, 10),
+  })
+}
+
 // Fetch a post not present on the client and render it
 async function fetchMissingPost(id: number) {
   insertPost(await API.post.get(id));

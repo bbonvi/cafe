@@ -11,9 +11,9 @@ import { copyToClipboard, on } from "../util";
 import { RELATIVE_TIME_PERIOD_SECS} from "../vars";
 import { POST_FILE_TITLE_SEL } from "../vars";
 import { init as initHover } from "./hover";
-import API from "../api";
 import { init as initPopup, handleNewReaction } from "./popup";
 import { init as initReply } from "./reply";
+import { reactToPost } from "../connection/synchronization";
 
 
 
@@ -65,18 +65,22 @@ document.addEventListener("click", (e: MouseEvent) => {
     return;
   }
 
-  // Disable button for a second
+  if (element.hasAttribute("disabled")) {
+    return;
+  }
+
+  // Disable button for some time
   disabledButton();
-  setTimeout(enableButton, 500);
+  setTimeout(enableButton, 100);
 
   preemptivelyIncreaseCounter();
-  API.post.react(reaction).catch(decreaseCounterOnError);
+  reactToPost(element.dataset.smileName, element.dataset.postId);
 
   function disabledButton() {
-    element.classList.add("post-react--disabled");
+    element.setAttribute("disabled", "");
   }
   function enableButton() {
-    element.classList.remove("post-react--disabled");
+    element.removeAttribute("disabled");
   }
 
   function getCounter() {
@@ -87,11 +91,11 @@ document.addEventListener("click", (e: MouseEvent) => {
     const counter = getCounter();
     counter.innerText = (parseInt(counter.innerText, 10) + 1).toString();
   }
-  function decreaseCounterOnError() {
-    const counter = getCounter();
-    const n = Math.max(parseInt(counter.innerText, 10) - 1, 1);
-    counter.innerText = n.toString();
-  }
+  // function decreaseCounterOnError() {
+  //   const counter = getCounter();
+  //   const n = Math.max(parseInt(counter.innerText, 10) - 1, 1);
+  //   counter.innerText = n.toString();
+  // }
 });
 
 interface Posts {

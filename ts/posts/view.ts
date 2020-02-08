@@ -73,16 +73,6 @@ export default class PostView extends View<Post> {
     container.innerHTML = html;
   }
 
-  public renderReactions() {
-    if (!this.model.reacts) {
-      return;
-    }
-
-    this.model.reacts.forEach((reaction) => {
-      this.renderReaction(reaction);
-    });
-  }
-
   public renderReaction(reaction: SmileReact) {
     // Get or create reaction badge.
     // Do not rerender if already exist;
@@ -107,7 +97,7 @@ export default class PostView extends View<Post> {
       // Check if already set
       const counter = reactContainer.lastElementChild as HTMLDivElement;
       const newValue = reaction.count.toString();
-      if (parseInt(counter.innerText, 19) < parseInt(newValue, 10)) {
+      if (parseInt(counter.innerText, 10) < parseInt(newValue, 10)) {
         counter.innerText = newValue;
       }
     }

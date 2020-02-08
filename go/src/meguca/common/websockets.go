@@ -18,7 +18,7 @@ const (
 	MessageBackspace
 	MessageSplice
 	MessageClosePost
-	_
+	ReactToPost
 	MessageInsertImage
 	MessageSpoiler
 	MessageDeletePost
