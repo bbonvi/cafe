@@ -29,11 +29,11 @@ var started bool
 func syncReacts() {
 	time.Sleep(time.Second)
 
-	oneSec := time.Tick(time.Second * 1)
+	ms := time.Tick(time.Millisecond * 500)
 
 	for {
 		select {
-		case <-oneSec:
+		case <-ms:
 			threadMap := createMap(reactQueue)
 			reactQueue = reactQueue[:0]
 			for threadID, t := range threadMap {

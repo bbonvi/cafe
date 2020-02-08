@@ -5,7 +5,7 @@
 import * as cx from "classnames";
 import { Component, h, render } from "preact";
 import options from "../options";
-import { getModel } from "../state";
+import { getModel, posts } from "../state";
 import { HOOKS, on, setter as s, trigger, mod } from "../util";
 import {
   POPUP_CONTAINER_SEL,
@@ -21,7 +21,7 @@ import {
 import { findPreloadImages } from "./hover";
 import RenderVideo from './player'
 import SmileBox from "./smile-box";
-import API from "../api";
+import { reactToPost } from "../connection/synchronization";
 // import { recalcPosts } from ".";
 const opened: Set<string> = new Set();
 export function isOpen(url: string): boolean {
@@ -798,11 +798,18 @@ export function handleNewReaction(postId: string, buttonElement: HTMLElement) {
   function handleClose() {
     element.remove();
   }
-  function handleSelect(id: string) {
+  function handleSelect(smileName: string) {
     handleClose();
-    API.post.react({
-      smile: id,
-      post: parseInt(postId, 10),
-    });
+    reactToPost(smileName, postId);
+
+    // Preemptively Increase Counter
+    const post = posts.get(parseInt(postId, 10));
+    if (post && !post.deleted) {
+      post.setReaction({
+        count: 1,
+        postId: parseInt(postId, 10),
+        smileName,
+      });
+    }
   }
 }
