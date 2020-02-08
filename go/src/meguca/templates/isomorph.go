@@ -34,6 +34,7 @@ type PostContext struct {
 	ShowColor bool
 	Time      string
 	HasFiles  bool
+	Reacts    common.Reacts
 	post      *common.Post
 	backlinks common.Backlinks
 }
@@ -91,6 +92,7 @@ func MakePostContext(l string, t common.Thread, p *common.Post, bls common.Backl
 		Name:      p.UserName,
 		Color:     p.UserColor,
 		ShowColor: p.ShowColor,
+		Reacts:    p.Reacts,
 		Time:      readableTime(l, postTime),
 		HasFiles:  len(p.Files) > 0,
 		post:      p,

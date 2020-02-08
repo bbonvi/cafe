@@ -135,6 +135,7 @@ func changePasswordForm(w http.ResponseWriter, r *http.Request) {
 func redirectToDefault(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/all/", 301)
 }
+
 // Redirect the client to the appropriate board through a cross-board redirect
 func crossRedirect(w http.ResponseWriter, r *http.Request) {
 	idStr := getParam(r, "id")

@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"meguca/common"
 
 	"github.com/lib/pq"
@@ -233,6 +234,16 @@ func GetBoardCatalog(board string) (common.Board, error) {
 	return scanCatalog(r)
 }
 
+func findReactionsInList(re common.Reacts, id uint64) (r common.Reacts, err error) {
+	for _, v := range re {
+		if v.PostID == id {
+			r = append(r, v)
+		}
+	}
+	return r, nil
+
+}
+
 // GetThread retrieves public thread data from the database.
 func GetThread(id uint64, lastN int) (t common.Thread, err error) {
 	// Read all data in single transaction.
@@ -267,6 +278,17 @@ func GetThread(id uint64, lastN int) (t common.Thread, err error) {
 	}
 	defer r.Close()
 
+	re, err := GetThreadReacts(id)
+	if err != nil {
+		fmt.Print(err)
+	}
+	threadReactions, err := findReactionsInList(re, id)
+	if err != nil {
+		fmt.Print(err)
+	} else {
+		t.Reacts = threadReactions
+	}
+
 	// Fill thread posts.
 	var ps postScanner
 	args := ps.ScanArgs()
@@ -284,6 +306,13 @@ func GetThread(id uint64, lastN int) (t common.Thread, err error) {
 		t.Posts = append(t.Posts, &p)
 		postIds = append(postIds, p.ID)
 		postsById[p.ID] = &p
+
+		postReactions, err := findReactionsInList(re, p.ID)
+		if err != nil {
+			postsById[p.ID].Reacts = make(common.Reacts, 0, 64)
+			continue
+		}
+		postsById[p.ID].Reacts = postReactions
 	}
 	err = r.Err()
 	if err != nil {
@@ -327,20 +356,15 @@ func GetPostReactCount(id uint64, smile_name string) (count uint64, err error) {
 	return
 }
 
-type PostReaction struct {
-	SmileName 		string	`json:"smileName"`
-	Count 			uint64	`json:"count"`
-	PostID   		uint64	`json:"postId"`
-}
-// GetThreadReacts reads a list of thread reaction
-func GetThreadReacts(id uint64) (reacts []PostReaction, err error) {
+// GetThreadReacts reads a list of thread reactions
+func GetThreadReacts(id uint64) (reacts common.Reacts, err error) {
 	rows, err := prepared["get_thread_reacts"].Query(id)
 	if err != nil {
 		return nil, err
 	}
 
-	reacts = make([]PostReaction, 0, 64)
-	var p PostReaction
+	reacts = make(common.Reacts, 0, 64)
+	var p common.React
 
 	defer rows.Close()
 	for rows.Next() {
@@ -355,14 +379,14 @@ func GetThreadReacts(id uint64) (reacts []PostReaction, err error) {
 }
 
 // GetPostReacts reads a list of post reactions
-func GetPostReacts(id uint64) (reacts []PostReaction, err error) {
+func GetPostReacts(id uint64) (reacts common.Reacts, err error) {
 	rows, err := prepared["get_post_reacts"].Query(id)
 	if err != nil {
 		return nil, err
 	}
 
-	reacts = make([]PostReaction, 0, 64)
-	var p PostReaction
+	reacts = make(common.Reacts, 0, 64)
+	var p common.React
 
 	defer rows.Close()
 	for rows.Next() {
@@ -398,7 +422,6 @@ func GetPost(id uint64) (p common.StandalonePost, err error) {
 	}
 	p.Post = ps.Val()
 
-
 	// Get post files.
 	r, err := tx.Stmt(prepared["get_post_files"]).Query(id)
 	if err != nil {
@@ -417,33 +440,8 @@ func GetPost(id uint64) (p common.StandalonePost, err error) {
 		p.Files = append(p.Files, img)
 	}
 
-
-	// Get post reactions
-	// pr, err := tx.Stmt(prepared["get_post_reacts"]).Query(id)
-	// if err != nil {
-	// 	return
-	// }
-	// defer pr.Close()
-	// // Fill post files.
-	// var rs reactionScanner
-	// args = rs.ScanArgs()
-	// for pr.Next() {
-	// 	err = pr.Scan(args...)
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// 	reaction := rs.Val()
-	// 	p.Reacts = append(p.Reacts, reaction)
-	// }
-
-
 	err = r.Err()
 
-	// t, _ := db.GetPostReacts(id)
-	// p, err := json.Marshal(t)
-	// if err != nil {
-	// 	fmt.Print(err)
-	// }
 	return
 }
 

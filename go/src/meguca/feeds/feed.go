@@ -1,12 +1,11 @@
 package feeds
 
 import (
+	"encoding/json"
 	"meguca/common"
 	"meguca/db"
-	"encoding/json"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 type postMessageType uint8
@@ -277,11 +276,9 @@ func (f *Feed) genSyncMessage() []byte {
 	encodeUints("deletedImage", f.deletedImage)
 
 	t, _ := db.GetThreadReacts(f.id)
-	p, err := json.Marshal(t)
-    if err != nil {
-		fmt.Print(err)
-	} else {
-		b = append(b, `, "reacts": ` + string(p)...)
+	p, _ := json.Marshal(t)
+	if p != nil {
+		b = append(b, `, "reacts": `+string(p)...)
 	}
 
 	b = append(b, '}')

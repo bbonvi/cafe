@@ -188,6 +188,8 @@ func constructPost(tx *sql.Tx, req PostCreationRequest) (post db.Post, err error
 	}
 
 	post.Links, post.Commands, err = parser.ParseBody([]byte(req.Body))
+	post.Reacts = make(common.Reacts, 0, 64)
+
 	if err != nil {
 		return
 	}

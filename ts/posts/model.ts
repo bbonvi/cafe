@@ -49,6 +49,7 @@ export class Post extends Model implements PostData {
   constructor(attrs: PostData) {
     super();
     Object.assign(this, attrs);
+    this.reacts = this.reacts || []
   }
 
   public getFileByIndex(i: number): File {
@@ -132,9 +133,11 @@ export class Post extends Model implements PostData {
     }
   }
 
-  public async setReaction(react: SmileReact) {
+  public async setReaction(reaction: SmileReact) {
+    this.reacts.push(reaction);
+
     setTimeout(() => {
-      this.view.renderReaction(react);
+      this.view.renderReaction(reaction);
     }, 0);
   }
 

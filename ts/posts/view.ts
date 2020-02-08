@@ -39,7 +39,6 @@ export default class PostView extends View<Post> {
     if (this.animate) {
       this.el.classList.add("post_loaded");
     }
-    this.renderReactions()
 
     return renderEmbeds(this.el);
   }
@@ -85,6 +84,8 @@ export default class PostView extends View<Post> {
   }
 
   public renderReaction(reaction: SmileReact) {
+    // Get or create reaction badge.
+    // Do not rerender if already exist;
     const [reactContainer, created] = this.getReactContainer(reaction.smileName);
 
     if (created) {
@@ -103,7 +104,12 @@ export default class PostView extends View<Post> {
       reactContainer.dataset.postId = this.model.id.toString();
       reactContainer.dataset.smileName = reaction.smileName;
     } else {
-      (reactContainer.lastElementChild as HTMLDivElement).innerText = reaction.count.toString();
+      // Check if already set
+      const counter = reactContainer.lastElementChild as HTMLDivElement;
+      const newValue = reaction.count.toString();
+      if (counter.innerText !== newValue) {
+        counter.innerText = newValue;
+      }
     }
   }
 

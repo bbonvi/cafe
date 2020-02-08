@@ -135,9 +135,6 @@ async function renderPostPreview(event: MouseEvent | TouchEvent) {
     // Fetch from server, if this post is not currently displayed due to
     // lastN or in a different thread.
     const data = await API.post.get(id);
-    if (data.reacts) {
-      data.reacts = JSON.parse(data.reacts)
-    }
 
     post = new Post(data);
     const view = new PostView(post, null);

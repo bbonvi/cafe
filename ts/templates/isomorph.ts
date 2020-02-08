@@ -47,6 +47,7 @@ export function makePostContext(
     Badge: !!p.auth,
     Auth: _(p.auth),
     Name: p.userName,
+    Reacts: p.reacts,
     Color: p.userColor,
     ShowColor: !!p.userColor,
     HasFiles: !!p.files,

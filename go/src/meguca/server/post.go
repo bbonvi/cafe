@@ -3,16 +3,15 @@
 package server
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
+	"smiles"
 	"strconv"
 	"strings"
-	"crypto/sha256"
-	"errors"
-	"encoding/base64"
-	"smiles"
-	"encoding/json"
 
 	"meguca/auth"
 	"meguca/config"
@@ -21,11 +20,6 @@ import (
 	"meguca/websockets"
 )
 
-type React struct {
-	SmileName 		string	`json:"smileName"`
-	Count 			uint64	`json:"count"`
-	PostID   		uint64	`json:"postId"`
-}
 // Serve a single post as JSON
 func servePost(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(getParam(r, "post"), 10, 64)
@@ -34,30 +28,7 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// s := `{ "votes": { "option_A": "3" } }`
-    // reacts := &common.Reacts{
-    //     Votes: &Votes{},
-    // }
-    // err := json.Unmarshal([]byte(s), reacts)
-    // fmt.Println(err)
-    // fmt.Println(data.Votes)
-    // s2, _ := json.Marshal(data)
-    // fmt.Println(string(s2))
-    // data.Count = "2"
-    // s3, _ := json.Marshal(data)
-    // fmt.Println(string(s3))
-
 	t, _ := db.GetPostReacts(id)
-	p, err := json.Marshal(t)
-	if err != nil {
-		fmt.Print(err)
-	}
-	// reacts := common.Reacts{}
-	// reacts := &common.Reacts{
-	// 	React: &React{},
-	// }
-	// err = json.Unmarshal([]byte(p), reacts)
-	// print(string)
 
 	switch post, err := db.GetPost(id); err {
 	case nil:
@@ -65,17 +36,9 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 		if !assertNotModOnly(w, r, post.Board, ss) {
 			return
 		}
-
-		post.Reacts = string(p)
-		// print(post.Reacts)
+		post.Reacts = t
 
 		serveJSON(w, r, post)
-
-		// if p != nil {
-			// b := make([]byte, 0, 1<<10)
-			// b = append(b,  `30{ "reacts": ` + string(p) + `}`...)
-			// feeds.SendTo(1, b)
-		// }
 
 	case sql.ErrNoRows:
 		serve404(w, r)
@@ -205,9 +168,11 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 	b := make([]byte, 0, 1<<10)
 	b = append(b, msg...)
 
-	feeds.SendTo(1, b)
+	threadID, err := db.GetPostOP(postID)
 
-	res := map[string]string{ "post": id, "smile": smileName, "count": fmt.Sprint(count) }
+	feeds.SendTo(threadID, b)
+
+	res := map[string]string{"post": id, "smile": smileName, "count": fmt.Sprint(count)}
 	serveJSON(w, r, res)
 }
 
@@ -272,7 +237,7 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	if !assertNotModOnlyAPI(w, board, ss) {
 		return
 	}
-	if !assertNotRegisteredOnlyAPI(w, board, ss){
+	if !assertNotRegisteredOnlyAPI(w, board, ss) {
 		return
 	}
 

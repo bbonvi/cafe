@@ -56,7 +56,7 @@ type Post struct {
 	Links     Links    `json:"links,omitempty"`
 	Commands  Commands `json:"commands,omitempty"`
 	Files     Files    `json:"files,omitempty"`
-	Reacts	  string   `json:"reacts"`
+	Reacts    Reacts   `json:"reacts"`
 }
 
 // StandalonePost is a post view that includes the "op" and "board"
@@ -81,12 +81,12 @@ type Commands []Command
 type Files []*Image
 
 type React struct {
-	SmileName   string
-	Count      	uint64
-	PostID      uint64
+	SmileName string `json:"smileName"`
+	Count     uint64 `json:"count"`
+	PostID    uint64 `json:"postId"`
 }
 
-type Reacts []*React
+type Reacts []React
 
 // Map of all backlinks on a page.
 type Backlinks map[uint64]map[uint64]uint64
