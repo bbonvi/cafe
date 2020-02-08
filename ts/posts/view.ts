@@ -107,7 +107,7 @@ export default class PostView extends View<Post> {
       // Check if already set
       const counter = reactContainer.lastElementChild as HTMLDivElement;
       const newValue = reaction.count.toString();
-      if (counter.innerText !== newValue) {
+      if (parseInt(counter.innerText, 19) < parseInt(newValue, 10)) {
         counter.innerText = newValue;
       }
     }
@@ -164,12 +164,12 @@ export default class PostView extends View<Post> {
 
   public getReactContainer(smileName: string): [HTMLDivElement, boolean] {
     const postReacts = this.model.view.el.querySelector(".post-reacts");
-    const addReactionButton = this.model.view.el.querySelector(".post-react--add");
+    const divider = this.model.view.el.querySelector(".post-reacts__divider");
 
     let created = false;
     let reactContainer: HTMLDivElement = postReacts.querySelector(".react-" + smileName);
     if (!reactContainer) {
-      reactContainer = postReacts.insertBefore(document.createElement("div"), addReactionButton);
+      reactContainer = postReacts.insertBefore(document.createElement("div"), divider);
       created = true;
     }
 
