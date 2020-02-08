@@ -239,7 +239,7 @@ func getTimestamp() int64 {
 // select loop.
 func (c *Client) receiverLoop() {
 	t := getTimestamp()
-	c := 0
+	n := 0
 	for {
 		var (
 			err error
@@ -254,9 +254,9 @@ func (c *Client) receiverLoop() {
 		// Check if client tries to abuse.
 		now := getTimestamp()
 		if now-t < 90 {
-			c++
+			n++
 		}
-		if c > 50 {
+		if n > 50 {
 			c.Close(nil)
 			return
 		}
