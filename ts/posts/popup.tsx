@@ -646,7 +646,7 @@ class Popups extends Component<any, PopupsState> {
 
   public initFileList = (callback?: () => void) => {
     const { curElement } = this;
-    this.files = [...document.querySelectorAll('.post-file-thumb:not(.fa-music)')];
+    this.files = [...document.querySelectorAll(".post-file-thumb:not(.fa-music)")];
     this.index = this.files.indexOf(curElement);
     if (callback) callback();
   }
@@ -655,18 +655,15 @@ class Popups extends Component<any, PopupsState> {
     return (
       <div class="popup-container-inner">
         {popups.map((props) => (
-          <Popup onChangeImage={this.handleChangeImage} {...props} key={props.url} onClose={this.makeHandleClose(props.url)} />
+          <Popup
+            onChangeImage={this.handleChangeImage}
+            {...props}
+            key={props.url}
+            onClose={this.makeHandleClose(props.url)}
+          />
         ))}
       </div>
     );
-  }
-
-  private open = (e: Event) => {
-    let target = e.target as HTMLElement;
-    if (!target.matches) return;
-    if ((e as MouseEvent).button !== 0) return;
-    e.preventDefault();
-    this.handleOpen(target);
   }
 
   public handleOpen(target: HTMLElement, omitSameSkip = false) {
@@ -769,6 +766,14 @@ class Popups extends Component<any, PopupsState> {
       this.setState({ popups });
     };
   }
+  private open = (e: Event) => {
+    let target = e.target as HTMLElement;
+    if (!target.matches) return;
+    if ((e as MouseEvent).button !== 0) return;
+    e.preventDefault();
+    this.handleOpen(target);
+  }
+
 }
 
 export function init() {
