@@ -167,6 +167,21 @@ var upgrades = []func(*sql.Tx) error{
 			`CREATE INDEX posts_op_time ON posts (op, time)`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx,
+			`create table post_reacts (
+				smile_name text not null,
+				count bigint default 0,
+				post_id bigint references posts on delete set null,
+				timestamp timestamp default current_timestamp
+			  )`,
+		)
+	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx,
+			`create index post_reacts_post_id on post_reacts (post_id)`,
+		)
+	},
 }
 
 func StartDB() (err error) {
