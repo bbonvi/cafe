@@ -120,6 +120,7 @@ export default class PostView extends View<Post> {
 
         // Get or create container for reaction badge.
         const [reactContainer, created] = this.getReactContainer(reaction.smileName);
+        const reactionsNumber = this.model.view.el.querySelectorAll(".post-react").length;
 
         if (created) {
             reactContainer.classList.add(
@@ -159,6 +160,16 @@ export default class PostView extends View<Post> {
             reactContainer.classList.remove("post-react--maximized");
             reactContainer.classList.remove("post-react--minimized");
         }, 100);
+
+        const hidden = this.model.view.el
+            .querySelector(".post-reacts")
+            .classList
+            .contains("post-reacts--hidden");
+
+        if (reactionsNumber > 10 && hidden) {
+            const showMore = this.model.view.el.querySelector(".post-reacts__showmore") as HTMLElement;
+            showMore.style.display = "";
+        }
 
     }
 

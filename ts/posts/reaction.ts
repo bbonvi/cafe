@@ -32,6 +32,11 @@ export function init() {
             return;
         }
 
+        if (target.matches(".post-reacts__showmore")) {
+            handleShowMore(target);
+            return;
+        }
+
         const newReaction = target.closest(TRIGGER_REACT_ADD_SEL)  as HTMLElement;
         const postEl = target.closest(".post") as HTMLElement;
         if (newReaction && postEl) {
@@ -75,4 +80,12 @@ export function init() {
             post.setReaction(reaction);
         }
     });
+}
+
+function handleShowMore(showMoreEl: HTMLElement) {
+    const reactsContainer = showMoreEl.closest(".post-reacts--hidden");
+    if (reactsContainer) {
+        reactsContainer.classList.remove("post-reacts--hidden");
+        showMoreEl.style.display = "none";
+    }
 }
