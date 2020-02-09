@@ -42,9 +42,6 @@
         </div>
       {{/Reacts}}
       <div class="post-reacts__divider"></div>
-      <div data-post-id="{{ ID }}" class="post-react post-react--add trigger-react-post-add">
-        <span class="fa fa-plus"></span>
-      </div>
     </div>
     <div class="post-controls">
       <a class="control post-control post-delete-control trigger-delete-post">
@@ -56,6 +53,20 @@
       <a class="control post-control post-quote-control trigger-quote-post">
         <span class="fa fa-reply trigger-quote-post"></span>
       </a>
+    </div>
+    <div class="smile-box reaction-box">
+      <div class="reaction-box__row reaction-box__recent">
+      </div>
+      <div class="reaction-box__row reaction-box__like">
+        <div class="smiles-item smiles-item--heart trigger-react-post" data-post-id="{{ ID }}" data-smile-name="heart">
+          <i class="smile smile-heart" title=":heart:"></i>
+        </div>
+      </div>
+      <div class="reaction-box__row reaction-box__add">
+        <div class="smiles-item trigger-react-post-add">
+          <i class="fa fa-plus"></i>
+        </div>
+      </div>
     </div>
   </footer>
 

@@ -743,17 +743,17 @@ class Popups extends Component<any, PopupsState> {
 
     const isVisualFile = props.image || props.video;
 
-    const hasSameFile = popups.find(p => p.url == props.url);
+    const hasSameFile = popups.find((p) => p.url === props.url);
 
     if (hasSameFile && !omitSameSkip) {
-      popups = popups.filter(p => p.url !== props.url)
+      popups = popups.filter((p) => p.url !== props.url);
     }
 
     if (!hasSameFile) {
-      if (isVisualFile) popups = popups.filter(p => !p.video && !p.image)
-      if (isAudioFile) popups = popups.filter(p => !p.record)
-      popups = popups.concat(props)
-    };
+      if (isVisualFile) popups = popups.filter((p) => !p.video && !p.image);
+      if (isAudioFile) popups = popups.filter((p) => !p.record);
+      popups = popups.concat(props);
+    }
 
     this.setState({ popups });
     this.initFileList();
@@ -767,9 +767,14 @@ class Popups extends Component<any, PopupsState> {
     };
   }
   private open = (e: Event) => {
-    let target = e.target as HTMLElement;
-    if (!target.matches) return;
-    if ((e as MouseEvent).button !== 0) return;
+    const target = e.target as HTMLElement;
+    if (!target.matches) {
+      return;
+    }
+    if ((e as MouseEvent).button !== 0) {
+      return;
+    }
+
     e.preventDefault();
     this.handleOpen(target);
   }
@@ -783,7 +788,7 @@ export function init() {
   }
 }
 
-export function handleNewReaction(postId: string, buttonElement: HTMLElement) {
+export function handleNewReaction(postId: number, buttonElement: HTMLElement) {
   const container = document.body;
   let element: Element = null;
   if (container) {
@@ -803,11 +808,11 @@ export function handleNewReaction(postId: string, buttonElement: HTMLElement) {
     reactToPost(smileName, postId);
 
     // Preemptively Increase Counter
-    const post = posts.get(parseInt(postId, 10));
+    const post = posts.get(postId);
     if (post && !post.deleted) {
       post.setReaction({
         count: 1,
-        postId: parseInt(postId, 10),
+        postId,
         smileName,
       });
     }

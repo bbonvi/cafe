@@ -33,7 +33,7 @@ export interface PostData {
 export interface SmileReact {
   postId: number;
   smileName: string;
-  count: number;
+  count?: number;
 }
 
 /** Generic link object containing target post board and thread. */

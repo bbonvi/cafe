@@ -7,6 +7,7 @@
 export const MAIN_CONTAINER_SEL = ".main";
 export const ALERTS_CONTAINER_SEL = ".alerts-container";
 export const HOVER_CONTAINER_SEL = ".hover-container";
+export const REACTION_HOVER_CONTAINER_SEL = ".reaction-container";
 export const POPUP_CONTAINER_SEL = ".popup-container";
 export const MODAL_CONTAINER_SEL = ".modal-container";
 export const REPLY_CONTAINER_SEL = ".reply-container";

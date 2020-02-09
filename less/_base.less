@@ -1814,6 +1814,7 @@ blockquote.twitter-tweet p {
   background: @postBG;
   box-shadow: @postShadow;
   word-break: break-word;
+  position: relative;
 
   ul {
     word-wrap: normal;
@@ -3137,13 +3138,24 @@ html:not(.pos_moderators) {
     height: 225px;
   }
 
-  .smiles-item:hover {
-    cursor: pointer;
-    background: @controlHover;
-  }
-
   .is-webkit & {
     width: 292px;
+  }
+}
+
+.smile-box_full,
+.reaction-box {
+  .smiles-item {
+    transition: 0.1s opacity;
+
+    &:hover {
+      cursor: pointer;
+      opacity: 0.4;
+    }
+
+    &:active {
+      opacity: 0.2;
+    }
   }
 }
 
@@ -3635,11 +3647,6 @@ html:not(.pos_moderators) {
     min-width: 14px;
   }
 
-  &--disabled {
-    opacity: 0.6;
-    pointer-events: none;
-  }
-
   &--add {
     padding: 4px 5px;
     font-size: 0.7em;
@@ -3675,6 +3682,64 @@ html:not(.pos_moderators) {
     cursor: pointer;
     margin: -4px 0;
     transform: scale(0.5);
+  }
+}
+
+.post:hover .reaction-box {
+  visibility: visible;
+}
+
+.reaction-box {
+  border-radius: 2px;
+  visibility: hidden;
+  display: flex;
+  flex-direction: row;
+  padding: 0px 2px 0px 3px;
+  flex-wrap: wrap;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  &__add {
+    opacity: 0.7;
+  }
+
+  .reaction-box__recent {
+    // padding: 0 10px;
+
+    .smiles-item:last-of-type {
+      border-right: 1px solid @spoiler;
+      padding-right: 10px;
+    }
+  }
+
+  .smiles-item {
+    min-width: unset;
+    padding: 2px 2px;
+
+    &--heart {
+      padding-left: 8px;
+
+      .smile {
+        transform: scale(0.7);
+      }
+    }
+
+    .smile {
+      transform: scale(0.7);
+    }
+
+    .fa-plus {
+      height: 32px;
+      width: 32px;
+      line-height: 2.2;
+    }
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
 

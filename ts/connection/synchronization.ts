@@ -32,10 +32,10 @@ export function synchronise() {
   });
 }
 
-export function reactToPost(smileName: string, postId: string) {
+export function reactToPost(smileName: string, postId: number) {
   send(message.reactToPost, {
     smile: smileName,
-    post: parseInt(postId, 10),
+    post: postId,
   })
 }
 

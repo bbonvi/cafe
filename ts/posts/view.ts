@@ -11,6 +11,7 @@ import { getID } from "../util";
 import { POST_BACKLINKS_SEL, THREAD_SEL } from "../vars";
 import { render as renderEmbeds } from "./embed";
 import { Post, Thread } from "./model";
+import { getRecent } from "./smile-box";
 
 /**
  * Base post view class
@@ -45,6 +46,24 @@ export default class PostView extends View<Post> {
         return renderEmbeds(this.el);
     }
 
+    public renderRecent() {
+        const recentContainer = this.model.view.el.querySelector(".reaction-box__recent");
+        recentContainer.innerHTML = "";
+        const recent = getRecent().filter((name) => name !== "heart").slice(0, 3);
+        for (const smileName of recent) {
+            recentContainer.innerHTML += `
+            <div
+                class="smiles-item trigger-react-post"
+                data-smile-name="${smileName}"
+                data-post-id="${this.model.id}"
+            >
+                <i class="smile smile-${smileName}" title=":smileName:"></i>
+            </div>
+            `;
+        }
+
+    }
+
     // Renders a time element. Can be either absolute or relative.
     public renderTime() {
         let text = readableTime(this.model.time);
@@ -75,7 +94,29 @@ export default class PostView extends View<Post> {
         container.innerHTML = html;
     }
 
+    // public incrementReaction(smileName: string) {
+    //     const currentReaction =
+    //         this.model.reacts
+    //             .find((reaction) => smileName === reaction.smileName);
+
+    //     if (!currentReaction) {
+    //         this.renderReaction({
+    //             postId: this.model.id,
+    //             count: 1,
+    //             smileName,
+    //         })
+    //     } else {
+    //         this.renderReaction({
+    //             ...currentReaction,
+    //             count: currentReaction.count + 1
+    //         })
+    //     }
+    // }
+
     public renderReaction(reaction: SmileReact) {
+        // if SmileReact object doesn't have a count,
+        // then we either increment or just set it to 1
+
         // Get or create container for reaction badge.
         const [reactContainer, created] = this.getReactContainer(reaction.smileName);
 
@@ -93,7 +134,7 @@ export default class PostView extends View<Post> {
 
             const counterEl = document.createElement("span");
             counterEl.classList.add("post-react__count");
-            counterEl.innerText = reaction.count.toString();
+            counterEl.innerText = (reaction.count || 1).toString();
 
             reactContainer.appendChild(smileEl);
             reactContainer.appendChild(counterEl);
@@ -102,11 +143,11 @@ export default class PostView extends View<Post> {
         } else {
             // skip if already set or is less than old value
             const counter = reactContainer.lastElementChild as HTMLDivElement;
-            const newValue = reaction.count;
             const oldValue = parseInt(counter.innerText, 10);
+            const newValue = reaction.count ? reaction.count : oldValue + 1;
 
             if (newValue > oldValue) {
-                counter.innerText = reaction.count.toString();
+                counter.innerText = newValue.toString();
                 // for animation
                 reactContainer.classList.add("post-react--maximized");
             }

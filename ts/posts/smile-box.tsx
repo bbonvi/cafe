@@ -97,6 +97,10 @@ function storeRecent(id: string) {
 window.addEventListener("storage", loadRecent);
 loadRecent();
 
+export function getRecent() {
+  return recent;
+}
+
 /**
  * Try to autocomplete textarea input.
  *
@@ -165,7 +169,7 @@ export default class extends Component<any, any> {
     }
 
     const rect = (this.props.positionElement as HTMLElement).getBoundingClientRect()
-    this.setState({ left: rect.left, top: rect.top - 50 })
+    this.setState({ left: rect.left, top: rect.top + 40 })
   }
 
   public componentWillUnmount() {
