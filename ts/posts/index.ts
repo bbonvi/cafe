@@ -63,6 +63,8 @@ function initCalc_() {
 export const initCalc = () => requestAnimationFrame(initCalc_);
 initCalc();
 
+setInterval(initCalc, 5000)
+
 // let recalcPending = false;
 export function recalcPosts(callback?: () => void) {
     const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
