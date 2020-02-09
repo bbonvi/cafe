@@ -3695,6 +3695,20 @@ html:not(.pos_moderators) {
   }
 }
 
+.post-reacts--hidden .post-react:nth-child(n+11) {
+  display: none;
+}
+
+.post-reacts__showmore {
+  cursor: pointer;
+  color: @link;
+  padding: 3px 9px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
 .reaction-box {
   border-radius: 2px;
   display: none;
