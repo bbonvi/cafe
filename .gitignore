@@ -22,6 +22,7 @@ tags
 
 /deb_dist/
 /cutechan.deb
+cutechan.toml.example
 .exclude
 .include
 .vscode/settings.json
