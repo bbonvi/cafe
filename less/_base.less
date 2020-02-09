@@ -3706,7 +3706,7 @@ html:not(.pos_moderators) {
   right: -5px;
 
   &__add {
-    opacity: 0.7;
+    color: @control;
   }
 
   &__add {
@@ -3717,7 +3717,7 @@ html:not(.pos_moderators) {
     // padding: 0 10px;
 
     .smiles-item:last-of-type {
-      border-right: 1px solid @spoiler;
+      border-right: 1px solid fade(@spoiler, 60%);
       padding-right: 10px;
     }
   }
