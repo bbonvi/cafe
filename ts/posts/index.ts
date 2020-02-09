@@ -45,25 +45,21 @@ interface Posts {
     id?: string;
 }
 
-let coordinates: Array<Posts> = [];
+let coordinates: Posts[] = [];
 let { innerHeight } = window;
 function initCalc_() {
     innerHeight = window.innerHeight;
-    const elements = document.getElementsByClassName('post_file');
+    const elements = [...document.querySelectorAll(".post_file")] as  HTMLElement[];
     coordinates = [];
-    for (let i = 0; i < elements.length; i++) {
-        const element = elements[i];
-        if (!element) continue;
-        // const { top } = element.getBoundingClientRect();
-        const { offsetTop: top, id} = (element as HTMLElement);
-        coordinates.push({ top, id });
+    for (const element of elements) {
+        coordinates.push({ top: element.offsetTop, id: element.id });
     }
     recalcPosts();
 }
 export const initCalc = () => requestAnimationFrame(initCalc_);
 initCalc();
 
-setInterval(initCalc, 5000)
+setInterval(initCalc, 10000);
 
 // let recalcPending = false;
 export function recalcPosts(callback?: () => void) {
@@ -78,12 +74,19 @@ export function recalcPosts(callback?: () => void) {
         const isVisible = top < postElement.top && bottom > postElement.top;
         if (isVisible) {
             try {
-                if (!post) return;
+                if (!post) {
+                    return;
+                }
                 post.classList.add("visible");
-                if (!post.dataset.loaded) replaceSrcs(post);
+                if (!post.dataset.loaded) {
+                    replaceSrcs(post);
+                }
+
             } catch (error) { console.log(error); }
         } else {
-            if (post) post.classList.remove("visible");
+            if (post) {
+                post.classList.remove("visible");
+            }
         }
     });
     if (callback) callback();
@@ -91,9 +94,9 @@ export function recalcPosts(callback?: () => void) {
 
 export function replaceSrcs(post: HTMLElement) {
     post.dataset.loaded = "true";
-    const containers = post.getElementsByClassName("post-file-thumb_containter");
+    const containers = [...post.querySelectorAll(".post-file-thumb_containter")];
 
-    [...containers].forEach((container) => {
+    containers.forEach((container) => {
         const thumb = container.firstElementChild as HTMLImageElement;
         const blur = thumb.nextElementSibling as HTMLImageElement;
         thumb.src = thumb.dataset.src;
