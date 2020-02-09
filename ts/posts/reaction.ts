@@ -20,6 +20,7 @@ export function init() {
         const post = posts.get(parseInt(postEl.dataset.id, 10));
 
         if (post && currentPost !== post) {
+            // TODO: Fix not rendering on initial page load
             post.view.renderRecent();
             currentPost = posts.get(parseInt(postEl.dataset.id, 10));
         }

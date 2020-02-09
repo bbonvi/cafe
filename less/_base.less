@@ -3685,14 +3685,19 @@ html:not(.pos_moderators) {
   }
 }
 
-.post:hover .reaction-box {
-  visibility: visible;
+.post {
+
+  &:hover,
+  &:active {
+    .reaction-box {
+      display: flex;
+    }
+  }
 }
 
 .reaction-box {
   border-radius: 2px;
-  visibility: hidden;
-  display: flex;
+  display: none;
   flex-direction: row;
   padding: 0px 2px 0px 3px;
   flex-wrap: wrap;
@@ -3702,6 +3707,10 @@ html:not(.pos_moderators) {
 
   &__add {
     opacity: 0.7;
+  }
+
+  &__add {
+    padding-right: 2px;
   }
 
   .reaction-box__recent {
@@ -3746,6 +3755,10 @@ html:not(.pos_moderators) {
 .thread_index {
   .post-react {
     pointer-events: none;
+  }
+
+  .reaction-box {
+    display: none !important;
   }
 
   .post-react--add {

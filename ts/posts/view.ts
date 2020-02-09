@@ -47,6 +47,7 @@ export default class PostView extends View<Post> {
     }
 
     public renderRecent() {
+        // TODO: Fix rerender
         const recentContainer = this.model.view.el.querySelector(".reaction-box__recent");
         recentContainer.innerHTML = "";
         const recent = getRecent().filter((name) => name !== "heart").slice(0, 3);

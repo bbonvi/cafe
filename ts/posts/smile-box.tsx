@@ -168,8 +168,8 @@ export default class extends Component<any, any> {
       return;
     }
 
-    const rect = (this.props.positionElement as HTMLElement).getBoundingClientRect()
-    this.setState({ left: rect.left, top: rect.top + 40 })
+    const rect = (this.props.positionElement as HTMLElement).getBoundingClientRect();
+    this.setState({ left: rect.left, top: rect.top + 40 });
   }
 
   public componentWillUnmount() {

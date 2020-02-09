@@ -79,6 +79,7 @@
 // iPad.
 @media (max-width: 768px),
 (max-width: 1366px) and (hover: none) {
+
   .progress-bar_full {
     // transition: 0.05s width linear;
   }
@@ -385,7 +386,7 @@
   .smile-box_full {
     width: unset;
     max-width: 290px;
-    left: 0px;
+    left: 0px !important;
     z-index: 2;
   }
 
@@ -608,8 +609,11 @@ input[type="range"]::-moz-focus-outer {
   outline: none;
 }
 
-// Hover sticking fix
 @media (hover: none) {
+
+  // .reaction-box__recent {
+  //   display: none;
+  // }
   .progress-bar_container {
     &:hover {
       opacity: 1;
