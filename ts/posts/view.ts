@@ -29,7 +29,9 @@ export default class PostView extends View<Post> {
         this.model.view = this;
         this.model.seenOnce = !!el;
         this.animate = !el;
-        if (this.animate) this.el.classList.add("should-anim")
+        if (this.animate) {
+            this.el.classList.add("should-anim");
+        }
         this.model.view.el.innerHTML = this.getEveryoneHTML();
     }
 
@@ -74,8 +76,7 @@ export default class PostView extends View<Post> {
     }
 
     public renderReaction(reaction: SmileReact) {
-        // Get or create reaction badge.
-        // Do not rerender if already exist;
+        // Get or create container for reaction badge.
         const [reactContainer, created] = this.getReactContainer(reaction.smileName);
 
         if (created) {
@@ -83,10 +84,8 @@ export default class PostView extends View<Post> {
                 "react-" + reaction.smileName,
                 "post-react",
                 "trigger-react-post",
+                "post-react--minimized", // for animation
             );
-
-            // Add popup animation
-            reactContainer.classList.add("post-react--minimized");
 
             const smileEl = document.createElement("i");
             smileEl.classList.add("smile", "smile-" + reaction.smileName);
@@ -101,19 +100,19 @@ export default class PostView extends View<Post> {
             reactContainer.dataset.postId = this.model.id.toString();
             reactContainer.dataset.smileName = reaction.smileName;
         } else {
-            // Check if already set
+            // skip if already set or is less than old value
             const counter = reactContainer.lastElementChild as HTMLDivElement;
-            const newValue = reaction.count.toString();
-            if (parseInt(newValue, 10) > parseInt(counter.innerText, 10)) {
-                counter.innerText = newValue;
+            const newValue = reaction.count;
+            const oldValue = parseInt(counter.innerText, 10);
+
+            if (newValue > oldValue) {
+                counter.innerText = reaction.count.toString();
+                // for animation
                 reactContainer.classList.add("post-react--maximized");
             }
         }
 
-        // Complete node render before removing class,
-        // so animation could be applied
-        // reactContainer.getClientRects();
-
+        // remove classes later, so animation could finish
         setTimeout(() => {
             reactContainer.classList.remove("post-react--maximized");
             reactContainer.classList.remove("post-react--minimized");
