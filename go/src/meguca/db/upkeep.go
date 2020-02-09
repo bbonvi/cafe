@@ -37,7 +37,7 @@ func runFiveMinuteTasks() {
 }
 
 func runHourTasks() {
-	runPrepared("expire_user_sessions", "remove_identity_info")
+	runPrepared("expire_user_sessions", "remove_identity_info", "remove_unique_id")
 	logError("reactions cleanup", deleteUnusedReactions())
 }
 

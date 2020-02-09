@@ -36,6 +36,7 @@ type Post struct {
 	common.StandalonePost
 	Password []byte
 	IP       string
+	UniqueID string
 }
 
 // Thread is a template for writing new threads to the database
@@ -249,9 +250,12 @@ func NewPostID(tx *sql.Tx) (id uint64, err error) {
 
 func getPostCreationArgs(p Post) []interface{} {
 	// Don't store empty strings in the database. Zero value != NULL.
-	var auth, name, ip *string
+	var auth, name, ip, uniqueID *string
 	if p.Auth != "" {
 		auth = &p.Auth
+	}
+	if p.UniqueID != "" {
+		uniqueID = &p.UniqueID
 	}
 	if p.UserID != "" {
 		name = &p.UserID
@@ -261,7 +265,7 @@ func getPostCreationArgs(p Post) []interface{} {
 	}
 	fileCnt := len(p.Files)
 	return []interface{}{
-		p.ID, p.OP, p.Time, p.Board, auth, name, p.Body, ip,
+		p.ID, p.OP, p.Time, p.Board, auth, name, p.Body, ip, uniqueID,
 		linkRow(p.Links), commandRow(p.Commands),
 		fileCnt,
 	}

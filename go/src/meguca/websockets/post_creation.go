@@ -40,6 +40,7 @@ type PostCreationRequest struct {
 	FilesRequest FilesRequest
 	Board        string
 	Ip           string
+	UniqueID     string
 	Body         string
 	Token        string
 	Sign         string
@@ -148,7 +149,8 @@ func constructPost(tx *sql.Tx, req PostCreationRequest) (post db.Post, err error
 			},
 			Board: req.Board,
 		},
-		IP: req.Ip,
+		IP:       req.Ip,
+		UniqueID: req.UniqueID,
 	}
 
 	// Check token and its signature.

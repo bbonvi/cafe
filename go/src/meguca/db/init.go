@@ -182,6 +182,16 @@ var upgrades = []func(*sql.Tx) error{
 			`create index post_reacts_post_id on post_reacts (post_id)`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx,
+			`ALTER TABLE posts ADD COLUMN unique_id text`,
+		)
+	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx,
+			`ALTER TABLE bans ADD COLUMN unique_id text`,
+		)
+	},
 }
 
 func StartDB() (err error) {

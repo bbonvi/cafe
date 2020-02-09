@@ -11,7 +11,16 @@ import (
 	"github.com/lib/pq"
 )
 
-// GetIP returns an IP of the poster that created a post. Posts older than 7
+// GetUniqueID returns post's unique identified. Posts older than 30
+// days will not have this information
+func GetUniqueID(id uint64) (string, error) {
+	var uniqueID sql.NullString
+	err := prepared["get_unique_id"].QueryRow(id).Scan(&uniqueID)
+
+	return uniqueID.String, err
+}
+
+// GetIP returns an IP of the poster that created a post. Posts older than 30
 // days will not have this information.
 func GetIP(id uint64) (string, error) {
 	var ip sql.NullString
@@ -25,7 +34,8 @@ func Ban(board, reason, by string, expires time.Time, ids ...uint64) (
 	ips map[string]uint64, err error,
 ) {
 	type post struct {
-		id, op uint64
+		id, op       uint64
+		uniqueID, ip string
 	}
 
 	// Retrieve matching posts
@@ -41,11 +51,19 @@ func Ban(board, reason, by string, expires time.Time, ids ...uint64) (
 			return nil, err
 		}
 		ips[ip] = id
-		posts = append(posts, post{id: id})
+		posts = append(posts, post{id: id, ip: ip})
 	}
 
 	if len(ips) == 0 {
 		return
+	}
+
+	// Retrieve their UniqueIDs
+	for i, post := range posts {
+		var uniqueID string
+		uniqueID, err = GetUniqueID(post.id)
+		post.uniqueID = uniqueID
+		posts[i] = post
 	}
 
 	// Retrieve their OPs
@@ -72,8 +90,9 @@ func Ban(board, reason, by string, expires time.Time, ids ...uint64) (
 	}
 
 	// Write bans to the ban table
-	for ip, id := range ips {
-		err = execPrepared("write_ban", board, ip, id, by, expires, reason)
+	for _, post := range posts {
+		err = execPrepared("write_ban", board, post.ip, post.id,
+			by, expires, reason, post.uniqueID)
 		if err != nil {
 			return
 		}
@@ -83,7 +102,7 @@ func Ban(board, reason, by string, expires time.Time, ids ...uint64) (
 	return
 }
 
-// Lift a ban from a specific post on a specific board
+// Unban lifts a ban from a specific post on a specific board
 func Unban(board string, id uint64, by string) error {
 	return execPrepared("unban", board, id, by)
 }
@@ -149,6 +168,7 @@ func moderatePost(
 	return
 }
 
+// DeletePost deletes post
 func DeletePost(id uint64, by string) error {
 	return moderatePost(id, by, "delete_post", common.DeletePost)
 }
@@ -196,7 +216,7 @@ func GetSameIPPosts(id uint64, board string) (
 	return
 }
 
-// Set the sticky field on a thread
+// SetThreadSticky sets the sticky field on a thread
 func SetThreadSticky(id uint64, sticky bool) error {
 	return execPrepared("set_sticky", id, sticky)
 }
@@ -223,7 +243,7 @@ func GetOwnedBoards(account string) (boards []string, err error) {
 	return
 }
 
-// Retrieve staff positions for the specificied boards.
+// GetStaff retrieves staff positions for the specificied boards.
 // TODO(Kagami): Get from cache?
 // TODO(Kagami): Pagination.
 func GetStaff(tx *sql.Tx, boards []string) (staff auth.Staff, err error) {
@@ -246,7 +266,7 @@ func GetStaff(tx *sql.Tx, boards []string) (staff auth.Staff, err error) {
 	return
 }
 
-// Set staff of specified board, overwriting the old values.
+// WriteStaff sets staff of specified board, overwriting the old values.
 func WriteStaff(tx *sql.Tx, board string, staff auth.Staff) (err error) {
 	if _, err = getStatement(tx, "clear_staff").Exec(board); err != nil {
 		return
@@ -260,7 +280,7 @@ func WriteStaff(tx *sql.Tx, board string, staff auth.Staff) (err error) {
 	return
 }
 
-// Get bans for the specified boards.
+// GetBans gets bans for the specified boards.
 // TODO(Kagami): Get from cache?
 // TODO(Kagami): Pagination.
 func GetBans(tx *sql.Tx, boards []string) (bans auth.BanRecords, err error) {
@@ -294,7 +314,7 @@ func GetBanInfo(ip, board string) (b auth.BanRecord, err error) {
 	return
 }
 
-// Set bans of specified board, overwriting the old values.
+// WriteBans sets bans of specified board, overwriting the old values.
 func WriteBans(tx *sql.Tx, board string, bans auth.BanRecords) (err error) {
 	if _, err = getStatement(tx, "clear_bans").Exec(board); err != nil {
 		return
@@ -311,7 +331,7 @@ func WriteBans(tx *sql.Tx, board string, bans auth.BanRecords) (err error) {
 	return
 }
 
-// Retrieve moderation log for the specified boards.
+// GetModLog retrieves moderation log for the specified boards.
 // TODO(Kagami): Pagination.
 func GetModLog(boards []string) (log auth.ModLogRecords, err error) {
 	log = make(auth.ModLogRecords, 0)
@@ -350,6 +370,7 @@ type BoardState struct {
 	Bans     auth.BanRecords    `json:"bans"`
 }
 
+// GetBoardState gets board states...
 func GetBoardState(tx *sql.Tx, board string) (state BoardState, err error) {
 	conf, err := GetBoardConfig(tx, board)
 	if err != nil {
@@ -367,6 +388,7 @@ func GetBoardState(tx *sql.Tx, board string) (state BoardState, err error) {
 	return
 }
 
+// SetBoardState sets board states...
 func SetBoardState(tx *sql.Tx, state BoardState, by string) (err error) {
 	if err = UpdateBoard(tx, state.Settings, by); err != nil {
 		return

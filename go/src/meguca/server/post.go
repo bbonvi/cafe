@@ -215,8 +215,7 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	req websockets.PostCreationRequest, ok bool,
 ) {
-	// sha := getHashedHeaders(r)
-	// fmt.Print("\n", sha[:10])
+	uniqueID := getHashedHeaders(r)[:10]
 
 	f, m, err := parseUploadForm(w, r)
 	if err != nil {
@@ -291,6 +290,7 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 		Board:        board,
 		Ip:           ip,
 		Body:         body,
+		UniqueID:     uniqueID,
 		Token:        f.Get("token"),
 		Sign:         f.Get("sign"),
 		ShowBadge:    f.Get("showBadge") == "on" || modOnly,

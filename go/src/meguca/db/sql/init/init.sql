@@ -27,6 +27,7 @@ create table bans (
   ip inet not null,
   forPost bigint default 0,
   by varchar(20) not null,
+  unique_id text,
   reason text not null,
   expires timestamp not null,
   primary key (ip, board)
@@ -128,6 +129,7 @@ create table posts (
   time bigint not null,
   board text not null,
   trip char(10),
+  unique_id text,
   auth varchar(20),
   SHA1 char(40) references images on delete set null,
   name varchar(50),
