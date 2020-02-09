@@ -1,6 +1,6 @@
 import { addHasReplyClass } from './../page/common';
 import { Model } from "../base";
-import { fileTypes, ImageData, PostData, PostLink } from "../common";
+import { fileTypes, ImageData, PostData, PostLink, SmileReact } from "../common";
 import { mine, page, posts } from "../state";
 import { notifyAboutReply } from "../ui";
 import Collection from "./collection";
@@ -38,6 +38,7 @@ export class Post extends Model implements PostData {
   public body: string;
   public links?: PostLink[];
   public files?: ImageData[];
+  public reacts?: SmileReact[];
   public backlinks: PostBacklinks;
   public op?: number;
   public board?: string;
@@ -48,6 +49,7 @@ export class Post extends Model implements PostData {
   constructor(attrs: PostData) {
     super();
     Object.assign(this, attrs);
+    // this.reacts = this.reacts || []
   }
 
   public getFileByIndex(i: number): File {
@@ -129,6 +131,12 @@ export class Post extends Model implements PostData {
       posts.remove(this);
       this.view.remove();
     }
+  }
+
+  public async setReaction(reaction: SmileReact) {
+    setTimeout(() => {
+      this.view.renderReaction(reaction);
+    }, 0);
   }
 
   // Returns, if this post has been seen already.

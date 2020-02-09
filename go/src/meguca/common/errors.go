@@ -8,12 +8,12 @@ import (
 
 // Commonly used errors
 var (
-	ErrNameTooLong    = ErrTooLong("name")
-	ErrNoSubject      = errors.New("no subject")
-	ErrSubjectTooLong = ErrTooLong("subject")
-	ErrBodyTooLong    = ErrTooLong("post body")
-	ErrInvalidCreds   = errors.New("invalid login credentials")
-	ErrContainsNull   = errors.New("null byte in non-concatenated message")
+	ErrNameTooLong    = ErrTooLong("Name")
+	ErrNoSubject      = errors.New("No subject")
+	ErrSubjectTooLong = ErrTooLong("Subject")
+	ErrBodyTooLong    = ErrTooLong("Post body")
+	ErrInvalidCreds   = errors.New("Invalid login credentials")
+	ErrContainsNull   = errors.New("Null byte in non-concatenated message")
 )
 
 // ErrTooLong is passed, when a field exceeds the maximum string length for

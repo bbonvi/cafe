@@ -66,13 +66,13 @@
 				if (!isSupported) {
 					var html = document.documentElement;
 					html.classList.add('no-webp');
-				} 
+				}
 				if (isSupported) {
 					var html = document.documentElement;
 					html.classList.add('has-webp');
-				} 
+				}
 		});
-		</script> 
+		</script>
 		<link rel="preload" href="/static/css/dark.css" as="style">
 		<link rel="preload" href="/static/css/light.css" as="style">
 		<link rel="stylesheet" href="/static/css/light.css" class="theme-temp">
@@ -98,7 +98,7 @@
 		<script>
 			var html = document.documentElement;
 			html.classList.add('page-loaded');
-		</script> 
+		</script>
 		<link rel="stylesheet" href="/static/css/{%s conf.DefaultCSS %}.css" id="theme-css">
 		<script id="style-script">
 			var styles = document.getElementsByClassName('theme-temp');
@@ -127,6 +127,7 @@
 		<main class="main">{%s= page %}</main>
 		<aside class="alerts-container"></aside>
 		<aside class="hover-container"></aside>
+		<aside class="reaction-container"></aside>
 		<aside class="popup-container"></aside>
 		<aside class="modal-container">
 			<div class="modal faq-modal"></div>

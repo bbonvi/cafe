@@ -61,7 +61,7 @@ function handleShortcut(e: KeyboardEvent) {
       navigateUp();
       break;
     }
-  } else if (e.ctrlKey) {
+  } else if (e.ctrlKey || e.metaKey) {
     switch (e.key) {
     case "Enter":
       caught = true;
@@ -69,7 +69,12 @@ function handleShortcut(e: KeyboardEvent) {
       break;
     }
   // tslint:disable-next-line:max-line-length
-  } else if ((keyCode >= 48 && keyCode <= 59) || (keyCode >= 65 && keyCode <= 90) || (keyCode === 13) || (keyCode >= 186 && keyCode <= 222)) {
+  } else if (
+    (keyCode >= 48 && keyCode <= 59) ||
+    (keyCode >= 65 && keyCode <= 90) ||
+    (keyCode === 13) ||
+    (keyCode >= 186 && keyCode <= 222)
+  ) {
     const activeElement = document.activeElement.tagName.toLowerCase();
     if (activeElement !== "input" && activeElement !== "textarea") {
       if (keyCode === 13) {

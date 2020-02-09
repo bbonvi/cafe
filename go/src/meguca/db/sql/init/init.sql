@@ -27,6 +27,7 @@ create table bans (
   ip inet not null,
   forPost bigint default 0,
   by varchar(20) not null,
+  unique_id text,
   reason text not null,
   expires timestamp not null,
   primary key (ip, board)
@@ -103,6 +104,21 @@ create index bumpTime on threads (bumpTime);
 create index replyTime on threads (replyTime);
 create index sticky on threads (sticky);
 
+-- create table smiles (
+--   name text not null,
+--   board text not null,
+--   fileType smallint not null,
+--   id bigint primary key,
+--   file_hash char(40)
+-- );
+
+create table post_reacts (
+  smile_name text not null,
+  count bigint default 0,
+  post_id bigint references posts on delete set null,
+  timestamp timestamp default current_timestamp
+);
+
 create table posts (
   editing boolean,
   deleted boolean,
@@ -113,6 +129,7 @@ create table posts (
   time bigint not null,
   board text not null,
   trip char(10),
+  unique_id text,
   auth varchar(20),
   SHA1 char(40) references images on delete set null,
   name varchar(50),
@@ -127,6 +144,7 @@ create index image on posts (SHA1);
 create index editing on posts (editing);
 create index ip on posts (ip);
 create index posts_op_time on posts (op, time);
+create index post_reacts_post_id on post_reacts (post_id);
 
 create table news (
   id bigserial primary key,

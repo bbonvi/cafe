@@ -29,6 +29,20 @@
 
   <footer class="post-footer">
     <div class="post-backlinks">{{{Backlinks}}}</div>
+    <div class="post-reacts">
+      {{#Reacts}}
+        <div
+          title=":{{ SmileName }}:"
+          class="react-{{ SmileName }} post-react trigger-react-post"
+          data-post-id="{{ PostID }}"
+          data-smile-name="{{ SmileName }}"
+        >
+          <i class="smile smile-{{ SmileName }}"></i>
+          <span class="post-react__count">{{ Count }}</span>
+        </div>
+      {{/Reacts}}
+      <div class="post-reacts__divider"></div>
+    </div>
     <div class="post-controls">
       <a class="control post-control post-delete-control trigger-delete-post">
         <i class="fa fa-remove trigger-delete-post"></i>
@@ -37,8 +51,22 @@
         <i class="fa fa-gavel trigger-ban-by-post"></i>
       </a>
       <a class="control post-control post-quote-control trigger-quote-post">
-        <span class="fa fa-reply trigger-quote-post"></span> 
+        <span class="fa fa-reply trigger-quote-post"></span>
       </a>
+    </div>
+    <div class="smile-box reaction-box">
+      <div class="reaction-box__row reaction-box__recent">
+      </div>
+      <div class="reaction-box__row reaction-box__like">
+        <div class="smiles-item smiles-item--heart trigger-react-post" data-post-id="{{ ID }}" data-smile-name="heart">
+          <i class="smile smile-heart" title=":heart:"></i>
+        </div>
+      </div>
+      <div class="reaction-box__row reaction-box__add">
+        <div class="smiles-item trigger-react-post-add">
+          <i class="fa fa-plus"></i>
+        </div>
+      </div>
     </div>
   </footer>
 

@@ -18,12 +18,13 @@ const (
 	MessageBackspace
 	MessageSplice
 	MessageClosePost
-	_
+	ReactToPost
 	MessageInsertImage
 	MessageSpoiler
 	MessageDeletePost
 	MessageBanned
 	MessageDeleteImage
+	MessageReacted
 )
 
 // >= 30 are miscellaneous and do not write to post models

@@ -36,6 +36,7 @@ type Post struct {
 	common.StandalonePost
 	Password []byte
 	IP       string
+	UniqueID string
 }
 
 // Thread is a template for writing new threads to the database
@@ -249,9 +250,12 @@ func NewPostID(tx *sql.Tx) (id uint64, err error) {
 
 func getPostCreationArgs(p Post) []interface{} {
 	// Don't store empty strings in the database. Zero value != NULL.
-	var auth, name, ip *string
+	var auth, name, ip, uniqueID *string
 	if p.Auth != "" {
 		auth = &p.Auth
+	}
+	if p.UniqueID != "" {
+		uniqueID = &p.UniqueID
 	}
 	if p.UserID != "" {
 		name = &p.UserID
@@ -261,7 +265,7 @@ func getPostCreationArgs(p Post) []interface{} {
 	}
 	fileCnt := len(p.Files)
 	return []interface{}{
-		p.ID, p.OP, p.Time, p.Board, auth, name, p.Body, ip,
+		p.ID, p.OP, p.Time, p.Board, auth, name, p.Body, ip, uniqueID,
 		linkRow(p.Links), commandRow(p.Commands),
 		fileCnt,
 	}
@@ -286,6 +290,23 @@ func InsertPost(tx *sql.Tx, p Post) (err error) {
 		return
 	}
 	err = InsertFiles(tx, p)
+	return
+}
+
+// InsertPostReaction inserts a post's reaction with relation to post.
+func InsertPostReaction(postID uint64, smileName string) (err error) {
+	err = execPrepared("write_post_react", postID, smileName)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func UpdateReactionCount(postID uint64, smileName string, count uint64) (err error) {
+	err = execPrepared("update_post_react", count, postID, smileName)
+	if err != nil {
+		return
+	}
 	return
 }
 

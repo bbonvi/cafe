@@ -4,6 +4,7 @@ package db
 
 import (
 	"meguca/assets"
+	"smiles"
 	"strings"
 	"time"
 )
@@ -32,12 +33,45 @@ func runCleanupTasks() {
 func runFiveMinuteTasks() {
 	runPrepared("expire_post_tokens", "expire_image_tokens", "expire_bans")
 	logError("file cleanup", deleteUnusedFiles())
+
 }
 
 func runHourTasks() {
-	runPrepared("expire_user_sessions", "remove_identity_info")
+	runPrepared("expire_user_sessions", "remove_identity_info", "remove_unique_id")
+	logError("reactions cleanup", deleteUnusedReactions())
 }
 
+// Delete reactions with smiles that not exist
+func deleteUnusedReactions() (err error) {
+	r, err := db.Query(`SELECT distinct smile_name from post_reacts`)
+	if err != nil {
+		return
+	}
+	defer r.Close()
+
+	reactions := make([]string, 0, 16)
+	for r.Next() {
+		var smileName string
+		err = r.Scan(&smileName)
+		if err != nil {
+			return
+		}
+		reactions = append(reactions, smileName)
+	}
+
+	err = r.Err()
+	if err != nil {
+		return
+	}
+
+	for _, smileName := range reactions {
+		if !smiles.Smiles[smileName] {
+			err = execPrepared("delete_unused_reactions", smileName)
+		}
+	}
+	return err
+
+}
 func runPrepared(ids ...string) {
 	for _, id := range ids {
 		logError(strings.Replace(id, "_", " ", -1), execPrepared(id))

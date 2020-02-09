@@ -1,6 +1,7 @@
 package feeds
 
 import (
+	"encoding/json"
 	"meguca/common"
 	"meguca/db"
 	"strconv"
@@ -16,6 +17,7 @@ const (
 	deletePost
 	ban
 	deleteImage
+	reactToPost
 )
 
 type postMessage struct {
@@ -273,6 +275,12 @@ func (f *Feed) genSyncMessage() []byte {
 	encodeUints("deleted", f.deleted)
 	encodeUints("deletedImage", f.deletedImage)
 
+	t, _ := db.GetThreadReacts(f.id)
+	p, _ := json.Marshal(t)
+	if p != nil {
+		b = append(b, `, "reacts": `+string(p)...)
+	}
+
 	b = append(b, '}')
 
 	return b
@@ -325,6 +333,10 @@ func (f *Feed) SpoilerImage(id uint64, msg []byte) {
 
 func (f *Feed) banPost(id uint64, msg []byte) {
 	f._sendPostMessage(ban, id, msg)
+}
+
+func (f *Feed) reactToPost(id uint64, msg []byte) {
+	f._sendPostMessage(reactToPost, id, msg)
 }
 
 func (f *Feed) deletePost(id uint64, msg []byte) {

@@ -102,6 +102,14 @@ func InsertPostInto(post common.StandalonePost, msg []byte) {
 	})
 }
 
+func ReactToPost(id uint64, smileName string, count uint64) {
+	_, err := common.EncodeMessage(common.MessageReacted, id)
+	if err != nil {
+		return
+	}
+	return
+}
+
 // ClosePost closes a post in a feed, if it exists
 func ClosePost(id, op uint64, msg []byte) {
 	sendIfExists(op, func(f *Feed) {

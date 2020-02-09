@@ -6,8 +6,20 @@ import (
 
 	"meguca/auth"
 	"meguca/config"
+	"meguca/common"
 	"meguca/util"
+	"meguca/db"
 )
+
+func assertHasWSConnection(w http.ResponseWriter, ip string, board string) bool {
+	for _, cl := range common.GetByIPAndBoard(ip, board) {
+		if cl.IP() != "" {
+			return true
+		}
+	}
+	text403(w, errNotConnected)
+	return false
+}
 
 // Ensure API user is not banned.
 func assertNotBannedAPI(w http.ResponseWriter, r *http.Request, board string) (ip string, ok bool) {
@@ -50,10 +62,83 @@ func checkReadOnly(board string, ss *auth.Session) bool {
 	return ss.Positions.CurBoard >= auth.Moderator
 }
 
-// Eunsure only mods and above can post at read-only boards.
+func checkPosition(board string, ss *auth.Session, position auth.ModerationLevel) bool {
+	if ss == nil {
+		return false
+	}
+	boards := make([]string, 1)
+	boards = append(boards, board)
+
+
+	staff, err := db.GetStaff(nil, boards)
+
+	if err != nil {
+		return false
+	}
+
+	inPosition := false
+	for _, curStaff := range staff {
+		if curStaff.UserID == ss.UserID {
+			inPosition = curStaff.Position == position
+		}
+	}
+
+	return inPosition
+}
+
+func checkWhitelistOnly(board string, ss *auth.Session) bool {
+	if !config.IsWhitelistOnlyBoard(board) {
+		return true
+	}
+	if ss == nil {
+		return false
+	}
+	return checkPosition(board, ss, 2) || ss.Positions.CurBoard >= auth.Moderator
+}
+
+
+func checkRegisteredOnly(board string, ss *auth.Session) bool {
+	if !config.IsRegisteredOnlyBoard(board) {
+		return true
+	}
+	if ss == nil {
+		return false
+	}
+	return true
+}
+
+// Ensure only mods and above can post at read-only boards.
 func assertNotReadOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
 	if !checkReadOnly(board, ss) {
 		text403(w, errReadOnly)
+		return false
+	}
+	return true
+}
+
+// Ensure only registered users can post.
+func assertNotRegisteredOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
+	if !checkRegisteredOnly(board, ss) {
+		text403(w, errOnlyRegistered)
+		return false
+	}
+	return true
+}
+
+// Ensure only registered users can post.
+func assertNotWhitelistOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
+	if !checkWhitelistOnly(board, ss) {
+		text403(w, errOnlyWhitelist)
+		return false
+	}
+	return true
+}
+
+
+// Ensure user not blacklisted.
+func assertNotBlacklisted(w http.ResponseWriter, board string, ss *auth.Session) bool {
+	if checkPosition(board, ss, 1) {
+		text403(w, errBannedBoard)
 		return false
 	}
 	return true
@@ -69,7 +154,7 @@ func checkModOnly(board string, ss *auth.Session) bool {
 	return ss.Positions.CurBoard >= auth.Moderator
 }
 
-// Eunsure only mods and above can view mod-only boards.
+// Ensure only mods and above can view mod-only boards.
 func assertNotModOnly(w http.ResponseWriter, r *http.Request, board string, ss *auth.Session) bool {
 	if !checkModOnly(board, ss) {
 		serve404(w, r)
@@ -78,7 +163,7 @@ func assertNotModOnly(w http.ResponseWriter, r *http.Request, board string, ss *
 	return true
 }
 
-// Eunsure only mods and above can post at mod-only boards.
+// Ensure only mods and above can post at mod-only boards.
 func assertNotModOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
 	if !checkModOnly(board, ss) {
 		text400(w, errInvalidBoard)
@@ -94,7 +179,7 @@ func checkPowerUser(ss *auth.Session) bool {
 	return ss.Positions.IsPowerUser()
 }
 
-// Eunsure only power users can pass.
+// Ensure only power users can pass.
 func assertPowerUserAPI(w http.ResponseWriter, ss *auth.Session) bool {
 	if !checkPowerUser(ss) {
 		text403(w, aerrPowerUserOnly)

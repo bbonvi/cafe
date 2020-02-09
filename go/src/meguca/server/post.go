@@ -3,9 +3,13 @@
 package server
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
+	"smiles"
 	"strconv"
 	"strings"
 
@@ -24,18 +28,40 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	t, _ := db.GetPostReacts(id)
+
 	switch post, err := db.GetPost(id); err {
 	case nil:
 		ss, _ := getSession(r, post.Board)
 		if !assertNotModOnly(w, r, post.Board, ss) {
 			return
 		}
+		post.Reacts = t
+
 		serveJSON(w, r, post)
+
 	case sql.ErrNoRows:
 		serve404(w, r)
 	default:
 		respondToJSONError(w, r, err)
 	}
+}
+
+func getHashedHeaders(r *http.Request) string {
+	str := strings.Join(r.Header["User-Agent"][:], "")
+	str += strings.Join(r.Header["Accept"], "")
+	str += strings.Join(r.Header["Accept-Language"], "")
+	str += strings.Join(r.Header["Accept-Encoding"], "")
+	str += strings.Join(r.Header["Sec-Fetch-Site"], "")
+	str += strings.Join(r.Header["Connection"], "")
+
+	hasher := sha256.New()
+	_, err := hasher.Write([]byte(str))
+	if err != nil {
+		return ""
+	}
+
+	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 }
 
 // Client should get token and solve challenge in order to post.
@@ -87,6 +113,69 @@ func createThread(w http.ResponseWriter, r *http.Request) {
 	serveJSON(w, r, res)
 }
 
+func reactToPost(w http.ResponseWriter, r *http.Request) {
+	f, _, _ := parseUploadForm(w, r)
+
+	id := f.Get("post")
+	smileName := f.Get("smile")
+
+	// ss, _ := getSession(r, "")
+	// if ss != nil {
+	// 	text403(w, errOnlyRegistered)
+	// 	return
+	// }
+
+	if !smiles.Smiles[smileName] {
+		err := errors.New("Smile not found")
+		text400(w, err)
+		return
+	}
+
+	postID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		text400(w, err)
+		return
+	}
+
+	count, err := db.GetPostReactCount(postID, smileName)
+	if err != nil {
+		count = 0
+	}
+
+	count++
+	if count == 1 {
+		err = db.InsertPostReaction(postID, smileName)
+		if err != nil {
+			text500(w, r, err)
+			return
+		}
+	} else {
+		err = db.UpdateReactionCount(postID, smileName, count)
+		if err != nil {
+			text500(w, r, err)
+			return
+		}
+	}
+
+	msg := `30{ "reacts":[{ "postId":`
+	msg += id
+	msg += `, "smileName": "`
+	msg += smileName
+	msg += `", "count": `
+	msg += fmt.Sprint(count)
+	msg += `}] }`
+
+	b := make([]byte, 0, 1<<10)
+	b = append(b, msg...)
+
+	threadID, err := db.GetPostOP(postID)
+
+	feeds.SendTo(threadID, b)
+
+	res := map[string]string{"post": id, "smile": smileName, "count": fmt.Sprint(count)}
+	serveJSON(w, r, res)
+}
+
 // Create post.
 func createPost(w http.ResponseWriter, r *http.Request) {
 	req, ok := parsePostCreationForm(w, r)
@@ -126,6 +215,8 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	req websockets.PostCreationRequest, ok bool,
 ) {
+	uniqueID := getHashedHeaders(r)[:10]
+
 	f, m, err := parseUploadForm(w, r)
 	if err != nil {
 		serveErrorJSON(w, r, err)
@@ -145,13 +236,31 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	if !assertNotModOnlyAPI(w, board, ss) {
 		return
 	}
+	if !assertNotRegisteredOnlyAPI(w, board, ss) {
+		return
+	}
+
+	if !assertNotBlacklisted(w, board, ss) {
+		return
+	}
+
+	if !assertNotWhitelistOnlyAPI(w, board, ss) {
+		return
+	}
+
 	if !assertNotReadOnlyAPI(w, board, ss) {
 		return
 	}
+
 	ip, allowed := assertNotBannedAPI(w, r, board)
 	if !allowed {
 		return
 	}
+
+	// TODO: Move to config
+	// if !assertHasWSConnection(w, ip, board) {
+	// 	return
+	// }
 
 	fhs := m.File["files[]"]
 	if len(fhs) > config.Get().MaxFiles {
@@ -181,6 +290,7 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 		Board:        board,
 		Ip:           ip,
 		Body:         body,
+		UniqueID:     uniqueID,
 		Token:        f.Get("token"),
 		Sign:         f.Get("sign"),
 		ShowBadge:    f.Get("showBadge") == "on" || modOnly,

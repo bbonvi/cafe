@@ -11,9 +11,9 @@ import { reverse, rotateRecent, setter } from "../util";
 const smileList = Array.from(smiles).sort();
 const thingSmiles = new Set(
   `
-  thumbs_up cookie champagne gift hat_santa whiskey ears ears2 hat_blue
-  scarf hat_red hat_red2 horns hand_up hand_up2 thumbs_up shovel hat2
-  confetti hat_green cocktail heart heart2 heart3 heart4 cigarette cigarette2 snowman scarf2 sweater
+  thumbs_up thumbs_down cookie champagne gift hat_santa whiskey ears ears2 hat_blue
+  scarf hat_red hat_red2 horns hand_up hand_up2 shovel hat2
+  confetti hat_green cocktail heart heart2 heart3 heart4 cigarette cigarette2 snowman scarf2 sweater eggplant
   sweater2 fire tophat wine coffee cola chips goose nogoose gun gun2 karandash knife
   ovsyanka ramyun umbrella chocolate mug mug2 snow space mandarin tree
 `
@@ -97,6 +97,10 @@ function storeRecent(id: string) {
 window.addEventListener("storage", loadRecent);
 loadRecent();
 
+export function getRecent() {
+  return recent;
+}
+
 /**
  * Try to autocomplete textarea input.
  *
@@ -157,7 +161,17 @@ export default class extends Component<any, any> {
   public componentDidMount() {
     document.addEventListener("keydown", this.handleGlobalKey);
     document.addEventListener("click", this.handleGlobalClick);
+    this.handleInitialPosition()
   }
+  public handleInitialPosition() {
+    if (!this.props.positionElement) {
+      return;
+    }
+
+    const rect = (this.props.positionElement as HTMLElement).getBoundingClientRect();
+    this.setState({ left: rect.left, top: rect.top + 40 });
+  }
+
   public componentWillUnmount() {
     document.removeEventListener("keydown", this.handleGlobalKey);
     document.removeEventListener("click", this.handleGlobalClick);
@@ -263,7 +277,10 @@ export default class extends Component<any, any> {
   }
   // tslint:disable-next-line:member-ordering
   public render({ acList }: any, { left, top }: any) {
-    const style = acList ? { left, top } : null;
+    let style = acList ? { left, top } : null as any;
+    style = this.props.positionElement ?
+      { left, top, bottom: "unset", position: "fixed", zIndex: "100000" } :
+      null;
     return (
       <div
         class={cx("smile-box", {

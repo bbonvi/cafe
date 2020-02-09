@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION insert_thread(
   name varchar(50),
   body text,
   ip inet,
+  unique_id text,
   links bigint[][2],
   commands json[],
   file_cnt bigint,
@@ -16,7 +17,7 @@ CREATE OR REPLACE FUNCTION insert_thread(
   INSERT INTO threads (board, id, postCtr, imageCtr, replyTime, bumpTime, subject)
   VALUES              (board, id, 1,       file_cnt, now,       now,      subject);
 
-  INSERT INTO posts (id, op, time, board, auth, name, body, ip, links, commands)
-  VALUES            (id, op, now,  board, auth, name, body, ip, links, commands);
+  INSERT INTO posts (id, op, time, board, auth, name, body, ip, unique_id, links, commands)
+  VALUES            (id, op, now,  board, auth, name, body, ip, unique_id, links, commands);
 
 $$ LANGUAGE SQL;

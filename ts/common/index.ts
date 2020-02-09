@@ -25,8 +25,15 @@ export interface PostData {
   links?: PostLink[];
   commands?: Command[];
   files?: ImageData[];
+  reacts?: SmileReact[];
   op?: number;
   board?: string;
+}
+
+export interface SmileReact {
+  postId: number;
+  smileName: string;
+  count?: number;
 }
 
 /** Generic link object containing target post board and thread. */
