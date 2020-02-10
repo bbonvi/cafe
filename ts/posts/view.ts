@@ -137,6 +137,7 @@ export default class PostView extends View<Post> {
         const [reactContainer, created] = this.getReactContainer(reaction.smileName);
         const reactionsNumber = this.model.view.el.querySelectorAll(".post-react").length;
 
+        console.log(reaction)
         if (created) {
             reactContainer.classList.add(
                 "react-" + reaction.smileName,
@@ -163,7 +164,7 @@ export default class PostView extends View<Post> {
             const oldValue = parseInt(counter.innerText, 10);
             const newValue = reaction.count ? reaction.count : oldValue + 1;
 
-            if (newValue !== oldValue) {
+            if (newValue > oldValue) {
                 counter.innerText = newValue.toString();
                 // for animation
                 reactContainer.classList.add("post-react--maximized");

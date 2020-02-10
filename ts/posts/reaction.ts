@@ -63,16 +63,16 @@ export function init() {
         disabledButton();
         setTimeout(enableButton, 100);
 
-        preemptivelyIncreaseCounter();
         const reactionParams = {
             postId: reaction.postId,
             smileName: reaction.smileName,
         };
+        preemptivelyIncreaseCounter();
         API.post.react({
             smileName: reaction.smileName,
             postId: reaction.postId,
         }).catch(() =>
-            post.decrementReaction(reactionParams)
+            post.view.decrementReaction(reactionParams)
         );
 
         function disabledButton() {
@@ -86,7 +86,7 @@ export function init() {
         }
 
         function preemptivelyIncreaseCounter() {
-            post.setReaction(reaction);
+            post.view.renderReaction(reactionParams);
         }
     });
 }
