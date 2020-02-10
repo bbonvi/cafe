@@ -6,14 +6,17 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 	"smiles"
 	"strconv"
 	"strings"
 
 	"meguca/auth"
+	"meguca/common"
 	"meguca/config"
 	"meguca/db"
 	"meguca/feeds"
@@ -113,67 +116,154 @@ func createThread(w http.ResponseWriter, r *http.Request) {
 	serveJSON(w, r, res)
 }
 
+var (
+	reactionFeedQueue common.Reacts
+)
+
+func init() {
+	// go syncReacts()
+}
+
+// func syncReacts() {
+// 	time.Sleep(time.Second)
+
+// 	ms := time.Tick(time.Millisecond * 500)
+
+// 	for {
+// 		select {
+// 		case <-ms:
+// 			threadMap := createMap(reactionFeedQueue)
+// 			reactionFeedQueue = reactionFeedQueue[:0]
+// 			for threadID := range threadMap {
+
+// 				sendToFeed(reactionFeedQueue, threadID)
+// 			}
+
+// 		}
+// 	}
+// }
+
+type threadMap map[uint64]postMap
+type postMap map[uint64]smileMap
+type smileMap map[string]uint64
+
+func isNil(v interface{}) bool {
+	return v == nil ||
+		(reflect.ValueOf(v).Kind() ==
+			reflect.Ptr && reflect.ValueOf(v).IsNil())
+}
+
+// removes duplicate reactions and
+func createMap(reactQueue common.Reacts) threadMap {
+	t := make(threadMap)
+	p := make(postMap)
+
+	// smileMap to PostIDs
+	for _, r := range reactQueue {
+		PostID := r.PostID
+		SmileID := r.SmileName
+
+		if p[PostID] == nil {
+			p[PostID] = make(smileMap)
+		}
+
+		count := p[PostID][SmileID]
+		if isNil(count) {
+			count = 1
+		} else {
+			count++
+		}
+
+		p[PostID][SmileID] = count
+	}
+
+	// Map postMap to ThreadID
+	for postID, m := range p {
+		// fmt.Println(o, r)
+		threadID, err := db.GetPostOP(postID)
+		if err == nil {
+			if t[threadID] == nil {
+				t[threadID] = make(postMap)
+			}
+			t[threadID][postID] = m
+		}
+	}
+
+	return t
+}
+
+type reactionJSON struct {
+	SmileName string `json:"smileName,omitempty"`
+	PostID    uint64 `json:"postId,omitempty"`
+}
+
 func reactToPost(w http.ResponseWriter, r *http.Request) {
-	f, _, _ := parseUploadForm(w, r)
-
-	id := f.Get("post")
-	smileName := f.Get("smile")
-
-	// ss, _ := getSession(r, "")
-	// if ss != nil {
-	// 	text403(w, errOnlyRegistered)
-	// 	return
-	// }
-
-	if !smiles.Smiles[smileName] {
-		err := errors.New("Smile not found")
-		text400(w, err)
+	var re reactionJSON
+	if err := readJSON(r, &re); err != nil {
 		return
 	}
 
-	postID, err := strconv.ParseUint(id, 10, 64)
+	threadID, err := db.GetPostOP(re.PostID)
+	if err != nil {
+		err = errors.New("Couldn't get post's thread")
+		text404(w, err)
+		return
+	}
+
+	if !smiles.Smiles[re.SmileName] {
+		err := errors.New("Smile not found")
+		text404(w, err)
+		return
+	}
+
+	// Get Client Session and IP
+	ss, _ := getSession(r, "")
+	ip, err := auth.GetIP(r)
 	if err != nil {
 		text400(w, err)
 		return
 	}
 
-	count, err := db.GetPostReactCount(postID, smileName)
+	if !db.AssertNotReacted(ss, ip, re.PostID, re.SmileName) {
+		text400(w, errAlreadyReacted)
+		return
+	}
+
+	// Set count to 0 if reaction not yet exist
+	count, err := db.GetPostReactCount(re.PostID, re.SmileName)
 	if err != nil {
 		count = 0
 	}
 
 	count++
-	if count == 1 {
-		err = db.InsertPostReaction(postID, smileName)
-		if err != nil {
-			text500(w, r, err)
-			return
-		}
+	// Create reaction or update count. Get its id in return.
+	var reactionID uint64
+	if err != nil {
+		reactionID, err = db.InsertPostReaction(re.PostID, re.SmileName)
 	} else {
-		err = db.UpdateReactionCount(postID, smileName, count)
-		if err != nil {
-			text500(w, r, err)
-			return
-		}
+		reactionID, err = db.UpdateReactionCount(re.PostID, re.SmileName, count)
 	}
 
-	msg := `30{ "reacts":[{ "postId":`
-	msg += id
-	msg += `, "smileName": "`
-	msg += smileName
-	msg += `", "count": `
-	msg += fmt.Sprint(count)
-	msg += `}] }`
+	// create user_reaction refering ip and account_id(if it exists)
+	err = db.InsertUserReaction(ss, ip, reactionID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	// make success response to the client
+	serveEmptyJSON(w, r)
 
-	b := make([]byte, 0, 1<<10)
-	b = append(b, msg...)
+	// add reaction to feed queue
+	react := common.React{
+		SmileName: re.SmileName,
+		Count:     count,
+		PostID:    re.PostID,
+	}
+	reactionFeedQueue = append(reactionFeedQueue, react)
 
-	threadID, err := db.GetPostOP(postID)
-
-	feeds.SendTo(threadID, b)
-
-	res := map[string]string{"post": id, "smile": smileName, "count": fmt.Sprint(count)}
-	serveJSON(w, r, res)
+	var reacts common.Reacts
+	reacts = append(reacts, react)
+	sendToFeed(reacts, threadID)
 }
 
 // Create post.
@@ -299,4 +389,22 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	}
 	ok = true
 	return
+}
+
+type reactsMessage struct {
+	Reacts common.Reacts `json:"reacts"`
+}
+
+func sendToFeed(r common.Reacts, threadID uint64) error {
+	var rm reactsMessage
+	rm.Reacts = r
+	msgType := `30`
+	t := make([]byte, 0, 1<<10)
+	t = append(t, msgType...)
+
+	msg, _ := json.Marshal(rm)
+
+	t = append(t, msg...)
+	feeds.SendTo(threadID, t)
+	return nil
 }

@@ -1,8 +1,8 @@
 import { posts } from "../state";
 import { Post } from "./model";
-import { reactToPost } from "../connection/synchronization";
 import { handleNewReaction } from "./popup";
 import { TRIGGER_REACT_SEL, TRIGGER_REACT_ADD_SEL } from "../vars";
+import API from "../api";
 
 export function init() {
     let currentPost: Post = null as Post;
@@ -64,7 +64,16 @@ export function init() {
         setTimeout(enableButton, 100);
 
         preemptivelyIncreaseCounter();
-        reactToPost(reaction.smileName, reaction.postId);
+        const reactionParams = {
+            postId: reaction.postId,
+            smileName: reaction.smileName,
+        };
+        API.post.react({
+            smileName: reaction.smileName,
+            postId: reaction.postId,
+        }).catch(() =>
+            post.decrementReaction(reactionParams)
+        );
 
         function disabledButton() {
             reactElement.setAttribute("disabled", "");

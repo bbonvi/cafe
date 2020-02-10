@@ -112,11 +112,18 @@ create index sticky on threads (sticky);
 --   file_hash char(40)
 -- );
 
+create table user_reacts (
+  account_id varchar(20) references accounts on delete cascade,
+  ip inet,
+  post_react_id bigserial references post_reacts on delete cascade
+)
+
 create table post_reacts (
   smile_name text not null,
   count bigint default 0,
   post_id bigint references posts on delete set null,
-  timestamp timestamp default current_timestamp
+  timestamp timestamp default current_timestamp,
+  id bigserial primary key
 );
 
 create table posts (

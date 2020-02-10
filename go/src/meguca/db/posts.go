@@ -293,17 +293,34 @@ func InsertPost(tx *sql.Tx, p Post) (err error) {
 	return
 }
 
-// InsertPostReaction inserts a post's reaction with relation to post.
-func InsertPostReaction(postID uint64, smileName string) (err error) {
-	err = execPrepared("write_post_react", postID, smileName)
+// InsertUserReaction inserts a post's reaction with relation to post.
+func InsertUserReaction(ss *auth.Session, ip string, reactionID uint64) (err error) {
+	var userID *string
+	if ss != nil {
+		userID = &ss.UserID
+	}
+	err = execPrepared("write_user_react", &userID, ip, reactionID)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func UpdateReactionCount(postID uint64, smileName string, count uint64) (err error) {
-	err = execPrepared("update_post_react", count, postID, smileName)
+// InsertPostReaction inserts a post's reaction with relation to post.
+func InsertPostReaction(postID uint64, smileName string) (reactionID uint64, err error) {
+	err = prepared["write_post_react"].QueryRow(postID, smileName).Scan(&reactionID)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func UpdateReactionCount(
+	postID uint64,
+	smileName string,
+	count uint64,
+) (reactionID uint64, err error) {
+	err = prepared["update_post_react"].QueryRow(count, postID, smileName).Scan(&reactionID)
 	if err != nil {
 		return
 	}

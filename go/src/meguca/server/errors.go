@@ -109,6 +109,7 @@ var (
 	errPageOverflow     = errors.New("Page not found")
 	errInvalidBoardName = errors.New("Invalid board name")
 	errBoardNameTaken   = errors.New("Board name taken")
+	errAlreadyReacted   = errors.New("You have already reacted")
 	errAccessDenied     = errors.New("Access denied")
 	errNoDuration       = errors.New("No ban duration provided")
 	errNoBoardOwner     = errors.New("No board owners set")

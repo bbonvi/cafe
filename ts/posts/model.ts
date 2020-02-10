@@ -139,6 +139,10 @@ export class Post extends Model implements PostData {
     }, 0);
   }
 
+  public decrementReaction(reaction: SmileReact) {
+    this.view.decrementReaction(reaction);
+  }
+
   // Returns, if this post has been seen already.
   public seen(): boolean {
     // Already seen, nothing to do.

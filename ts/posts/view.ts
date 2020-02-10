@@ -114,6 +114,21 @@ export default class PostView extends View<Post> {
     //     }
     // }
 
+    public decrementReaction(reaction: SmileReact) {
+        const postReacts = this.model.view.el.querySelector(".post-reacts");
+        const reactContainer: HTMLDivElement = postReacts.querySelector(".react-" + reaction.smileName);
+        if (!reactContainer) {
+            return;
+        }
+        const counter = reactContainer.querySelector(".post-react__count") as HTMLElement;
+        const currentValue = parseInt(counter.innerText, 10);
+        if (currentValue > 1) {
+            counter.innerText = (currentValue - 1).toString();
+        } else {
+            reactContainer.outerHTML = "";
+        }
+    }
+
     public renderReaction(reaction: SmileReact) {
         // if SmileReact object doesn't have a count,
         // then we either increment or just set it to 1
@@ -148,7 +163,7 @@ export default class PostView extends View<Post> {
             const oldValue = parseInt(counter.innerText, 10);
             const newValue = reaction.count ? reaction.count : oldValue + 1;
 
-            if (newValue > oldValue) {
+            if (newValue !== oldValue) {
                 counter.innerText = newValue.toString();
                 // for animation
                 reactContainer.classList.add("post-react--maximized");
