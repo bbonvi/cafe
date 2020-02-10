@@ -810,13 +810,13 @@ export function handleNewReaction(postId: number, buttonElement: HTMLElement) {
       postId,
       smileName,
     };
-    post.setReaction(reactionParams);
+    post.view.renderReaction(reactionParams)
     handleClose();
     API.post.react({
       smileName,
       postId,
     }).catch(() => {
-      post.decrementReaction(reactionParams);
+      post.view.decrementReaction(reactionParams);
     });
   }
 }
