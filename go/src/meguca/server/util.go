@@ -52,6 +52,11 @@ func text400(w http.ResponseWriter, err error) {
 	http.Error(w, fmt.Sprintf("%s", err), 400)
 }
 
+// Text-only 404 response
+func text404(w http.ResponseWriter, err error) {
+	http.Error(w, fmt.Sprintf("%s", err), 404)
+}
+
 // Text-only 403 response
 // TODO(Kagami): User ApiError instead.
 func text403(w http.ResponseWriter, err error) {

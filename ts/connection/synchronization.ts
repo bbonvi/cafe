@@ -33,10 +33,10 @@ export function synchronise() {
 }
 
 export function reactToPost(smileName: string, postId: number) {
-  send(message.reactToPost, {
-    smile: smileName,
-    post: postId,
-  })
+  // send(message.reactToPost, {
+  //   smile: smileName,
+  //   post: postId,
+  // })
 }
 
 // Fetch a post not present on the client and render it

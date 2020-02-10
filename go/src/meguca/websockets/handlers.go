@@ -19,8 +19,8 @@ func (c *Client) runHandler(typ common.MessageType, msg []byte) error {
 	switch typ {
 	case common.MessageSynchronise:
 		return c.synchronise(data)
-	case common.ReactToPost:
-		return c.reactToPost(data)
+	// case common.ReactToPost:
+	// 	return c.reactToPost(data)
 	// case common.MessageReclaim:
 	// 	return c.reclaimPost(data)
 	// case common.MessageAppend:

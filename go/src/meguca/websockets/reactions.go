@@ -40,7 +40,7 @@ func syncReacts() {
 			threadMap := createMap(reactQueue)
 			reactQueue = reactQueue[:0]
 			for threadID, t := range threadMap {
-				rs := React(t)
+				rs := handleReaction(t)
 				sendToFeed(rs, threadID)
 			}
 		}
@@ -114,8 +114,7 @@ func (c *Client) reactToPost(data []byte) error {
 	return nil
 }
 
-// React gotta react
-func React(p postMap) common.Reacts {
+func handleReaction(p postMap) common.Reacts {
 	var r common.Reacts
 	for PostID, m := range p {
 		for smileName, c := range m {
@@ -141,63 +140,12 @@ func React(p postMap) common.Reacts {
 	return r
 }
 
-// _React reacts
-func _React(r reactRequest) (reactRequest, err error) {
-	postID := r.Post
-	smileName := r.Smile
-
-	if !smiles.Smiles[smileName] {
-		err := errors.New("Smile not found")
-		return nil, err
-	}
-
-	count, err := db.GetPostReactCount(postID, smileName)
-	if err != nil {
-		count = 0
-	}
-
-	count++
-	if count == 1 {
-		err = db.InsertPostReaction(postID, smileName)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		err = db.UpdateReactionCount(postID, smileName, count)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	threadID, err := db.GetPostOP(postID)
-	r.Count = count
-	r.ThreadID = threadID
-
-	return
-
-	// msg, _ := json.Marshal("[123]")
-
-	// msg := `{ "reacts":[{ "postId":`
-	// msg += fmt.Sprint(postID)
-	// msg += `, "smileName": "`
-	// msg += smileName
-	// msg += `", "count": `
-	// msg += fmt.Sprint(count)
-	// msg += `}] }`
-
-	// b := make([]byte, 0, 1<<10)
-	// b = append(b, msg...)
-
-	// feeds.SendTo(threadID, b)
-
-}
-
-type ReactsMessage struct {
+type reactsMessage struct {
 	Reacts common.Reacts `json:"reacts"`
 }
 
 func sendToFeed(r common.Reacts, threadID uint64) error {
-	var rm ReactsMessage
+	var rm reactsMessage
 	rm.Reacts = r
 	msgType := `30`
 	t := make([]byte, 0, 1<<10)

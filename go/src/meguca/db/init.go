@@ -192,6 +192,20 @@ var upgrades = []func(*sql.Tx) error{
 			`ALTER TABLE bans ADD COLUMN unique_id text`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx,
+			`ALTER TABLE post_reacts ADD COLUMN id bigserial primary key`,
+		)
+	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx,
+			`CREATE TABLE user_reacts (
+				account_id varchar(20) references accounts on delete cascade,
+				ip inet,
+				post_react_id bigserial references post_reacts on delete cascade
+			)`,
+		)
+	},
 }
 
 func StartDB() (err error) {

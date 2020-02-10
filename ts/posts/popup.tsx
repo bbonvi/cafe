@@ -21,7 +21,7 @@ import {
 import { findPreloadImages } from "./hover";
 import RenderVideo from './player'
 import SmileBox from "./smile-box";
-import { reactToPost } from "../connection/synchronization";
+import API from "../api";
 // import { recalcPosts } from ".";
 const opened: Set<string> = new Set();
 export function isOpen(url: string): boolean {
@@ -804,17 +804,19 @@ export function handleNewReaction(postId: number, buttonElement: HTMLElement) {
     element.remove();
   }
   function handleSelect(smileName: string) {
-    handleClose();
-    reactToPost(smileName, postId);
-
-    // Preemptively Increase Counter
     const post = posts.get(postId);
-    if (post && !post.deleted) {
-      post.setReaction({
-        count: 1,
-        postId,
-        smileName,
-      });
-    }
+    const reactionParams = {
+      count: 1,
+      postId,
+      smileName,
+    };
+    post.setReaction(reactionParams);
+    handleClose();
+    API.post.react({
+      smileName,
+      postId,
+    }).catch(() => {
+      post.decrementReaction(reactionParams);
+    });
   }
 }

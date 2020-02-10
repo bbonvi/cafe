@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"meguca/auth"
 	"meguca/common"
 
 	"github.com/lib/pq"
@@ -347,6 +348,30 @@ func GetThread(id uint64, lastN int) (t common.Thread, err error) {
 		}
 	}
 	err = r2.Err()
+	return
+}
+
+// AssertNotReacted ensures that user with following ip or accountID
+// haven't reacted to post with following smileName
+func AssertNotReacted(
+	ss *auth.Session,
+	ip string,
+	postID uint64,
+	smileName string,
+) (r bool) {
+	var userID *string
+	if ss != nil {
+		userID = &ss.UserID
+	}
+	err := prepared["assert_user_not_reacted"].QueryRow(
+		ip,
+		userID,
+		postID,
+		smileName,
+	).Scan(&r)
+	if err != nil {
+		return false
+	}
 	return
 }
 
