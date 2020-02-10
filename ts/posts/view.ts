@@ -137,7 +137,6 @@ export default class PostView extends View<Post> {
         const [reactContainer, created] = this.getReactContainer(reaction.smileName);
         const reactionsNumber = this.model.view.el.querySelectorAll(".post-react").length;
 
-        console.log(reaction)
         if (created) {
             reactContainer.classList.add(
                 "react-" + reaction.smileName,
