@@ -90,6 +90,21 @@ func createPostToken(w http.ResponseWriter, r *http.Request) {
 	serveJSON(w, r, res)
 }
 
+func getTreahReaction(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseUint(getParam(r, "thread"), 10, 64)
+	if err != nil {
+		text400(w, err)
+		return
+	}
+	re, err := db.GetThreadReacts(id)
+	if err != nil {
+		err = errors.New("Thread not found")
+		text404(w, err)
+		return
+	}
+	serveJSON(w, r, re)
+}
+
 // Create thread.
 func createThread(w http.ResponseWriter, r *http.Request) {
 	postReq, ok := parsePostCreationForm(w, r)

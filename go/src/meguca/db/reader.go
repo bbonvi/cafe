@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"meguca/auth"
 	"meguca/common"
@@ -395,6 +396,7 @@ func GetThreadReacts(id uint64) (reacts common.Reacts, err error) {
 	for rows.Next() {
 		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID)
 		if err != nil {
+			err = errors.New("something went wrong")
 			return
 		}
 		reacts = append(reacts, p)
