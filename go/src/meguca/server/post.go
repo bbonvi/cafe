@@ -90,6 +90,27 @@ func createPostToken(w http.ResponseWriter, r *http.Request) {
 	serveJSON(w, r, res)
 }
 
+func getTreadUserReaction(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseUint(getParam(r, "thread"), 10, 64)
+	if err != nil {
+		text400(w, err)
+		return
+	}
+	ss, _ := getSession(r, "")
+	ip, err := auth.GetIP(r)
+	if err != nil {
+		text400(w, err)
+		return
+	}
+
+	re, err := db.GetThreadUserReacts(ss, ip, id)
+	if err != nil {
+		text404(w, err)
+		return
+	}
+	serveJSON(w, r, re)
+}
+
 func getTreadReaction(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(getParam(r, "thread"), 10, 64)
 	if err != nil {

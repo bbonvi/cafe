@@ -382,6 +382,33 @@ func GetPostReactCount(id uint64, smile_name string) (count uint64, err error) {
 	return
 }
 
+// GetThreadUserReacts reads a list of thread reactions
+func GetThreadUserReacts(ss *auth.Session, ip string, threadID uint64) (reacts common.Reacts, err error) {
+	var userID *string
+	if ss != nil {
+		userID = &ss.UserID
+	}
+	rows, err := prepared["get_user_reacts"].Query(userID, ip, threadID)
+	if err != nil {
+		return nil, err
+	}
+
+	reacts = make(common.Reacts, 0, 64)
+	var p common.React
+
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID)
+		if err != nil {
+			err = errors.New("something went wrong")
+			return
+		}
+		reacts = append(reacts, p)
+	}
+	err = rows.Err()
+	return
+}
+
 // GetThreadReacts reads a list of thread reactions
 func GetThreadReacts(id uint64) (reacts common.Reacts, err error) {
 	rows, err := prepared["get_thread_reacts"].Query(id)
