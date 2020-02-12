@@ -90,7 +90,7 @@ func createPostToken(w http.ResponseWriter, r *http.Request) {
 	serveJSON(w, r, res)
 }
 
-func getTreahReaction(w http.ResponseWriter, r *http.Request) {
+func getTreadReaction(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(getParam(r, "thread"), 10, 64)
 	if err != nil {
 		text400(w, err)
