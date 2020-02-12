@@ -118,15 +118,17 @@ func handleReaction(p postMap) common.Reacts {
 	var r common.Reacts
 	for PostID, m := range p {
 		for smileName, c := range m {
-			count, err := db.GetPostReactCount(PostID, smileName)
-			if err != nil {
-				count = 0
+			exist := true
+			count := db.GetPostReactCount(PostID, smileName)
+			if count == 0 {
+				exist = false
 			}
+
 			count = count + c
-			if err != nil {
-				db.InsertPostReaction(PostID, smileName)
-			} else {
+			if exist {
 				db.UpdateReactionCount(PostID, smileName, count)
+			} else {
+				db.InsertPostReaction(PostID, smileName)
 			}
 
 			var re common.React

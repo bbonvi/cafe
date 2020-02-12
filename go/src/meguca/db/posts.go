@@ -315,11 +315,8 @@ func InsertPostReaction(postID uint64, smileName string) (reactionID uint64, err
 	return
 }
 
-func UpdateReactionCount(
-	postID uint64,
-	smileName string,
-	count uint64,
-) (reactionID uint64, err error) {
+// UpdateReactionCount updates count of post_reacts column
+func UpdateReactionCount(postID uint64, smileName string, count uint64) (reactionID uint64, err error) {
 	err = prepared["update_post_react"].QueryRow(count, postID, smileName).Scan(&reactionID)
 	if err != nil {
 		return
@@ -327,7 +324,28 @@ func UpdateReactionCount(
 	return
 }
 
-// Write post files in current transaction.
+func DeleteUserReaction(ss *auth.Session, ip string, reactionID uint64) (err error) {
+	var userID *string
+	if ss != nil {
+		userID = &ss.UserID
+	}
+	err = execPrepared("delete_user_react", &userID, ip, reactionID)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// DeletePostReaction deletes item from post_reacts column
+func DeletePostReaction(postID uint64, smileName string) (err error) {
+	err = execPrepared("delete_post_react", postID, smileName)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// InsertFiles write post files in current transaction.
 func InsertFiles(tx *sql.Tx, p Post) (err error) {
 	for _, f := range p.Files {
 		err = execPreparedTx(tx, "insert_post_file", p.ID, f.SHA1)
@@ -339,7 +357,6 @@ func InsertFiles(tx *sql.Tx, p Post) (err error) {
 }
 
 // Token operations
-
 func NewPostToken(ip string) (token string, err error) {
 	// Check if client tries to abuse.
 	var can bool

@@ -206,6 +206,11 @@ var upgrades = []func(*sql.Tx) error{
 			)`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			ALTER TABLE post_reacts ADD FOREIGN KEY (post_id) REFERENCES posts on delete cascade`,
+		)
+	},
 }
 
 func StartDB() (err error) {

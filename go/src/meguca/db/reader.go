@@ -377,8 +377,11 @@ func AssertNotReacted(
 }
 
 // GetPostReactCount reads a single post reaction from the database.
-func GetPostReactCount(id uint64, smile_name string) (count uint64, err error) {
-	err = prepared["get_post_react_count"].QueryRow(id, smile_name).Scan(&count)
+func GetPostReactCount(id uint64, smile_name string) (count uint64) {
+	err := prepared["get_post_react_count"].QueryRow(id, smile_name).Scan(&count)
+	if err != nil {
+		count = 0
+	}
 	return
 }
 
@@ -403,6 +406,7 @@ func GetThreadUserReacts(ss *auth.Session, ip string, threadID uint64) (reacts c
 			err = errors.New("something went wrong")
 			return
 		}
+		p.Self = true
 		reacts = append(reacts, p)
 	}
 	err = rows.Err()

@@ -2,6 +2,7 @@ package feeds
 
 import (
 	"encoding/json"
+	"fmt"
 	"meguca/common"
 	"meguca/db"
 	"strconv"
@@ -278,7 +279,8 @@ func (f *Feed) genSyncMessage() []byte {
 	t, _ := db.GetThreadReacts(f.id)
 	p, _ := json.Marshal(t)
 	if p != nil {
-		b = append(b, `, "reacts": `+string(p)...)
+		// b = append(b, `, "reacts": `+string(p)...)
+		fmt.Println(p)
 	}
 
 	b = append(b, '}')

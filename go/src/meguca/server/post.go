@@ -260,34 +260,34 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !db.AssertNotReacted(ss, ip, re.PostID, re.SmileName) {
-		text400(w, errAlreadyReacted)
-		return
-	}
+	alreadyReacted := !db.AssertNotReacted(ss, ip, re.PostID, re.SmileName)
 
+	exist := true
+	count := db.GetPostReactCount(re.PostID, re.SmileName)
 	// Set count to 0 if reaction not yet exist
-	count, err := db.GetPostReactCount(re.PostID, re.SmileName)
-	if err != nil {
-		count = 0
+	if count == 0 {
+		exist = false
 	}
 
-	count++
-	// Create reaction or update count. Get its id in return.
-	var reactionID uint64
-	if err != nil {
-		reactionID, err = db.InsertPostReaction(re.PostID, re.SmileName)
+	// Decrement counter if user already reacted
+	if alreadyReacted {
+		count--
 	} else {
-		reactionID, err = db.UpdateReactionCount(re.PostID, re.SmileName, count)
+		count++
 	}
 
-	// create user_reaction refering ip and account_id(if it exists)
-	err = db.InsertUserReaction(ss, ip, reactionID)
+	// Create reaction or set count to value. Get post_react id in return.
+	reactionID, err := updatePostReaction(re, count, exist)
+
+	err = handleUserReaction(ss, ip, reactionID, alreadyReacted)
 	if err != nil {
-		fmt.Println(err)
+		text500(w, r, err)
 		return
 	}
+	res := map[string]bool{"reacted": !alreadyReacted}
+
 	// make success response to the client
-	serveEmptyJSON(w, r)
+	serveJSON(w, r, res)
 
 	// add reaction to feed queue
 	react := common.React{
@@ -300,6 +300,29 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 	var reacts common.Reacts
 	reacts = append(reacts, react)
 	sendToFeed(reacts, threadID)
+}
+
+func handleUserReaction(ss *auth.Session, ip string, reactionID uint64, reacted bool) (err error) {
+	if !reacted {
+		// create user_reaction refering ip and account_id(if it exists)
+		err = db.InsertUserReaction(ss, ip, reactionID)
+		return
+	}
+	err = db.DeleteUserReaction(ss, ip, reactionID)
+	return
+}
+
+func updatePostReaction(re reactionJSON, count uint64, exist bool) (postReactionID uint64, err error) {
+	if exist {
+		if count < 1 {
+			err = db.DeletePostReaction(re.PostID, re.SmileName)
+			return 0, err
+		}
+		postReactionID, err = db.UpdateReactionCount(re.PostID, re.SmileName, count)
+		return
+	}
+	postReactionID, err = db.InsertPostReaction(re.PostID, re.SmileName)
+	return
 }
 
 // Create post.
