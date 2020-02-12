@@ -254,6 +254,11 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 
 	// Get Client Session and IP
 	ss, _ := getSession(r, "")
+	if ss == nil {
+		e := errors.New("You are not authorized")
+		text400(w, e)
+		return
+	}
 	ip, err := auth.GetIP(r)
 	if err != nil {
 		text400(w, err)
