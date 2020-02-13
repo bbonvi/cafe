@@ -9,6 +9,7 @@ import {
   Dict, FutureAPI, ProgressFn,
   sendFormProgress, sendJSON, uncachedGET,
 } from "../util";
+import { SmileReact } from "../common";
 
 type ReqFn = (
   url: string, data?: Dict, method?: string,
@@ -76,12 +77,14 @@ export const API = {
   post: {
     create: emit.POST.Form("post"),
     createToken: emit.POST.JSON("post/token"),
-    react: emit.POST.JSON("post/react"),
+    react: (d?: Dict): Promise<SmileReact> => emit.POST.JSON("post/react")(d),
     delete: emit.POST.JSON("delete-post"),
     get: (id: number) => emit.GET.JSON(`post/${id}`)(),
   },
   thread: {
     create: emit.POST.Form("thread"),
+    selfReacts: (id: number): Promise<SmileReact[]> =>
+      emit.GET.JSON(`thread/${id}/reacts-self`)(),
   },
   user: {
     banByPost: emit.POST.JSON("ban"),
