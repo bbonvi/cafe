@@ -17,6 +17,7 @@ import { getRecent } from "./smile-box";
  * Base post view class
  */
 export default class PostView extends View<Post> {
+    timers: any;
     constructor(model: Post, el: HTMLElement | null) {
         const attrs: ViewAttrs = { model };
 
@@ -33,6 +34,7 @@ export default class PostView extends View<Post> {
         if (this.animate) {
             this.el.classList.add("should-anim");
         }
+        this.timers = {};
         this.model.view.el.innerHTML = this.getEveryoneHTML();
     }
 
@@ -95,6 +97,10 @@ export default class PostView extends View<Post> {
         container.innerHTML = html;
     }
 
+    // TODO: We should render reactions with mustache
+    // public renderReactions() {
+    // }
+
     // public incrementReaction(smileName: string) {
     //     const currentReaction =
     //         this.model.reacts
@@ -129,64 +135,85 @@ export default class PostView extends View<Post> {
         }
     }
 
-    public renderReaction(reaction: SmileReact) {
-        // if SmileReact object doesn't have a count,
-        // then we either increment or just set it to 1
+    public renderReactContainerElements(reactContainer: HTMLElement, reaction: SmileReact) {
+        reactContainer.classList.add(
+            "react-" + reaction.smileName,
+            "post-react",
+            "trigger-react-post",
+            "post-react--minimized", // for animation
+        );
 
-        // Get or create container for reaction badge.
+        const smileEl = document.createElement("i");
+        smileEl.classList.add("smile", "smile-" + reaction.smileName);
+        smileEl.title = reaction.smileName;
+
+        const counterEl = document.createElement("span");
+        counterEl.classList.add("post-react__count");
+        counterEl.innerText = (0).toString();
+
+        reactContainer.appendChild(smileEl);
+        reactContainer.appendChild(counterEl);
+        reactContainer.dataset.postId = this.model.id.toString();
+        reactContainer.dataset.smileName = reaction.smileName;
+
+        return reactContainer;
+    }
+
+    public delayedRemoveReaction(reactContainer: HTMLElement, smileName: string) {
+        reactContainer.classList.add("post-react--maximized");
+        this.timers[smileName] = setTimeout(() => {
+            reactContainer.outerHTML = "";
+        }, 100);
+    }
+
+    public setReaction(reaction: SmileReact) {
         const [reactContainer, created] = this.getReactContainer(reaction.smileName);
-        const reactionsNumber = this.model.view.el.querySelectorAll(".post-react").length;
+        if (reaction.count === 0 && created) {
+            reactContainer.outerHTML = "";
+            return;
+        }
+        clearTimeout(this.timers[reaction.smileName]);
 
+        // dont' rerender if already exists
         if (created) {
-            reactContainer.classList.add(
-                "react-" + reaction.smileName,
-                "post-react",
-                "trigger-react-post",
-                "post-react--minimized", // for animation
-            );
-
-            const smileEl = document.createElement("i");
-            smileEl.classList.add("smile", "smile-" + reaction.smileName);
-            smileEl.title = reaction.smileName;
-
-            const counterEl = document.createElement("span");
-            counterEl.classList.add("post-react__count");
-            counterEl.innerText = (reaction.count || 1).toString();
-
-            reactContainer.appendChild(smileEl);
-            reactContainer.appendChild(counterEl);
-            reactContainer.dataset.postId = this.model.id.toString();
-            reactContainer.dataset.smileName = reaction.smileName;
-        } else {
-            // skip if already set or is less than old value
-            const counter = reactContainer.lastElementChild as HTMLDivElement;
-            const oldValue = parseInt(counter.innerText, 10);
-            const newValue = reaction.count ? reaction.count : oldValue + 1;
-
-            if (newValue > oldValue) {
-                counter.innerText = newValue.toString();
-                // for animation
-                reactContainer.classList.add("post-react--maximized");
-            }
+            this.renderReactContainerElements(reactContainer, reaction);
+        }
+        if (reaction.self) {
+            reactContainer.classList.add("post-react--self");
+        } else if (reaction.self === false) {
+            reactContainer.classList.remove("post-react--self");
         }
 
-        // remove classes later, so animation could finish
-        setTimeout(() => {
+        const counter = reactContainer.querySelector(".post-react__count") as HTMLDivElement;
+        const oldValue = parseInt(counter.innerText, 10);
+
+        if (reaction.count === 0) {
+            this.delayedRemoveReaction(reactContainer, reaction.smileName);
+            return;
+        } else {
+            counter.innerText = reaction.count.toString();
+        }
+
+        if (reaction.count !== oldValue) {
+            reactContainer.classList.add("post-react--maximized");
+        }
+        clearTimeout(this.timers[reaction.smileName + "anim"]);
+        this.timers[reaction.smileName + "anim"] = setTimeout(() => {
             reactContainer.classList.remove("post-react--maximized");
             reactContainer.classList.remove("post-react--minimized");
-        }, 100);
+        }, 200);
 
-        const hidden = this.model.view.el
-            .querySelector(".post-reacts")
-            .classList
-            .contains("post-reacts--hidden");
+        // const hidden = this.model.view.el
+        //     .querySelector(".post-reacts")
+        //     .classList
+        //     .contains("post-reacts--hidden");
 
-        if (reactionsNumber > 10 && hidden) {
-            const showMore = this.model.view.el.querySelector(".post-reacts__showmore") as HTMLElement;
-            showMore.style.display = "";
-        }
-
+        // if (reactionsNumber > 10 && hidden) {
+        //     const showMore = this.model.view.el.querySelector(".post-reacts__showmore") as HTMLElement;
+        //     showMore.style.display = "";
+        // }
     }
+
 
         public removeThread() {
             this.el.closest(THREAD_SEL).remove();

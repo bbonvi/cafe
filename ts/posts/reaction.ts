@@ -3,6 +3,8 @@ import { Post } from "./model";
 import { handleNewReaction } from "./popup";
 import { TRIGGER_REACT_SEL, TRIGGER_REACT_ADD_SEL } from "../vars";
 import API from "../api";
+import { showAlert } from "../alerts";
+import _ from "../lang";
 
 export function init() {
     let currentPost: Post = null as Post;
@@ -61,20 +63,17 @@ export function init() {
 
         // Disable button for some time
         disabledButton();
-        setTimeout(enableButton, 100);
 
-        const reactionParams = {
-            postId: reaction.postId,
-            smileName: reaction.smileName,
-        };
-        preemptivelyIncreaseCounter();
+        setTimeout(enableButton, 200);
         API.post.react({
             smileName: reaction.smileName,
             postId: reaction.postId,
-        }).catch(() =>
-            post.view.decrementReaction(reactionParams)
-        );
-
+        }).then((res) => {
+            res.self = !!res.self;
+            post.view.setReaction(res);
+        }).catch((err) => {
+            showAlert({ message: err.message, title: _("sendErr"), type: "warn" });
+        });
         function disabledButton() {
             reactElement.setAttribute("disabled", "");
         }
@@ -83,10 +82,6 @@ export function init() {
         }
         function isDisabled() {
             return reactElement.hasAttribute("disabled");
-        }
-
-        function preemptivelyIncreaseCounter() {
-            post.view.renderReaction(reactionParams);
         }
     });
 }

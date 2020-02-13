@@ -135,7 +135,7 @@ export class Post extends Model implements PostData {
 
   public async setReaction(reaction: SmileReact) {
     setTimeout(() => {
-      this.view.renderReaction(reaction);
+      this.view.setReaction(reaction);
     }, 0);
   }
 
