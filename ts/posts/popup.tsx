@@ -807,12 +807,6 @@ export function handleNewReaction(postId: number, buttonElement: HTMLElement) {
   }
   function handleSelect(smileName: string) {
     const post = posts.get(postId);
-    const reactionParams = {
-      postId,
-      smileName,
-      self: true,
-    };
-    post.view.setReaction(reactionParams);
     handleClose();
     API.post.react({
       smileName,
