@@ -101,25 +101,6 @@ export default class PostView extends View<Post> {
     // public renderReactions() {
     // }
 
-    // public incrementReaction(smileName: string) {
-    //     const currentReaction =
-    //         this.model.reacts
-    //             .find((reaction) => smileName === reaction.smileName);
-
-    //     if (!currentReaction) {
-    //         this.renderReaction({
-    //             postId: this.model.id,
-    //             count: 1,
-    //             smileName,
-    //         })
-    //     } else {
-    //         this.renderReaction({
-    //             ...currentReaction,
-    //             count: currentReaction.count + 1
-    //         })
-    //     }
-    // }
-
     public decrementReaction(reaction: SmileReact) {
         const postReacts = this.model.view.el.querySelector(".post-reacts");
         const reactContainer: HTMLDivElement = postReacts.querySelector(".react-" + reaction.smileName);
