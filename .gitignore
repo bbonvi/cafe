@@ -29,3 +29,5 @@ tags
 .include
 .vscode/settings.json
 logfile
+config.toml
+run.sh
