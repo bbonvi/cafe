@@ -31,9 +31,10 @@ export interface PostData {
 }
 
 export interface SmileReact {
-  postId: number;
-  smileName: string;
+  postId?: number;
+  smileName?: string;
   count?: number;
+  self?: boolean;
 }
 
 /** Generic link object containing target post board and thread. */
