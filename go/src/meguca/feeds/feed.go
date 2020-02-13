@@ -279,9 +279,11 @@ func (f *Feed) genSyncMessage() []byte {
 	// although later he gonna call api to get all self reactions.
 	// This is no good
 	t, _ := db.GetThreadReacts(f.id)
-	p, _ := json.Marshal(t)
-	if p != nil {
-		b = append(b, `, "reacts": `+string(p)...)
+	if t != nil {
+		p, _ := json.Marshal(t)
+		if p != nil {
+			b = append(b, `, "reacts": `+string(p)...)
+		}
 	}
 
 	b = append(b, '}')
