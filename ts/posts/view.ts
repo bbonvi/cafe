@@ -60,7 +60,7 @@ export default class PostView extends View<Post> {
                 data-smile-name="${smileName}"
                 data-post-id="${this.model.id}"
             >
-                <i class="smile smile-${smileName}" title=":smileName:"></i>
+                <i class="smile smile-${smileName}" title=":${smileName}:"></i>
             </div>
             `;
         }
