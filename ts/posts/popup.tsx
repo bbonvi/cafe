@@ -24,7 +24,6 @@ import SmileBox from "./smile-box";
 import API from "../api";
 import { showAlert } from "../alerts";
 import _ from "../lang";
-// import { recalcPosts } from ".";
 const opened: Set<string> = new Set();
 export function isOpen(url: string): boolean {
   return opened.has(url);
