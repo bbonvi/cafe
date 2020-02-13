@@ -17,6 +17,7 @@ interface Alert {
   message: string;
   sticky?: boolean;
   closing?: boolean;
+  type?: "error" | "success" | "warn" | "neutral";
 }
 
 class Alerts extends Component<any, any> {
@@ -63,9 +64,9 @@ class Alerts extends Component<any, any> {
       }, 1000);
     };
   }
-  private renderAlert = ({ id, title, message, closing }: Alert) => {
+  private renderAlert = ({ id, title, message, closing, type = "error" }: Alert) => {
     return (
-      <article class={cx("alert", closing && "alert_closing")} key={id.toString()}>
+      <article class={cx("alert", closing && "alert_closing", "alert--" + type)} key={id.toString()}>
         <a class="control alert-close-control" onClick={this.makeClose(id, true)}>
           <i class="fa fa-remove" />
         </a>
@@ -86,6 +87,8 @@ export function showAlert(a: Alert | Error | string | [string, Error]) {
     a = {message: a.message};
   } else if (Array.isArray(a)) {
     a = {title: a[0], message: a[1].message};
+  } else {
+    (a as any) = { ...a, type: a.type };
   }
   trigger(HOOKS.showAlert, a);
 }
