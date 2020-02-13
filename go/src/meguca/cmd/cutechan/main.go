@@ -47,7 +47,7 @@ Options:
   -d <datadir>  Kpopnet data directory location (default: ./go/src/github.com/Kagami/kpopnet/data).
   -g <geodir>   GeoIP databases directory location (default: ./geoip).
   -o <origin>   Allowed origin for Idol API (default: http://localhost:8000).
-  --cfg <path>  Path to TOML config (default: ./cutechan.toml.example).
+  --cfg <path>  Path to TOML config (default: ./config.toml.example).
 `
 
 // Duplicates USAGE so make sure to update consistently!
@@ -63,7 +63,7 @@ var defaultConfig = config{
 	DataDir: "./go/src/github.com/Kagami/kpopnet/data",
 	GeoDir:  "./geoip",
 	Origin:  "http://localhost:8000",
-	Path:    "./cutechan.toml.example",
+	Path:    "./config.toml.example",
 }
 
 type config struct {
