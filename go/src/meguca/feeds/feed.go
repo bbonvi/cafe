@@ -1,6 +1,7 @@
 package feeds
 
 import (
+	"encoding/json"
 	"meguca/common"
 	"meguca/db"
 	"strconv"
@@ -274,11 +275,14 @@ func (f *Feed) genSyncMessage() []byte {
 	encodeUints("deleted", f.deleted)
 	encodeUints("deletedImage", f.deletedImage)
 
-	// t, _ := db.GetThreadReacts(f.id)
-	// p, _ := json.Marshal(t)
-	// if p != nil {
-	// b = append(b, `, "reacts": `+string(p)...)
-	// }
+	// TODO: We send all thread reactions to connected client,
+	// although later he gonna call api to get all self reactions.
+	// This is no good
+	t, _ := db.GetThreadReacts(f.id)
+	p, _ := json.Marshal(t)
+	if p != nil {
+		b = append(b, `, "reacts": `+string(p)...)
+	}
 
 	b = append(b, '}')
 
