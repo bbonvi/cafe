@@ -90,6 +90,8 @@ func createRouter(debugRoutes bool) http.Handler {
 	api.POST("/post", createPost)
 	api.POST("/post/react", reactToPost)
 	api.POST("/thread", createThread)
+	api.GET("/thread/:thread/reacts-self", getTreadUserReaction)
+	api.GET("/thread/:thread/reacts", getTreadReaction)
 	// Account.
 	api.POST("/register", register)
 	api.POST("/login", login)

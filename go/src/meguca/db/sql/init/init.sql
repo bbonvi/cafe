@@ -121,7 +121,7 @@ create table user_reacts (
 create table post_reacts (
   smile_name text not null,
   count bigint default 0,
-  post_id bigint references posts on delete set null,
+  post_id bigint references posts on delete cascade,
   timestamp timestamp default current_timestamp,
   id bigserial primary key
 );

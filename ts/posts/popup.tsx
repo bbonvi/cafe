@@ -22,7 +22,8 @@ import { findPreloadImages } from "./hover";
 import RenderVideo from './player'
 import SmileBox from "./smile-box";
 import API from "../api";
-// import { recalcPosts } from ".";
+import { showAlert } from "../alerts";
+import _ from "../lang";
 const opened: Set<string> = new Set();
 export function isOpen(url: string): boolean {
   return opened.has(url);
@@ -805,18 +806,15 @@ export function handleNewReaction(postId: number, buttonElement: HTMLElement) {
   }
   function handleSelect(smileName: string) {
     const post = posts.get(postId);
-    const reactionParams = {
-      count: 1,
-      postId,
-      smileName,
-    };
-    post.view.renderReaction(reactionParams)
     handleClose();
     API.post.react({
       smileName,
       postId,
-    }).catch(() => {
-      post.view.decrementReaction(reactionParams);
+    }).then((res) => {
+      res.self = !!res.self;
+      post.view.setReaction(res);
+    }).catch((err) => {
+      showAlert({ message: err.message, title: _("sendErr"), type: "warn" });
     });
   }
 }

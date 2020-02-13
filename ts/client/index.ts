@@ -1,12 +1,11 @@
-import { initCalc } from './../posts/index';
 /**
  * Core websocket message handlers.
  */
 
 import { showAlert } from "../alerts";
-import { PostData } from "../common";
+import { PostData, SmileReact } from "../common";
 import { connEvent, connSM, handlers, message } from "../connection";
-import { isHoverActive, Post, PostView } from "../posts";
+import { isHoverActive, Post, PostView, observePost } from "../posts";
 import { page, posts } from "../state";
 import { postAdded } from "../ui";
 import { isAtBottom, scrollToBottom } from "../util";
@@ -63,7 +62,12 @@ export function insertPost(data: PostData) {
   if (tabInFocus && atBottom && !isHoverActive()) {
     scrollToBottom();
   }
-  initCalc()
+  const { reacts = []} = data;
+  reacts.forEach((react: SmileReact) => {
+    view.setReaction(react);
+  });
+
+  observePost(view.el)
 }
 
 // TODO: This has to be on server-side!!!

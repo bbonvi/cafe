@@ -84,6 +84,7 @@ type React struct {
 	SmileName string `json:"smileName"`
 	Count     uint64 `json:"count"`
 	PostID    uint64 `json:"postId"`
+	Self      bool   `json:"self,omitempty"`
 }
 
 type Reacts []React

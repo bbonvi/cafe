@@ -11,7 +11,6 @@ export { HOOKS, hook, unhook, trigger } from "./hooks";
 export { ChangeEmitter, emitChanges } from "./changes";
 
 import { POST_SEL } from "../vars";
-import { recalcPosts } from "../posts";
 
 export interface Constructable {
   new (): any;
@@ -137,13 +136,11 @@ export function isAtBottom() {
 // Scroll to the top of the page.
 export function scrollToTop() {
   window.scrollTo(0, 0);
-  recalcPosts()
 }
 
 // Scroll to the bottom of the thread.
 export function scrollToBottom() {
   window.scrollTo(0, document.documentElement.scrollHeight);
-  recalcPosts()
 }
 
 // https://stackoverflow.com/a/30810322
