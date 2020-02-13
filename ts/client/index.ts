@@ -4,7 +4,7 @@ import { initCalc } from './../posts/index';
  */
 
 import { showAlert } from "../alerts";
-import { PostData } from "../common";
+import { PostData, SmileReact } from "../common";
 import { connEvent, connSM, handlers, message } from "../connection";
 import { isHoverActive, Post, PostView } from "../posts";
 import { page, posts } from "../state";
@@ -63,7 +63,12 @@ export function insertPost(data: PostData) {
   if (tabInFocus && atBottom && !isHoverActive()) {
     scrollToBottom();
   }
-  initCalc()
+  initCalc();
+  const { reacts = []} = data;
+  reacts.forEach((react: SmileReact) => {
+    view.setReaction(react);
+  });
+
 }
 
 // TODO: This has to be on server-side!!!

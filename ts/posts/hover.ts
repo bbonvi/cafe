@@ -22,6 +22,7 @@ import {
 import { Post } from "./model";
 import * as popup from "./popup";
 import PostView from "./view";
+import { SmileReact } from "../common";
 // import { SmileReact } from "../common";
 // import { fileTypes } from "../common";
 
@@ -141,6 +142,10 @@ async function renderPostPreview(event: MouseEvent | TouchEvent) {
     await view.afterRender();
     post.seenOnce = true;
     posts.add(post);
+    const { reacts = []} = data;
+    reacts.forEach((react: SmileReact) => {
+      view.setReaction(react);
+    });
   }
 
   const preview = new PostPreview(post, target);
@@ -151,7 +156,7 @@ async function renderPostPreview(event: MouseEvent | TouchEvent) {
 function showImage(url: string, width: number, height: number, thumbSrc?: string,
                    fileType?: number, transparent?: boolean, postId?: number) {
   if (popup.isOpen(url)) return;
-  let backgroundImage = '';
+  let backgroundImage = "";
   switch (fileType) {
     case 0: // jpg
       backgroundImage = `url(${thumbSrc})`;

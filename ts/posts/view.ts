@@ -178,93 +178,96 @@ export default class PostView extends View<Post> {
         if (reaction.count !== oldValue) {
             reactContainer.classList.add("post-react--maximized");
         }
-        clearTimeout(this.timers[reaction.smileName + "anim"]);
-        this.timers[reaction.smileName + "anim"] = setTimeout(() => {
+        setTimeout(() => {
             reactContainer.classList.remove("post-react--maximized");
             reactContainer.classList.remove("post-react--minimized");
         }, 200);
+        this.handleExtraReactions();
+    }
 
-        // const hidden = this.model.view.el
-        //     .querySelector(".post-reacts")
-        //     .classList
-        //     .contains("post-reacts--hidden");
+    public handleExtraReactions() {
+        const reactionsNumber = this.model.view.el.querySelectorAll(".post-react").length;
+        const hidden = this.model.view.el
+            .querySelector(".post-reacts")
+            .classList
+            .contains("post-reacts--hidden");
 
-        // if (reactionsNumber > 10 && hidden) {
-        //     const showMore = this.model.view.el.querySelector(".post-reacts__showmore") as HTMLElement;
-        //     showMore.style.display = "";
+        if (reactionsNumber > 10 && hidden) {
+            const showMore = this.model.view.el.querySelector(".post-reacts__showmore") as HTMLElement;
+            showMore.style.display = "";
+        }
+    }
+
+
+    public removeThread() {
+        this.el.closest(THREAD_SEL).remove();
+    }
+
+    // Render the sticky status of a thread OP.
+    // TODO(Kagami): Implement.
+    public renderSticky() {
+        // const old = this.el.querySelector(".sticky")
+        // if (old) {
+        //   old.remove()
+        // }
+        // if (this.model.sticky) {
+        //   this.el
+        //     .querySelector(".mod-checkbox")
+        //     .after(importTemplate("sticky"))
         // }
     }
 
-
-        public removeThread() {
-            this.el.closest(THREAD_SEL).remove();
-        }
-
-        // Render the sticky status of a thread OP.
-        // TODO(Kagami): Implement.
-        public renderSticky() {
-            // const old = this.el.querySelector(".sticky")
-            // if (old) {
-            //   old.remove()
-            // }
-            // if (this.model.sticky) {
-            //   this.el
-            //     .querySelector(".mod-checkbox")
-            //     .after(importTemplate("sticky"))
-            // }
-        }
-
-        // Inserts PostView back into the thread ordered by id.
-        public reposition() {
-            // Insert before first post with greater ID.
-            const { id, op } = this.model;
-            const thread = document.getElementById(`thread${op}`);
-            if (!thread) return;
-            for (const el of Array.from(thread.children)) {
-                switch (el.tagName) {
-                    case "ARTICLE":
-                    if (getID(el) > id) {
-                        el.before(this.el);
-                        return;
-                    }
-                    break;
-                    case "ASIDE": // On board pages
+    // Inserts PostView back into the thread ordered by id.
+    public reposition() {
+        // Insert before first post with greater ID.
+        const { id, op } = this.model;
+        const thread = document.getElementById(`thread${op}`);
+        if (!thread) return;
+        for (const el of Array.from(thread.children)) {
+            switch (el.tagName) {
+                case "ARTICLE":
+                if (getID(el) > id) {
                     el.before(this.el);
                     return;
                 }
+                break;
+                case "ASIDE": // On board pages
+                el.before(this.el);
+                return;
             }
-            // This post should be last or no posts in thread.
-            thread.append(this.el);
         }
-
-        // Check if we can see the post or have scrolled past it.
-        public scrolledPast() {
-            const rect = this.el.getBoundingClientRect();
-            const viewW = document.body.clientWidth;
-            const viewH = document.body.clientHeight;
-            return rect.bottom < viewH && rect.left > 0 && rect.left < viewW;
-        }
-
-        public getReactContainer(smileName: string): [HTMLDivElement, boolean] {
-            const postReacts = this.model.view.el.querySelector(".post-reacts");
-            const divider = this.model.view.el.querySelector(".post-reacts__divider");
-
-            let created = false;
-            let reactContainer: HTMLDivElement = postReacts.querySelector(".react-" + smileName);
-            if (!reactContainer) {
-                reactContainer = postReacts.insertBefore(document.createElement("div"), divider);
-                created = true;
-            }
-
-            return [reactContainer, created];
-        }
-
-        private getEveryoneHTML() {
-            let { innerHTML } = this.model.view.el;
-            const everyoneHTML = `<a class="everyone">@everyone</a>`;
-            const everyone = new RegExp('@everyone', 'g')
-            innerHTML = innerHTML.replace(everyone, everyoneHTML);
-            return innerHTML;
-        }
-
+        // This post should be last or no posts in thread.
+        thread.append(this.el);
     }
+
+    // Check if we can see the post or have scrolled past it.
+    public scrolledPast() {
+        const rect = this.el.getBoundingClientRect();
+        const viewW = document.body.clientWidth;
+        const viewH = document.body.clientHeight;
+        return rect.bottom < viewH && rect.left > 0 && rect.left < viewW;
+    }
+
+    public getReactContainer(smileName: string): [HTMLDivElement, boolean] {
+        const postReacts = this.model.view.el.querySelector(".post-reacts");
+        const divider = this.model.view.el.querySelector(".post-reacts__divider");
+
+        let created = false;
+        let reactContainer: HTMLDivElement = postReacts.querySelector(".react-" + smileName);
+        if (!reactContainer) {
+            reactContainer = postReacts.insertBefore(document.createElement("div"), divider);
+            created = true;
+        }
+
+        return [reactContainer, created];
+    }
+
+    private getEveryoneHTML() {
+        let { innerHTML } = this.model.view.el;
+        const everyoneHTML = `<a class="everyone">@everyone</a>`;
+        const everyone = new RegExp('@everyone', 'g')
+        innerHTML = innerHTML.replace(everyone, everyoneHTML);
+        return innerHTML;
+    }
+
+}
