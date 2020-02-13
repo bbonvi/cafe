@@ -152,14 +152,17 @@ func createThread(w http.ResponseWriter, r *http.Request) {
 	serveJSON(w, r, res)
 }
 
-var (
-	reactionFeedQueue common.Reacts
-)
+// var (
+// 	reactionFeedQueue common.Reacts
+// )
 
 func init() {
 	// go syncReacts()
 }
 
+// TODO: handle reaction queue
+// For perfomance reason we could collect reactions
+// for about half of the second and then send them all to the clients
 // func syncReacts() {
 // 	time.Sleep(time.Second)
 
@@ -289,22 +292,24 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 		text500(w, r, err)
 		return
 	}
-	res := map[string]bool{"reacted": !alreadyReacted}
 
+	res := common.React{
+		SmileName: re.SmileName,
+		Count:     count,
+		PostID:    re.PostID,
+		Self:      !alreadyReacted,
+	}
 	// make success response to the client
 	serveJSON(w, r, res)
 
-	// add reaction to feed queue
 	react := common.React{
 		SmileName: re.SmileName,
 		Count:     count,
 		PostID:    re.PostID,
 	}
-	reactionFeedQueue = append(reactionFeedQueue, react)
-
 	var reacts common.Reacts
 	reacts = append(reacts, react)
-	sendToFeed(reacts, threadID)
+	sendReactionsToFeed(reacts, threadID)
 }
 
 func handleUserReaction(ss *auth.Session, ip string, reactionID uint64, reacted bool) (err error) {
@@ -459,7 +464,7 @@ type reactsMessage struct {
 	Reacts common.Reacts `json:"reacts"`
 }
 
-func sendToFeed(r common.Reacts, threadID uint64) error {
+func sendReactionsToFeed(r common.Reacts, threadID uint64) error {
 	var rm reactsMessage
 	rm.Reacts = r
 	msgType := `30`
