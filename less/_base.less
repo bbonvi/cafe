@@ -3635,9 +3635,16 @@ html:not(.pos_moderators) {
   flex-direction: row;
   flex-wrap: wrap;
 
+  height: 27px;
   align-items: center;
 
   user-select: none;
+}
+
+html.page-loaded {
+  .post:not(.visible) .smile {
+    background-image: unset !important;
+  }
 }
 
 .post-react {
