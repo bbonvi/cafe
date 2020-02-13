@@ -80,15 +80,53 @@ function initIntersectionObserver() {
         observer.observe(element);
     });
 }
+interface xHTMLElement extends HTMLElement {
+    previousElementSibling: xHTMLElement;
+    nextElementSibling: xHTMLElement;
+    previousSibling: xHTMLElement;
+    nextSibling: xHTMLElement;
+}
 function onIntersectionChange(
     entries: IntersectionObserverEntry[],
     observ: IntersectionObserver,
 ) {
     entries.forEach((entry) => {
         requestAnimationFrame(() => {
-            setVisibility(entry.target as HTMLElement, entry.isIntersecting);
+            const post = entry.target as xHTMLElement;
+            setVisibility(getSibling(getSibling(post, -1), -1), entry.isIntersecting, true);
+            setVisibility(getSibling(getSibling(post, 1), 1), entry.isIntersecting, true);
+
+            setVisibility(post, entry.isIntersecting);
+
+            setVisibility(getSibling(post, -1), entry.isIntersecting, true);
+            setVisibility(getSibling(post, 1), entry.isIntersecting, true);
         });
     });
+}
+function getSibling(element: xHTMLElement, n = -1) {
+    try {
+        if (n < 0) {
+            return element.previousSibling
+        }
+        return element.nextSibling
+    } catch (_) {}
+}
+
+function setVisibility(post: HTMLElement, visible: boolean, showOnly?: boolean) {
+    // Check if post exists and is a part of a dom
+    if (!post || !post.parentElement) {
+        return;
+    }
+
+    if (visible && !post.dataset.loaded) {
+        replaceSrcs(post);
+    }
+
+    if (visible && !post.classList.contains("visible")) {
+        post.classList.add("visible");
+    } else if (!visible && post.classList.contains("visible") && !showOnly) {
+        post.classList.remove("visible");
+    }
 }
 
 export function observePost(post: HTMLElement) {
@@ -96,20 +134,6 @@ export function observePost(post: HTMLElement) {
 }
 initIntersectionObserver();
 
-function setVisibility(post: HTMLElement, visible: boolean) {
-    // Check if post exists and is a part of a dom
-    if (!post || !post.parentElement) {
-        return;
-    }
-    if (visible) {
-        post.classList.add("visible");
-        if (!post.dataset.loaded) {
-            replaceSrcs(post);
-        }
-    } else {
-        post.classList.remove("visible");
-    }
-}
 
 export function replaceSrcs(post: HTMLElement) {
     post.dataset.loaded = "true";

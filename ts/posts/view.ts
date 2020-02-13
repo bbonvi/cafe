@@ -45,6 +45,7 @@ export default class PostView extends View<Post> {
             this.el.classList.add("post_loaded");
         }
 
+        this.renderRecent();
         return renderEmbeds(this.el);
     }
 

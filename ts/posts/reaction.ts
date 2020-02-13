@@ -6,9 +6,20 @@ import API from "../api";
 import { showAlert } from "../alerts";
 import _ from "../lang";
 
+const timer = {
+    ref: null,
+};
+
 export function init() {
     let currentPost: Post = null as Post;
-    document.addEventListener("mousemove", (e: MouseEvent) => {
+    const onMouseMove = (e: MouseEvent) => {
+        clearTimeout(timer.ref);
+        timer.ref = setTimeout(() => {
+            handlePostHover(e);
+        }, 64);
+    }
+
+    function handlePostHover(e: MouseEvent) {
         if (!e.target) {
             return;
         }
@@ -26,8 +37,9 @@ export function init() {
             post.view.renderRecent();
             currentPost = posts.get(parseInt(postEl.dataset.id, 10));
         }
-    });
+    }
 
+    document.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("click", (e: MouseEvent) => {
         const target = e.target as HTMLElement;
         if (!target) {
@@ -83,7 +95,7 @@ export function init() {
         function isDisabled() {
             return reactElement.hasAttribute("disabled");
         }
-    });
+    }, { passive: true });
 }
 
 function handleShowMore(showMoreEl: HTMLElement) {
