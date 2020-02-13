@@ -533,11 +533,30 @@ body {
   max-width: 500px;
   margin-bottom: 20px;
   padding: 10px;
-  border: 1px solid #ebccd1;
   border-radius: 5px;
-  color: #a94442;
-  background-color: #f2dede;
+  color: #444;
+  background-color: #ddd;
   .clearfix;
+
+  &--error {
+    color: #a94442;
+    background-color: #f2dede;
+  }
+
+  &--neutral {
+    color: #444;
+    background-color: #ddd;
+  }
+
+  &--success {
+    color: #29451b;
+    background-color: #64e455;
+  }
+
+  &--warn {
+    color: #58502c;
+    background-color: #e4cc55;
+  }
 }
 
 .alert_closing {
@@ -3639,6 +3658,7 @@ html:not(.pos_moderators) {
 
   cursor: pointer;
   transition: 0.15s;
+  opacity: 1;
   // box-shadow: 0 10px 10px 0 #00000000;
   transition-timing-function: cubic-bezier(0, 1.38, 0.96, 1.15);
 
@@ -3656,6 +3676,10 @@ html:not(.pos_moderators) {
     .fa-plus {
       opacity: 0.6;
     }
+  }
+
+  &--self {
+    background: saturate(lighten(@spoiler, 2%), 7%);
   }
 
   &--minimized {
@@ -3768,18 +3792,18 @@ html:not(.pos_moderators) {
 }
 
 // .thread_index {
-  //   .post-react {
-  //     pointer-events: none;
-  //   }
+//   .post-react {
+//     pointer-events: none;
+//   }
 
-  //   .reaction-box {
-  //     display: none !important;
-  //   }
+//   .reaction-box {
+//     display: none !important;
+//   }
 
-  //   .post-react--add {
-  //     display: none;
-  //   }
-  // }
+//   .post-react--add {
+//     display: none;
+//   }
+// }
 
 .post:hover {
   .post-react--add {
