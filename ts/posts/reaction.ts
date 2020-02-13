@@ -84,7 +84,11 @@ export function init() {
             res.self = !!res.self;
             post.view.setReaction(res);
         }).catch((err) => {
-            showAlert({ message: err.message, title: _("sendErr"), type: "warn" });
+            if (err.message === "Unknown error") {
+                showAlert({ message: "You reacting too fast :(", title: _("sendErr"), type: "neutral" });
+            } else {
+                showAlert({ message: err.message, title: _("sendErr"), type: "warn" });
+            }
         });
         function disabledButton() {
             reactElement.setAttribute("disabled", "");
