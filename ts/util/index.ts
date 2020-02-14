@@ -199,6 +199,41 @@ export function rotateRecent<T>(list: T[], item: T, max: number): T[] {
     : [item, ...list.slice(0, idx), ...list.slice(idx + 1)];
 }
 
+interface CreateElementParams {
+  parent?: HTMLElement;
+  classes?: string | string[];
+  dataSet?: {[key: string]: string | number};
+  text?: string | number;
+  title?: string | number;
+  append?: boolean;
+}
+export function createElement(tag: string, params: CreateElementParams = {}): HTMLElement {
+  const { classes, dataSet = {}, text, title, append = false, parent} = params;
+  const element = document.createElement(tag);
+  if (Array.isArray(classes)) {
+    element.classList.add(...classes)
+  } else {
+    element.className = classes
+  }
+
+  Object.entries(dataSet).forEach(([key, value]) => {
+    element.dataset[key] = String(value);
+  })
+
+  if (text) {
+    element.innerText = String(text);
+  }
+
+  if (title) {
+    element.title = String(title);
+  }
+
+  if (append && parent) {
+    parent.appendChild(element)
+  }
+  return element;
+}
+
 /** Printf-alike helper. */
 export function printf(s: string, ...args: any[]): string {
   return s.replace(/%s/g, () => args.shift());

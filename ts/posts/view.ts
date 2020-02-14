@@ -7,7 +7,7 @@ import {
     makePostContext, readableTime,
     relativeTime, renderPostLink, TemplateContext,
 } from "../templates";
-import { getID } from "../util";
+import { getID, createElement } from "../util";
 import { POST_BACKLINKS_SEL, THREAD_SEL } from "../vars";
 import { render as renderEmbeds } from "./embed";
 import { Post, Thread } from "./model";
@@ -98,44 +98,27 @@ export default class PostView extends View<Post> {
         container.innerHTML = html;
     }
 
-    // TODO: We should render reactions with mustache
-    // public renderReactions() {
-    // }
-
-    public decrementReaction(reaction: SmileReact) {
-        const postReacts = this.model.view.el.querySelector(".post-reacts");
-        const reactContainer: HTMLDivElement = postReacts.querySelector(".react-" + reaction.smileName);
-        if (!reactContainer) {
-            return;
-        }
-        const counter = reactContainer.querySelector(".post-react__count") as HTMLElement;
-        const currentValue = parseInt(counter.innerText, 10);
-        if (currentValue > 1) {
-            counter.innerText = (currentValue - 1).toString();
-        } else {
-            reactContainer.outerHTML = "";
-        }
-    }
-
     public renderReactContainerElements(reactContainer: HTMLElement, reaction: SmileReact) {
-        reactContainer.classList.add(
+        const containerClasses = [
             "react-" + reaction.smileName,
             "post-react",
             "trigger-react-post",
             "post-react--minimized", // for animation
-        );
+        ]
 
-        const smileEl = document.createElement("i");
-        smileEl.classList.add("smile", "smile-" + reaction.smileName);
-        smileEl.title = reaction.smileName;
-
-        const counterEl = document.createElement("span");
-        counterEl.classList.add("post-react__count");
-        counterEl.innerText = (0).toString();
+        const smileEl = createElement("i", {
+            classes: ["smile", "smile-" + reaction.smileName],
+            title: reaction.smileName,
+        })
+        const counterEl = createElement("span", {
+            classes: "post-react__count",
+            text: 0,
+        })
 
         reactContainer.appendChild(smileEl);
         reactContainer.appendChild(counterEl);
-        reactContainer.dataset.postId = this.model.id.toString();
+        reactContainer.classList.add(...containerClasses)
+        reactContainer.dataset.postId = String(this.model.id);
         reactContainer.dataset.smileName = reaction.smileName;
 
         return reactContainer;
@@ -177,12 +160,15 @@ export default class PostView extends View<Post> {
         }
 
         if (reaction.count !== oldValue) {
-            reactContainer.classList.add("post-react--maximized");
+            reactContainer.classList.add("post-react--counterchange");
         }
         setTimeout(() => {
             reactContainer.classList.remove("post-react--maximized");
             reactContainer.classList.remove("post-react--minimized");
         }, 200);
+        setTimeout(() => {
+            reactContainer.classList.remove("post-react--counterchange");
+        }, 100);
         this.handleExtraReactions();
     }
 
