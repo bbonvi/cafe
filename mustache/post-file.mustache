@@ -5,13 +5,21 @@
     <img
       src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
       data-srcset="{{ ThumbPath }} 1x{{^HasVideo}}{{^Record}}, {{ SourcePath }}?retina=true 2x{{/Record}}{{/HasVideo}}"
+      title="{{#Title }}{{ Title }}{{/Title }}"
       class="post-file-thumb{{^HasVideo}} trigger-media-hover{{/HasVideo}} trigger-media-popup "
       data-src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}"
       style="{{ #ThumbPng }} box-shadow: none {{ /ThumbPng }}" data-sha1="{{ SHA1 }}" file-size="{{ Size }}">
     <div class="post-file-thumb_background" style="{{ #ThumbPng }} display: none {{ /ThumbPng }}"
       src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="{{ BlurPath }}"></div>
     <noscript>
-      <img class="post-file-thumb" src="{{ ThumbPath }}" width="{{ TWidth }}" height="{{ THeight }}">
+      <img
+        title="{{#Title }}{{ Title }}{{/Title }}"
+        class="post-file-thumb"
+        src="{{ ThumbPath }}"
+        width="{{ TWidth }}"
+        height="{{ THeight }}"
+        srcset="{{ ThumbPath }} 1x{{^HasVideo}}{{^Record}}, {{ SourcePath }}?retina=true 2x{{/Record}}{{/HasVideo}}"
+       >
     </noscript>
     {{/Record}}
     {{^Record}}
