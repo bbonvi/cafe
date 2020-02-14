@@ -3710,11 +3710,14 @@ html.page-loaded {
   border-radius: 2px;
   display: none;
   flex-direction: row;
+  top: -19px;
+  right: -2px;
+  overflow: hidden;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
   padding: 0px 2px 0px 3px;
   flex-wrap: wrap;
   position: absolute;
-  top: -5px;
-  right: -5px;
+  margin: -2px 0;
 
   &__add {
     color: @control;
@@ -3735,18 +3738,19 @@ html.page-loaded {
 
   .smiles-item {
     min-width: unset;
-    padding: 2px 2px;
+    padding: 0;
+    margin: -2px -1px;
 
     &--heart {
       padding-left: 8px;
 
       .smile {
-        transform: scale(0.7);
+        transform: scale(0.53);
       }
     }
 
     .smile {
-      transform: scale(0.7);
+      transform: scale(0.53);
     }
 
     .fa-plus {
