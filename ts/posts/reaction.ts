@@ -85,7 +85,7 @@ export function init() {
             post.view.setReaction(res);
         }).catch((err) => {
             if (err.message === "Unknown error") {
-                showAlert({ message: "You reacting too fast :(", title: _("sendErr"), type: "neutral" });
+                showAlert({ message: "You are probably reacting too fast :(", title: _("sendErr"), type: "neutral" });
             } else {
                 showAlert({ message: err.message, title: _("sendErr"), type: "warn" });
             }
