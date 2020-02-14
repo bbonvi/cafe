@@ -20,15 +20,15 @@ const thingSmiles = new Set(
     .trim()
     .split(/\s+/),
 );
-const memeSmiles = new Set(
-  `
-  beast cool frukt heechul hyunsuk jyp jyp2 kwangsoo lookup priunil sooman
-  tellmemore v_gugudalnik sekshie plsno orly police autism hyperlol iljin
-  blinchick hug shy
-`
-    .trim()
-    .split(/\s+/),
-);
+// const memeSmiles = new Set(
+//   `
+//   beast cool frukt heechul hyunsuk jyp jyp2 kwangsoo lookup priunil sooman
+//   tellmemore v_gugudalnik sekshie plsno orly police autism hyperlol iljin
+//   blinchick hug shy
+// `
+//     .trim()
+//     .split(/\s+/),
+// );
 // const memeSmiles = new Set(`
 //   beast cool frukt heechul hyunsuk jyp jyp2 kwangsoo lookup priunil sooman
 //   tellmemore v_gugudalnik sekshie plsno orly police autism hyperlol iljin
@@ -63,12 +63,12 @@ function isThingSmile(id: string): boolean {
   return thingSmiles.has(id);
 }
 
-function isMemeSmile(id: string): boolean {
-  return memeSmiles.has(id);
-}
+// function isMemeSmile(id: string): boolean {
+//   return memeSmiles.has(id);
+// }
 
 function isIdolSmile(id: string): boolean {
-  return !isThingSmile(id) && !isMemeSmile(id);
+  return !isThingSmile(id);
 }
 
 // Recent smiles list routines.
