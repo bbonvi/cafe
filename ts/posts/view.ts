@@ -125,7 +125,7 @@ export default class PostView extends View<Post> {
     }
 
     public delayedRemoveReaction(reactContainer: HTMLElement, smileName: string) {
-        reactContainer.classList.add("post-react--maximized");
+        reactContainer.classList.add("post-react--beforedelete");
         this.timers[smileName] = setTimeout(() => {
             reactContainer.outerHTML = "";
         }, 100);
@@ -163,7 +163,7 @@ export default class PostView extends View<Post> {
             reactContainer.classList.add("post-react--counterchange");
         }
         setTimeout(() => {
-            reactContainer.classList.remove("post-react--maximized");
+            reactContainer.classList.remove("post-react--beforedelete");
             reactContainer.classList.remove("post-react--minimized");
         }, 200);
         setTimeout(() => {

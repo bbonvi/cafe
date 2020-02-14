@@ -3666,6 +3666,7 @@ html.page-loaded {
 
   cursor: pointer;
   transition: 0.2s;
+  max-width: 90px;
   opacity: 1;
 
   &__count {
@@ -3699,8 +3700,10 @@ html.page-loaded {
     opacity: 0;
   }
 
-  &--maximized {
-    opacity: 0.5;
+  &--beforedelete {
+    opacity: 0;
+    max-width: 0px;
+    padding: 0;
   }
 
   &:hover {
