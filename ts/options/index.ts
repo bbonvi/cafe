@@ -69,13 +69,9 @@ const specs: { [id: string]: OptionSpec } = {
       element.classList.toggle('enabled', on);
     },
   },
-  // // Backdrop clicking
-  // popupBackdrop: {
-  //   default: false,
-  // },
   // Image hover expansion
   imageHover: {
-    default: true,
+    default: false,
   },
   // Desktop Notifications
   notification: {
