@@ -107,6 +107,7 @@ handlers[message.synchronise] = async (data: SyncData) => {
       showAlert(e.message);
       throw e;
     });
+    // TODO: Also update all the reactions
   }
 
   connSM.feed(connEvent.sync);

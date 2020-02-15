@@ -1,10 +1,11 @@
-import { PostData } from "../common";
+import { PostData, ThreadData } from "../common";
 import _ from "../lang";
 import { Backlinks, Post, PostView } from "../posts";
 import { mine, page, posts } from "../state";
 import { notifyAboutReply, postAdded } from "../ui";
 import { extractJSON } from "../util";
 import { POST_BACKLINKS_SEL } from "../vars";
+import { API } from "../api";
 
 // Check if the rendered page is a ban page.
 export function isBanned(): boolean {
@@ -18,7 +19,18 @@ export function extractPageData<T>(): {threads: T, backlinks: Backlinks} {
     backlinks: extractJSON("backlink-data"),
   };
 }
-
+export function updateSelfReactions() {
+  const { threads } = extractPageData<ThreadData>();
+    API.thread.selfReacts(threads.id)
+      .then((reacts) => {
+        for (const react of reacts) {
+          const post = posts.get(react.postId);
+          if (post && !post.deleted) {
+            post.setReaction(react);
+          }
+        }
+      });
+}
 // Extract post model and view from the HTML fragment and apply
 // client-specific formatting. Returns whether the element was removed.
 export function extractPost(data: PostData, op: number, board: string, backlinks: Backlinks): boolean {
