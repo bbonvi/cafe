@@ -294,12 +294,12 @@ func InsertPost(tx *sql.Tx, p Post) (err error) {
 }
 
 // InsertUserReaction inserts a post's reaction with relation to post.
-func InsertUserReaction(ss *auth.Session, ip string, reactionID uint64) (err error) {
+func InsertUserReaction(ss *auth.Session, reactionID uint64) (err error) {
 	var userID *string
 	if ss != nil {
 		userID = &ss.UserID
 	}
-	err = execPrepared("write_user_react", &userID, ip, reactionID)
+	err = execPrepared("write_user_react", &userID, reactionID)
 	if err != nil {
 		return
 	}
@@ -324,12 +324,12 @@ func UpdateReactionCount(postID uint64, smileName string, count uint64) (reactio
 	return
 }
 
-func DeleteUserReaction(ss *auth.Session, ip string, reactionID uint64) (err error) {
+func DeleteUserReaction(ss *auth.Session, reactionID uint64) (err error) {
 	var userID *string
 	if ss != nil {
 		userID = &ss.UserID
 	}
-	err = execPrepared("delete_user_react", &userID, ip, reactionID)
+	err = execPrepared("delete_user_react", &userID, reactionID)
 	if err != nil {
 		return
 	}

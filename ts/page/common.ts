@@ -19,9 +19,9 @@ export function extractPageData<T>(): {threads: T, backlinks: Backlinks} {
     backlinks: extractJSON("backlink-data"),
   };
 }
-export function updateSelfReactions() {
+export function updateThreadReactions() {
   const { threads } = extractPageData<ThreadData>();
-    API.thread.selfReacts(threads.id)
+    API.thread.reactions(threads.id)
       .then((reacts) => {
         for (const react of reacts) {
           const post = posts.get(react.postId);

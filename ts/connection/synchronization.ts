@@ -5,6 +5,7 @@ import { page, posts } from "../state";
 import { handlers, message } from "./messages";
 import { connEvent, connSM, send } from "./state";
 import { SmileReact } from "../common";
+import { updateThreadReactions } from "../page/common";
 
 
 // Passed from the server to allow the client to synchronise state, before
@@ -106,8 +107,10 @@ handlers[message.synchronise] = async (data: SyncData) => {
     await Promise.all(proms).catch((e) => {
       showAlert(e.message);
       throw e;
-    });
-    // TODO: Also update all the reactions
+    })
+    if (proms.length > 0) {
+      updateThreadReactions()
+    }
   }
 
   connSM.feed(connEvent.sync);

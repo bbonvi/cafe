@@ -356,7 +356,6 @@ func GetThread(id uint64, lastN int) (t common.Thread, err error) {
 // haven't reacted to post with following smileName
 func AssertNotReacted(
 	ss *auth.Session,
-	ip string,
 	postID uint64,
 	smileName string,
 ) (r bool) {
@@ -365,7 +364,6 @@ func AssertNotReacted(
 		userID = &ss.UserID
 	}
 	err := prepared["assert_user_not_reacted"].QueryRow(
-		ip,
 		userID,
 		postID,
 		smileName,
@@ -386,12 +384,12 @@ func GetPostReactCount(id uint64, smile_name string) (count uint64) {
 }
 
 // GetThreadUserReacts reads a list of thread reactions
-func GetThreadUserReacts(ss *auth.Session, ip string, threadID uint64) (reacts common.Reacts, err error) {
+func GetThreadUserReacts(ss *auth.Session, threadID uint64) (reacts common.Reacts, err error) {
 	var userID *string
 	if ss != nil {
 		userID = &ss.UserID
 	}
-	rows, err := prepared["get_user_reacts"].Query(userID, ip, threadID)
+	rows, err := prepared["get_thread_reacts"].Query(threadID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -401,12 +399,12 @@ func GetThreadUserReacts(ss *auth.Session, ip string, threadID uint64) (reacts c
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID)
+		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID, &p.Self)
 		if err != nil {
+			fmt.Println(err)
 			err = errors.New("something went wrong")
 			return
 		}
-		p.Self = true
 		reacts = append(reacts, p)
 	}
 	err = rows.Err()
@@ -415,7 +413,7 @@ func GetThreadUserReacts(ss *auth.Session, ip string, threadID uint64) (reacts c
 
 // GetThreadReacts reads a list of thread reactions
 func GetThreadReacts(id uint64) (reacts common.Reacts, err error) {
-	rows, err := prepared["get_thread_reacts"].Query(id)
+	rows, err := prepared["get_thread_reacts"].Query(id, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -425,7 +423,7 @@ func GetThreadReacts(id uint64) (reacts common.Reacts, err error) {
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID)
+		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID, &p.Self)
 		if err != nil {
 			err = errors.New("something went wrong")
 			return

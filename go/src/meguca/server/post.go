@@ -97,29 +97,9 @@ func getTreadUserReaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ss, _ := getSession(r, "")
-	ip, err := auth.GetIP(r)
-	if err != nil {
-		text400(w, err)
-		return
-	}
 
-	re, err := db.GetThreadUserReacts(ss, ip, id)
+	re, err := db.GetThreadUserReacts(ss, id)
 	if err != nil {
-		text404(w, err)
-		return
-	}
-	serveJSON(w, r, re)
-}
-
-func getTreadReaction(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseUint(getParam(r, "thread"), 10, 64)
-	if err != nil {
-		text400(w, err)
-		return
-	}
-	re, err := db.GetThreadReacts(id)
-	if err != nil {
-		err = errors.New("Thread not found")
 		text404(w, err)
 		return
 	}
@@ -262,13 +242,8 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 		text400(w, e)
 		return
 	}
-	ip, err := auth.GetIP(r)
-	if err != nil {
-		text400(w, err)
-		return
-	}
 
-	alreadyReacted := !db.AssertNotReacted(ss, ip, re.PostID, re.SmileName)
+	alreadyReacted := !db.AssertNotReacted(ss, re.PostID, re.SmileName)
 
 	exist := true
 	count := db.GetPostReactCount(re.PostID, re.SmileName)
@@ -287,7 +262,7 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 	// Create reaction or set count to value. Get post_react id in return.
 	reactionID, err := updatePostReaction(re, count, exist)
 
-	err = handleUserReaction(ss, ip, reactionID, alreadyReacted)
+	err = handleUserReaction(ss, reactionID, alreadyReacted)
 	if err != nil {
 		text500(w, r, err)
 		return
@@ -312,13 +287,13 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 	sendReactionsToFeed(reacts, threadID)
 }
 
-func handleUserReaction(ss *auth.Session, ip string, reactionID uint64, reacted bool) (err error) {
+func handleUserReaction(ss *auth.Session, reactionID uint64, reacted bool) (err error) {
 	if !reacted {
 		// create user_reaction refering ip and account_id(if it exists)
-		err = db.InsertUserReaction(ss, ip, reactionID)
+		err = db.InsertUserReaction(ss, reactionID)
 		return
 	}
-	err = db.DeleteUserReaction(ss, ip, reactionID)
+	err = db.DeleteUserReaction(ss, reactionID)
 	return
 }
 

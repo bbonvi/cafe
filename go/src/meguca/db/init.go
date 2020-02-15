@@ -211,6 +211,11 @@ var upgrades = []func(*sql.Tx) error{
 			ALTER TABLE post_reacts ADD FOREIGN KEY (post_id) REFERENCES posts on delete cascade`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			CREATE INDEX user_reacts_post_react_id ON user_reacts (post_react_id)`,
+		)
+	},
 }
 
 func StartDB() (err error) {

@@ -83,8 +83,8 @@ export const API = {
   },
   thread: {
     create: emit.POST.Form("thread"),
-    selfReacts: (id: number): Promise<SmileReact[]> =>
-      emit.GET.JSON(`thread/${id}/reacts-self`)(),
+    reactions: (id: number): Promise<SmileReact[]> =>
+      emit.GET.JSON(`thread/${id}/reacts`)(),
   },
   user: {
     banByPost: emit.POST.JSON("ban"),

@@ -152,6 +152,7 @@ create index editing on posts (editing);
 create index ip on posts (ip);
 create index posts_op_time on posts (op, time);
 create index post_reacts_post_id on post_reacts (post_id);
+create index user_reacts_post_react_id on user_reacts (post_react_id);
 
 create table news (
   id bigserial primary key,
