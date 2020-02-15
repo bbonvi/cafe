@@ -90,13 +90,13 @@ if (isWebkit) {
 }
 
 export function smileLineOffset(elems: any) {
-  requestAnimationFrame(() => {
-    for (const elem of elems) {
-      if (!elem.innerText || !/\S/.test(elem.innerText)) {
-        elem.classList.add("smiles-offset");
-      }
-    }
-  })
+  for (const elem of elems) {
+    requestAnimationFrame(() => {
+        if (!elem.innerText || !/\S/.test(elem.innerText)) {
+          elem.classList.add("smiles-offset");
+        }
+    })
+  }
 }
 
 export function init() {
