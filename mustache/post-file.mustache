@@ -19,23 +19,24 @@
         width="{{ TWidth }}"
         height="{{ THeight }}"
         srcset="{{ ThumbPath }} 1x{{^HasVideo}}{{^Record}}, {{ SourcePath }}?retina=true 2x{{/Record}}{{/HasVideo}}"
-       >
+      >
     </noscript>
     {{/Record}}
     {{^Record}}
-    {{#HasVideo}}
     <figure class="post-file-badges">
+      <i class="fa post-file-badge post-file-video-badge post-file-res-badge">
+        {{ Width }}×{{ Height }}
+      </i>
       {{#HasVideo}}
-      <i class="fa fa-play-circle-o post-file-badge post-file-video-badge"></i>
-      {{/HasVideo}}{{#HasAudio}}
-      <i class="fa fa-volume-up post-file-badge post-file-audio-badge"></i>
-      {{/HasAudio}}{{#HasTitle}}
+        <i class="fa fa-play-circle-o post-file-badge post-file-video-badge"></i>
+      {{/HasVideo}}
+      {{#HasTitle}}
       <i class="fa fa-sticky-note post-file-badge post-file-title-badge" to-copy="{{ Title }}"
         title="({{ LCopy }}) {{ Title }}"></i>
       {{/HasTitle}}
     </figure>
-    {{/HasVideo}}
-    {{/Record}}{{#Record}}
+    {{/Record}}
+    {{#Record}}
     <i class="post-file-thumb trigger-media-popup fa fa-music" data-sha1="{{ SHA1 }}"></i>
     {{/Record}}
   </a>

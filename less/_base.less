@@ -283,7 +283,6 @@ body {
 }
 
 .page-title {
-  font-size: 60px;
   font-size: calc(~"45px + (60 - 45) * ((100vw - 300px) / (1600 - 300))");
   font-weight: 800;
   margin: 0px 0 5px;
@@ -673,11 +672,7 @@ blockquote.twitter-tweet p {
   left: 0;
   right: 0;
   top: 0;
-  bottom: 0; // TODO: change to 0;
-}
-
-.popup-video-overlay_full {
-  // bottom: 0;
+  bottom: 0;
 }
 
 .popup-player {
@@ -708,7 +703,6 @@ blockquote.twitter-tweet p {
 }
 
 .player-controls_container {
-  display: inline-block;
   box-sizing: border-box;
   height: 100%;
   line-height: 54px;
@@ -731,11 +725,6 @@ blockquote.twitter-tweet p {
 
   .reduced2x & {
     padding: 0 5px; // min-width: 33px;
-  }
-
-  // reduced version of player 2
-  .reduced3x & {
-    // min-width: 15px;
   }
 
   // fix left and right buttons align
@@ -866,10 +855,6 @@ blockquote.twitter-tweet p {
   top: 0;
   margin: auto 0;
   cursor: pointer;
-
-  &:not(.player-volume):not(.seeking) {
-    // transition: 0.18s ease-out;
-  }
 }
 
 .minimized .progress-bar_full {
@@ -1133,11 +1118,6 @@ blockquote.twitter-tweet p {
     }
   }
 
-  .progress-bar_full {
-    // background: @playerMinBg;
-    // transition: 0.08s linear;
-  }
-
   .progress-bar_container {
     padding: 0;
     margin: 0;
@@ -1373,7 +1353,6 @@ blockquote.twitter-tweet p {
   input[type="password"] {
     background-color: @modalInput;
     box-sizing: border-box;
-    border: 1px solid rgb(169, 169, 169);
     outline: none;
     padding-left: 5px;
     -moz-appearance: none;
@@ -1438,9 +1417,7 @@ blockquote.twitter-tweet p {
 }
 
 .shortcut {
-  border: 1px solid grey;
   text-align: center;
-  padding: 0;
   margin-left: 1px;
   margin-right: 3px;
   width: 1.7em;
@@ -1882,15 +1859,12 @@ header {
 
 .post-header {
   width: 100%;
-  margin: 2px 0 5px; // word-break: keep-all;
+  margin: 2px 0 5px;
+  padding-left: 2px;
 
-  // white-space: nowrap;
-  // overflow: hidden;
-  // text-overflow: ellipsis;
   .post:not(.post_catalog) & {
     white-space: nowrap;
     display: flex;
-    align-items: center;
   }
 }
 
@@ -1902,13 +1876,8 @@ header {
   }
 }
 
-.post-header-item~.post-header-item:not(.post-subject):not(.post-time) {
-  margin-left: 10px;
-}
-
 .post-subject {
   color: @pagetitle;
-  font-size: 16px;
   font-size: calc(~"16px + (17 - 16) * ((100vw - 300px) / (1600 - 300))");
   font-weight: 800;
   font-family: "Montserrat";
@@ -1924,7 +1893,6 @@ header {
 }
 
 .post-board {
-  display: inline-block;
   padding: 0 4px;
   border-radius: 5px;
   background-color: @link;
@@ -1938,9 +1906,8 @@ header {
 }
 
 .post-id {
-  color: @postid;
-  font-size: 12px; // vertical-align: 1px;
-  margin-bottom: -1px;
+  color: @postcounter;
+  font-size: 13px;
 }
 
 .thread_single .post_op .post-subject {
@@ -1956,6 +1923,7 @@ header {
   font-family: Montserrat;
   font-weight: 500;
   font-size: 14px;
+  margin-right: 4px;
 
   &:hover {
     text-decoration: underline;
@@ -1979,7 +1947,7 @@ html.user {
   float: right;
   position: relative;
   cursor: default;
-  color: @posttime;
+  color: @postcounter;
   margin-left: auto;
   padding-left: 10px;
   margin-bottom: -2px;
@@ -1988,7 +1956,6 @@ html.user {
 .post-file-info {
   color: @postinfo;
   font-size: smaller;
-  padding-right: 5px;
   text-overflow: ellipsis;
   width: auto;
   max-width: 200px;
@@ -2064,7 +2031,6 @@ html.user {
   color: @postfilebadge;
   background: @postfilebadgeBG;
   border-radius: 2px;
-  z-index: 1;
   margin-right: 2px;
   width: 23px;
   height: 23px;
@@ -2073,14 +2039,17 @@ html.user {
   z-index: 2;
 }
 
-.post-file-video-badge {
-  // right: 4px;
-  // bottom: 4px;
-}
+.post-file-res-badge {
+  width: unset;
+  padding: 0 4px;
+  font-weight: bold;
+  line-height: 2.1;
+  font-family: inherit;
+  font-size: 0.8em;
 
-.post-file-audio-badge {
-  // right: 28px;
-  // bottom: 4px;
+  .post_op & {
+    display: none;
+  }
 }
 
 .post-file-title-badge {
@@ -2190,12 +2159,6 @@ html.page-loaded {
 
   .post-file-thumb_containter {
     background-color: @spoiler;
-  }
-
-  section:not(.catalog) .post:not(.visible) .smile {
-    // background-image: unset!important;
-    // background-color: @spoiler;
-    // will-change: background-image;
   }
 
   .hover-container {
@@ -2331,7 +2294,12 @@ html.work-mode {
 }
 
 .post-controls {
+  opacity: 0;
   width: 100%;
+
+  .post:hover & {
+    opacity: 1;
+  }
 }
 
 .post-control {
@@ -2342,8 +2310,7 @@ html.work-mode {
 .post-quote-control {
   float: right;
   margin-right: 0;
-  padding: 0 0 0 15px;
-  font-style: normal;
+  padding: 1px 0px 1px 25px;
   color: @link;
   font-size: 14px;
   font-style: italic;
@@ -2595,7 +2562,6 @@ html:not(.pos_moderators) {
 // HOVER
 //////////////////////////////
 .post_hover {
-  position: absolute;
   padding: 5px 10px;
   box-shadow: @previewShadow;
   z-index: 401;
@@ -2693,6 +2659,14 @@ html:not(.pos_moderators) {
 
   .post_op .post-id:after {
     display: none;
+  }
+}
+
+.post-id {
+  opacity: 0;
+
+  .post:hover & {
+    opacity: 1;
   }
 }
 
@@ -3066,7 +3040,6 @@ html:not(.pos_moderators) {
     background: @link;
     position: absolute;
     left: 0;
-    right: 0;
     top: 0;
     bottom: 0;
     transform: translateX(-100%);
@@ -3153,7 +3126,6 @@ html:not(.pos_moderators) {
 
   .smiles {
     overflow-y: scroll;
-    height: 200px;
     height: 225px;
   }
 
@@ -3703,6 +3675,22 @@ html.page-loaded {
 
   &:hover {
     opacity: 0.8;
+  }
+}
+
+html:not(.user) {
+
+  .reaction-box {
+    display: none !important;
+  }
+
+  .post-react {
+    cursor: default;
+
+    &:active,
+    &:hover {
+      opacity: 1 !important;
+    }
   }
 }
 
