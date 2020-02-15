@@ -202,15 +202,11 @@ func (ctx *PostContext) renderFile(img *common.Image, n int) string {
 	} else {
 		isPngThumb = false
 	}
-	title := img.Title
-	if title == "" {
-		title = ctx.post.Body
-	}
 	fileCtx := FileContext{
 		SHA1:       img.SHA1,
 		HasTitle:   img.Title != "",
 		LCopy:      lang.Get(ctx.Lang, "clickToCopy"),
-		Title:      title,
+		Title:      img.Title,
 		HasVideo:   img.Video,
 		HasAudio:   img.Audio,
 		HasLength:  img.Video || img.Audio,
