@@ -93,23 +93,9 @@ function onIntersectionChange(
     entries.forEach((entry) => {
         requestAnimationFrame(() => {
             const post = entry.target as xHTMLElement;
-            setVisibility(getSibling(getSibling(post, -1), -1), entry.isIntersecting, true);
-            setVisibility(getSibling(getSibling(post, 1), 1), entry.isIntersecting, true);
-
             setVisibility(post, entry.isIntersecting);
-
-            setVisibility(getSibling(post, -1), entry.isIntersecting, true);
-            setVisibility(getSibling(post, 1), entry.isIntersecting, true);
         });
     });
-}
-function getSibling(element: xHTMLElement, n = -1) {
-    try {
-        if (n < 0) {
-            return element.previousSibling
-        }
-        return element.nextSibling
-    } catch (_) {}
 }
 
 function setVisibility(post: HTMLElement, visible: boolean, showOnly?: boolean) {
@@ -143,6 +129,7 @@ export function replaceSrcs(post: HTMLElement) {
         const thumb = container.firstElementChild as HTMLImageElement;
         const blur = thumb.nextElementSibling as HTMLImageElement;
         thumb.src = thumb.dataset.src;
+        thumb.title = ""
         thumb.srcset = thumb.dataset.srcset;
         if (thumb) {
             blur.style.backgroundImage = `url("${blur.dataset.src}")`;
