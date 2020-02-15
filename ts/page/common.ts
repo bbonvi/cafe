@@ -51,8 +51,8 @@ export function extractPost(data: PostData, op: number, board: string, backlinks
     const view = new PostView(post, el);
     view.afterRender();
     post.backlinks = backlinks[post.id];
-    requestAnimationFrame(() => personalizeLinks(post))
-    requestAnimationFrame(() => personalizeBacklinks(post))
+    setTimeout(() => personalizeLinks(post), 0)
+    setTimeout(() => personalizeBacklinks(post), 0)
     postAdded(post);
   }
 

@@ -91,11 +91,11 @@ if (isWebkit) {
 
 export function smileLineOffset(elems: any) {
   for (const elem of elems) {
-    requestAnimationFrame(() => {
+    setTimeout(() => {
         if (!elem.innerText || !/\S/.test(elem.innerText)) {
           elem.classList.add("smiles-offset");
         }
-    })
+    }, 0)
   }
 }
 
