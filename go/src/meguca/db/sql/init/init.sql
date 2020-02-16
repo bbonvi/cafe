@@ -106,10 +106,12 @@ create index sticky on threads (sticky);
 
 -- create table smiles (
 --   name text not null,
+--   aliases text[],
 --   board text not null,
 --   fileType smallint not null,
 --   id bigint primary key,
---   file_hash char(40)
+--   file_hash char(40) not null,
+--   timestamp timestamp default current_timestamp
 -- );
 
 create table user_reacts (
