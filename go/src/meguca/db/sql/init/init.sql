@@ -114,19 +114,6 @@ create index sticky on threads (sticky);
 --   timestamp timestamp default current_timestamp
 -- );
 
-create table user_reacts (
-  account_id varchar(20) references accounts on delete cascade,
-  ip inet,
-  post_react_id bigserial references post_reacts on delete cascade
-)
-
-create table post_reacts (
-  smile_name text not null,
-  count bigint default 0,
-  post_id bigint references posts on delete cascade,
-  timestamp timestamp default current_timestamp,
-  id bigserial primary key
-);
 
 create table posts (
   editing boolean,
@@ -153,8 +140,6 @@ create index image on posts (SHA1);
 create index editing on posts (editing);
 create index ip on posts (ip);
 create index posts_op_time on posts (op, time);
-create index post_reacts_post_id on post_reacts (post_id);
-create index user_reacts_post_react_id on user_reacts (post_react_id);
 
 create table news (
   id bigserial primary key,
@@ -191,3 +176,20 @@ CREATE TABLE sticker_tags (
   PRIMARY KEY (sticker_hash, tag_id)
 );
 CREATE INDEX sticker_tags_tag_id ON sticker_tags (tag_id);
+
+create table post_reacts (
+  smile_name text not null,
+  count bigint default 0,
+  post_id bigint references posts on delete cascade,
+  timestamp timestamp default current_timestamp,
+  id bigserial primary key
+);
+
+create table user_reacts (
+  account_id varchar(20) references accounts on delete cascade,
+  ip inet,
+  post_react_id bigserial references post_reacts on delete cascade
+);
+
+create index post_reacts_post_id on post_reacts (post_id);
+create index user_reacts_post_react_id on user_reacts (post_react_id);
