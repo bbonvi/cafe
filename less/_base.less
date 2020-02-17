@@ -2264,12 +2264,7 @@ html.work-mode {
 }
 
 .post-controls {
-  opacity: 0;
   width: 100%;
-
-  .post:hover & {
-    opacity: 1;
-  }
 }
 
 .post-control {
@@ -2405,8 +2400,13 @@ html:not(.pos_moderators) {
 
 .post-delete-control,
 .post-ban-control {
-  opacity: 0.25;
+  opacity: 0;
+  transition: 0.1s;
   font-size: 10px;
+
+  .post:hover & {
+    opacity: 0.25;
+  }
 }
 
 .post-delete-control:hover,
@@ -2632,6 +2632,7 @@ html:not(.pos_moderators) {
 }
 
 .post-id {
+  transition: 0.1s;
   opacity: 0;
 
   .post:hover & {
@@ -3624,10 +3625,9 @@ html.page-loaded {
 
 .post {
 
-  &:hover,
-  &:active {
+  &:hover {
     .reaction-box {
-      display: flex;
+      opacity: 1;
     }
   }
 }
@@ -3665,9 +3665,11 @@ html:not(.user) {
 
 .reaction-box {
   border-radius: 3px;
-  display: none;
+  display: flex;
+  opacity: 0;
+  transition: 0.1s opacity;
   flex-direction: row;
-  top: -19px;
+  top: -17px;
   right: -2px;
   overflow: hidden;
   border-top: 1px solid rgba(0, 0, 0, 0.04);
