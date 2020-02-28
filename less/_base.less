@@ -3466,6 +3466,71 @@ html:not(.pos_moderators) {
   width: 30px;
 }
 
+.admin-smiles-list {
+  overflow: auto;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  // flex-wrap: wrap;
+}
+
+.admin-smile-item {
+  &:nth-child(odd) {
+    background: @postBG;
+  }
+
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+
+  &:hover .admin-smile-input {
+    border-color: @spoiler;
+  }
+
+  .admin-smile-input {
+    color: @body;
+    background: transparent;
+    text-align: center;
+    outline: none !important;
+    padding: 4px 0;
+    border-radius: 4px;
+    height: 100%;
+    border: 1px solid transparent;
+
+    &:focus {
+      background: fade(@spoiler, 70%);
+      border-color: transparent;
+    }
+
+  }
+
+  &__text {
+    margin-left: auto;
+    width: 100%;
+    text-align: center;
+
+    &:before,
+    &:after {
+      content: ":";
+      opacity: 0.6;
+    }
+
+    // &:before {
+    //   margin-right: -8px;
+    // }
+
+    // &:after {
+    //   margin-left: -8px;
+    // }
+  }
+
+  &__smile {
+    margin-right: auto;
+    width: 100%;
+    text-align: center;
+  }
+}
+
 //////////////////////////////
 // MEMBER LIST
 //////////////////////////////
