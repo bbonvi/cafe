@@ -86,15 +86,36 @@ export const modLog = window.modLog;
 type ChangeFn = (changes: BoardStateChanges) => void;
 
 class Smiles extends Component<any, {}> {
-    public render() {
+    constructor() {
+        super();
+        this.state = {
+            smilesFilter: [],
+        };
+    }
+    public componentDidMount() {
+        this.setState({ smilesFilter: [...smiles] });
+    }
+    public handleSearch = ({ target }) => {
+        const searchValue = target.value;
+        const smilesFilter = [...smiles].filter((s) => s.includes(searchValue));
+        this.setState({ smilesFilter });
+    }
+    public render({}, { smilesFilter }) {
         return (
             <div class={cx("admin-smiles")}>
                 <a class="admin-content-anchor" name="members" />
                 <h3 class="admin-content-header">
                     <a class="admin-header-link" href="#smiles">{_("Smiles")}</a>
                 </h3>
+                <div class="admin-smiles-search">
+                    <input
+                        placeholder={_("search")}
+                        class="admin-smile-input admin-smile-search"
+                        onInput={this.handleSearch}
+                    />
+                </div>
                 <div class="admin-smiles-list">
-                    {[...smiles].map(this.renderSmile)}
+                    {smilesFilter.map(this.renderSmile)}
                 </div>
             </div>
         );
@@ -105,7 +126,7 @@ class Smiles extends Component<any, {}> {
             name: s,
             id: Math.random().toString(),
         };
-        return <SmileItem smile={smile} />
+        return <SmileItem key={smile.id} smile={smile} />;
     }
 }
 interface Smile {

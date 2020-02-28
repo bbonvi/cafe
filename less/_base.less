@@ -3468,10 +3468,30 @@ html:not(.pos_moderators) {
 
 .admin-smiles-list {
   overflow: auto;
-  max-height: 500px;
+  height: 500px;
   display: flex;
   flex-direction: column;
-  // flex-wrap: wrap;
+}
+
+.admin-smile-input {
+  transition: 0.1s;
+  color: @body;
+  background: transparent;
+  text-align: center;
+  outline: none !important;
+  padding: 4px 0;
+  border-radius: 4px;
+  height: 100%;
+  border: none;
+
+  &:focus {
+    background: fade(@spoiler, 70%);
+  }
+}
+
+.admin-smile-search {
+  width: 100%;
+  margin-bottom: 4px;
 }
 
 .admin-smile-item {
@@ -3483,26 +3503,6 @@ html:not(.pos_moderators) {
   align-items: center;
   flex-direction: row;
 
-  &:hover .admin-smile-input {
-    border-color: @spoiler;
-  }
-
-  .admin-smile-input {
-    color: @body;
-    background: transparent;
-    text-align: center;
-    outline: none !important;
-    padding: 4px 0;
-    border-radius: 4px;
-    height: 100%;
-    border: 1px solid transparent;
-
-    &:focus {
-      background: fade(@spoiler, 70%);
-      border-color: transparent;
-    }
-
-  }
 
   &__text {
     margin-left: auto;
@@ -3514,20 +3514,18 @@ html:not(.pos_moderators) {
       content: ":";
       opacity: 0.6;
     }
-
-    // &:before {
-    //   margin-right: -8px;
-    // }
-
-    // &:after {
-    //   margin-left: -8px;
-    // }
   }
 
   &__smile {
     margin-right: auto;
     width: 100%;
     text-align: center;
+    cursor: default;
+  }
+
+  // override default cursor: pointer
+  .smiles-item .smile:hover {
+    cursor: default;
   }
 }
 
