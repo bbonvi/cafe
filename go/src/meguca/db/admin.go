@@ -322,7 +322,7 @@ func WriteBans(tx *sql.Tx, board string, bans auth.BanRecords) (err error) {
 	st := getStatement(tx, "write_ban")
 	for _, rec := range bans {
 		expires := time.Unix(rec.Expires, 0)
-		_, err = st.Exec(board, rec.IP, rec.ID, rec.By, expires, rec.Reason)
+		_, err = st.Exec(board, rec.IP, rec.ID, rec.By, expires, rec.Reason, nil)
 		if err != nil {
 			return
 		}
