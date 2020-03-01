@@ -387,7 +387,7 @@ func createSmile(w http.ResponseWriter, r *http.Request) {
 
 func getValidSmileName(smileName string, board string) (newName string, err error) {
 	if len(smileName) < 1 {
-		smileName = "unnamed"
+		return "", invalidName
 	}
 	if len(smileName) > 30 {
 		smileName = smileName[0:30]
