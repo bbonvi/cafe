@@ -117,9 +117,7 @@ func saveSmile(srcData []byte, smile *common.SmileCommon) (res uploadResult, err
 		return
 	}
 
-	// Map fields.
 	smile.FileType = mimeTypes[thumb.Mime]
-	// smilePath := assets.SmilePath(smile.FileType, smile.SHA1)
 	if err = db.AllocateSmileImage(srcData, *smile); err != nil {
 		err = aerrInternal.Hide(err)
 		return

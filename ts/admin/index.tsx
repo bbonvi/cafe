@@ -231,7 +231,6 @@ class SmileItem extends Component<SmileItemProps, any> {
         this.setState({ value: target.value });
     }
     public handleChange = (e) => {
-        console.log("new name:", this.state.value);
         const target = e.target as HTMLInputElement;
         target.blur();
         const { smile } = this.props;
