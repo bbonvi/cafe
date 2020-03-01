@@ -250,6 +250,11 @@ var upgrades = []func(*sql.Tx) error{
 			ALTER TABLE smiles DROP COLUMN id, ADD COLUMN id bigserial primary key;`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			ALTER TABLE smiles DROP COLUMN fileType, ADD COLUMN file_type smallint not null;`,
+		)
+	},
 }
 
 func StartDB() (err error) {

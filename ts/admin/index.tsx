@@ -10,12 +10,13 @@ import { showSendAlert, showAlert } from "../alerts";
 import API from "../api";
 import { ModerationLevel } from "../auth";
 import _ from "../lang";
-import { BoardConfig, page } from "../state";
+import { BoardConfig, page, loadSmiles, Smile } from "../state";
 import { readableTime, relativeTime, fileSize } from "../templates";
 import { replace, setter as s, printf } from "../util";
 import { MAIN_CONTAINER_SEL } from "../vars";
 import { MemberList } from "../widgets";
-import smileList from "../../smiles-pp/smiles";
+import { updateBoardSmiles } from "../page/common";
+import { smilePath } from "../posts/images";
 export const enum AccessMode {
     bypass = -1,
     viaBlacklist,
@@ -86,17 +87,30 @@ export const modLog = window.modLog;
 type ChangeFn = (changes: BoardStateChanges) => void;
 
 interface SmilesProps {
-    smiles: any[];
+    smiles: Smile[];
     board: string;
+    onSmileUpdated: () => void;
 }
 
-class Smiles extends Component<SmilesProps, {}> {
+interface SmilesState {
+    smilesFilter: Smile[];
+}
+
+class Smiles extends Component<SmilesProps, SmilesState> {
     private fileEl: HTMLInputElement = null;
+    private searchEl: HTMLInputElement = null;
     constructor() {
         super();
         this.state = {
             smilesFilter: [],
         };
+    }
+    public componentDidUpdate(props: SmilesProps) {
+        // TODO: Kinda inefficient?
+        if (JSON.stringify(props.smiles) !== JSON.stringify(this.props.smiles)) {
+            this.setState({ smilesFilter: this.props.smiles });
+            this.searchEl.value = "";
+        }
     }
     public componentDidMount() {
         const { smiles } = this.props;
@@ -105,7 +119,7 @@ class Smiles extends Component<SmilesProps, {}> {
     public handleSearch = ({ target }) => {
         const searchValue = target.value;
         const { smiles } = this.props;
-        const smilesFilter = smiles.filter((sm) => sm.includes(searchValue));
+        const smilesFilter = smiles.filter((sm) => sm.name.includes(searchValue));
         this.setState({ smilesFilter });
     }
     public handleAttach = () => {
@@ -131,7 +145,9 @@ class Smiles extends Component<SmilesProps, {}> {
             smileName: this.getFileName((file as File).name),
             files: [file],
         };
-        API.post.smile(this.props.board, dict);
+        API.smiles.add(this.props.board, dict)
+            .then(this.props.onSmileUpdated);
+
     }
     public getFileName(inputName: string) {
         if (!inputName) {
@@ -151,7 +167,7 @@ class Smiles extends Component<SmilesProps, {}> {
 
         return outputName.substr(0, 30);
     }
-    public render({}, { smilesFilter }) {
+    public render({}, { smilesFilter }: SmilesState) {
         return (
             <div class={cx("admin-smiles")}>
                 <a class="admin-content-anchor" name="smiles" />
@@ -161,6 +177,7 @@ class Smiles extends Component<SmilesProps, {}> {
                 <div class="admin-smiles-search">
                     <input
                         placeholder={_("search")}
+                        ref={s(this, "searchEl")}
                         class="admin-smile-input admin-smile-search"
                         onInput={this.handleSearch}
                     />
@@ -186,21 +203,16 @@ class Smiles extends Component<SmilesProps, {}> {
             </div>
         );
     }
-    public renderSmile(s: string) {
-        // Will receive a smile object from props
-        const smile = {
-            name: s,
-            id: Math.random().toString(),
-        };
-        return <SmileItem key={smile.id} smile={smile} />;
+    public renderSmile = (smile: Smile) => {
+        return <SmileItem onSmileUpdated={this.props.onSmileUpdated} key={smile.id} smile={smile} />;
     }
 }
-interface Smile {
-    name: string;
-    id: string;
-}
 
-class SmileItem extends Component<{ smile: Smile }, any> {
+interface SmileItemProps {
+    smile: Smile;
+    onSmileUpdated: () => void;
+}
+class SmileItem extends Component<SmileItemProps, any> {
     constructor() {
         super();
         this.state = {
@@ -210,6 +222,11 @@ class SmileItem extends Component<{ smile: Smile }, any> {
     public componentDidMount() {
         this.setState({ value: this.props.smile.name });
     }
+    public componentDidUpdate(props: SmileItemProps) {
+        if (props.smile.name !== this.props.smile.name) {
+            this.setState({ value: this.props.smile.name });
+        }
+    }
     public handleInput = ({ target }) => {
         this.setState({ value: target.value });
     }
@@ -217,11 +234,15 @@ class SmileItem extends Component<{ smile: Smile }, any> {
         console.log("new name:", this.state.value);
         const target = e.target as HTMLInputElement;
         target.blur();
+        const { smile } = this.props;
+        API.smiles.rename(smile.board, smile.name, this.state.value)
+            .catch(() => this.setState({ value: smile.name }))
+            .then(this.props.onSmileUpdated);
     }
     public handleDelete = () => {
-        console.log("delete", this.props.smile.id);
+        console.log("delete", this.props.smile.name);
     }
-    public render({ smile }, { value }) {
+    public render({ smile }: SmileItemProps, { value }) {
         return (
             <div class="admin-smile-item">
                 <div class="admin-smile-item__text">
@@ -234,7 +255,10 @@ class SmileItem extends Component<{ smile: Smile }, any> {
                     />
                 </div>
                 <div class="admin-smile-item__smile smiles-item">
-                    <i class={"smile smile-" + smile.name} title={`:${smile.name}:`}></i>
+                    <img
+                        class="smile" title={`:${smile.name}:`}
+                        src={smilePath(smile.fileType, smile.sha1)}
+                    />
                 </div>
                 <div onClick={this.handleDelete} class="control admin-smile-delete">
                     <i class="fa fa-times"></i>
@@ -621,6 +645,7 @@ interface AdminState {
     boardState: BoardState;
     needSaving: boolean;
     saving: boolean;
+    smiles: Smile[];
 }
 
 class Admin extends Component<{}, AdminState> {
@@ -638,9 +663,21 @@ class Admin extends Component<{}, AdminState> {
             boardState: this.getBoardState(id),
             needSaving: false,
             saving: false,
+            smiles: loadSmiles(id),
         };
     }
-    public render({ }, { id, boardState, needSaving, saving }: AdminState) {
+    public componentDidMount() {
+        window.addEventListener("storage", this.setSmiles);
+        this.fetchSmiles();
+    }
+    public fetchSmiles = async () => {
+        await updateBoardSmiles(this.state.id);
+        this.setSmiles();
+    }
+    public setSmiles = () => {
+        this.setState({ smiles: loadSmiles(this.state.id) });
+    }
+    public render({ }, { id, boardState, needSaving, saving, smiles }: AdminState) {
         const { settings, staff, bans } = boardState;
         return (
             <section class="admin">
@@ -678,7 +715,7 @@ class Admin extends Component<{}, AdminState> {
                     </ul>
                     <hr class="admin-separator" />
                     <section class="admin-content">
-                        <Smiles smiles={[...smileList]} board={id}/>
+                        <Smiles smiles={smiles} board={id} onSmileUpdated={this.fetchSmiles}/>
                         <hr class="admin-separator" />
                         <Settings settings={settings} disabled={saving} onChange={this.handleChange} />
                         <hr class="admin-separator" />
@@ -744,6 +781,8 @@ class Admin extends Component<{}, AdminState> {
         this.fixateBoardInURL(id);
         const boardState = this.getBoardState(id);
         this.setState({ id, boardState });
+
+        this.fetchSmiles()
     }
     private handleChange = (changes: BoardStateChanges) => {
         const boardState = Object.assign({}, this.state.boardState, changes);

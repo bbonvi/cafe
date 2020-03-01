@@ -3,7 +3,7 @@ import { Post } from "../posts";
 import { page, posts } from "../state";
 import { getID } from "../util";
 import { BOARD_SEARCH_INPUT_SEL, BOARD_SEARCH_SORT_SEL } from "../vars";
-import { extractPageData, extractPost } from "./common";
+import { extractPageData, extractPost, updateBoardSmiles, updateGlobalSmiles } from "./common";
 
 type SortFunction = (a: Post, b: Post) => number;
 
@@ -108,12 +108,18 @@ function onSortChange(e: Event) {
   sortThreads((e.target as HTMLInputElement).value);
 }
 
+function initSmiles() {
+  updateBoardSmiles();
+  updateGlobalSmiles()
+}
+
 // Apply client-side modifications to a board page's HTML.
 export function render() {
   if (page.catalog) {
     extractCatalogModels();
   } else {
     extractThreads();
+    initSmiles();
   }
 
   if (page.catalog) {

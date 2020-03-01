@@ -1,5 +1,5 @@
 import { ThreadData } from "../common";
-import { extractPageData, extractPost, isBanned, updateThreadReactions } from "./common";
+import { extractPageData, extractPost, isBanned, updateThreadReactions, updateBoardSmiles, updateGlobalSmiles } from "./common";
 
 // Render the HTML of a thread page.
 export function render() {
@@ -9,7 +9,9 @@ export function render() {
   const { posts } = data;
   data.posts = null;
 
-  updateThreadReactions()
+  updateThreadReactions();
+  updateBoardSmiles();
+  updateGlobalSmiles();
 
   extractPost(data, data.id, data.board, backlinks);
   for (const post of posts) {

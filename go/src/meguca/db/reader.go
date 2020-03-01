@@ -395,7 +395,7 @@ func GetBoardSmiles(board string) (smiles []common.SmileCommon, err error) {
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&s.Name, &s.ID, &s.SHA1, &s.Board)
+		err = rows.Scan(&s.Name, &s.ID, &s.SHA1, &s.Board, &s.FileType)
 		if err != nil {
 			err = errors.New("something went wrong")
 			return

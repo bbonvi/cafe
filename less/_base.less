@@ -3540,6 +3540,7 @@ html:not(.pos_moderators) {
         width: 100%;
         text-align: center;
         cursor: default;
+        height: unset;
     }
 
     // override default cursor: pointer
@@ -3597,9 +3598,15 @@ html:not(.pos_moderators) {
 // SMILES
 //////////////////////////////
 .smile {
+    // TODO: Remove later when gulp job will be fixed
+    background: unset !important;
     display: inline-block;
     cursor: default;
     transform: translateY(1px);
+    max-height: 2.5em;
+    max-width: 2.5em;
+    height: auto;
+    width: auto;
 
     .smiles-item:hover & {
         cursor: pointer;
