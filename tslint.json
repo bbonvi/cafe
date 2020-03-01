@@ -5,6 +5,7 @@
   ],
   "jsRules": {},
   "rules": {
+    "no-console": false,
     "curly": [true, "ignore-same-line"],
     "object-literal-sort-keys": false,
     "max-classes-per-file": false,

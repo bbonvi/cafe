@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"meguca/auth"
-	"meguca/config"
 	"meguca/common"
-	"meguca/util"
+	"meguca/config"
 	"meguca/db"
+	"meguca/util"
 )
 
 func assertHasWSConnection(w http.ResponseWriter, ip string, board string) bool {
@@ -69,7 +69,6 @@ func checkPosition(board string, ss *auth.Session, position auth.ModerationLevel
 	boards := make([]string, 1)
 	boards = append(boards, board)
 
-
 	staff, err := db.GetStaff(nil, boards)
 
 	if err != nil {
@@ -95,7 +94,6 @@ func checkWhitelistOnly(board string, ss *auth.Session) bool {
 	}
 	return checkPosition(board, ss, 2) || ss.Positions.CurBoard >= auth.Moderator
 }
-
 
 func checkRegisteredOnly(board string, ss *auth.Session) bool {
 	if !config.IsRegisteredOnlyBoard(board) {
@@ -133,7 +131,6 @@ func assertNotWhitelistOnlyAPI(w http.ResponseWriter, board string, ss *auth.Ses
 	}
 	return true
 }
-
 
 // Ensure user not blacklisted.
 func assertNotBlacklisted(w http.ResponseWriter, board string, ss *auth.Session) bool {

@@ -15,7 +15,7 @@ import { readableTime, relativeTime } from "../templates";
 import { replace } from "../util";
 import { MAIN_CONTAINER_SEL } from "../vars";
 import { MemberList } from "../widgets";
-import smiles from "../../smiles-pp/smiles";
+import smileList from "../../smiles-pp/smiles";
 export const enum AccessMode {
     bypass = -1,
     viaBlacklist,
@@ -85,7 +85,12 @@ export const modLog = window.modLog;
 
 type ChangeFn = (changes: BoardStateChanges) => void;
 
-class Smiles extends Component<any, {}> {
+interface SmilesProps {
+    smiles: any[];
+    board: string;
+}
+
+class Smiles extends Component<SmilesProps, {}> {
     constructor() {
         super();
         this.state = {
@@ -93,17 +98,19 @@ class Smiles extends Component<any, {}> {
         };
     }
     public componentDidMount() {
-        this.setState({ smilesFilter: [...smiles] });
+        const { smiles } = this.props;
+        this.setState({ smilesFilter: smiles });
     }
     public handleSearch = ({ target }) => {
         const searchValue = target.value;
-        const smilesFilter = [...smiles].filter((s) => s.includes(searchValue));
+        const { smiles } = this.props;
+        const smilesFilter = smiles.filter((s) => s.includes(searchValue));
         this.setState({ smilesFilter });
     }
     public render({}, { smilesFilter }) {
         return (
             <div class={cx("admin-smiles")}>
-                <a class="admin-content-anchor" name="members" />
+                <a class="admin-content-anchor" name="smiles" />
                 <h3 class="admin-content-header">
                     <a class="admin-header-link" href="#smiles">{_("Smiles")}</a>
                 </h3>
@@ -152,6 +159,9 @@ class SmileItem extends Component<{ smile: Smile }, any> {
         const target = e.target as HTMLInputElement;
         target.blur();
     }
+    public handleDelete = () => {
+        console.log("delete", this.props.smile.id);
+    }
     public render({ smile }, { value }) {
         return (
             <div class="admin-smile-item">
@@ -166,6 +176,9 @@ class SmileItem extends Component<{ smile: Smile }, any> {
                 </div>
                 <div class="admin-smile-item__smile smiles-item">
                     <i class={"smile smile-" + smile.name} title={`:${smile.name}:`}></i>
+                </div>
+                <div onClick={this.handleDelete} class="control admin-smile-delete">
+                    <i class="fa fa-times"></i>
                 </div>
             </div>
         );
@@ -589,6 +602,9 @@ class Admin extends Component<{}, AdminState> {
                 <section class="admin-inner">
                     <ul class="admin-section-tabs">
                         <li class="admin-section-tab">
+                            <a href="#smiles">{_("Smiles")}</a>
+                        </li>
+                        <li class="admin-section-tab">
                             <a href="#settings">{_("Settings")}</a>
                         </li>
                         <li class="admin-section-tab">
@@ -603,7 +619,7 @@ class Admin extends Component<{}, AdminState> {
                     </ul>
                     <hr class="admin-separator" />
                     <section class="admin-content">
-                        <Smiles />
+                        <Smiles smiles={[...smileList]} board={id}/>
                         <hr class="admin-separator" />
                         <Settings settings={settings} disabled={saving} onChange={this.handleChange} />
                         <hr class="admin-separator" />
