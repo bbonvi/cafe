@@ -239,7 +239,9 @@ class SmileItem extends Component<SmileItemProps, any> {
             .then(this.props.onSmileUpdated);
     }
     public handleDelete = () => {
-        console.log("delete", this.props.smile.name);
+        const { smile } = this.props;
+        API.smiles.delete(smile.board, smile.name)
+            .then(this.props.onSmileUpdated);
     }
     public render({ smile }: SmileItemProps, { value }) {
         return (

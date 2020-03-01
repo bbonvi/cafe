@@ -86,6 +86,8 @@ export const API = {
         get: (board: string) => emit.GET.JSON(`smiles/${board}`)(),
         rename: (board: string, oldName: string, newName: string) =>
             emit.POST.Form(`smiles/${board}/rename`)({ oldName, smileName: newName }),
+        delete: (board: string, smileName: string) =>
+            emit.POST.Form(`smiles/${board}/delete`)({ smileName }),
     },
     thread: {
         create: emit.POST.Form("thread"),
