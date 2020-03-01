@@ -75,6 +75,11 @@ func BlurPathLocal(thumbType uint8, SHA1 string) string {
 	return imagePath("/uploads", "blur", thumbType, SHA1)
 }
 
+// SorucePath returns the path to the source file of a smile
+func SmilePath(fileType uint8, SHA1 string) string {
+	return imagePath(imageRoot(), "smiles", fileType, SHA1)
+}
+
 // Generate file paths of the source file and its thumbnail
 func getFilePaths(SHA1 string, fileType, thumbType uint8) (paths [2]string) {
 	path := imagePath(common.ImageWebRoot, "src", fileType, SHA1)
@@ -82,6 +87,31 @@ func getFilePaths(SHA1 string, fileType, thumbType uint8) (paths [2]string) {
 	path = imagePath(common.ImageWebRoot, "thumb", thumbType, SHA1)
 	paths[1] = filepath.FromSlash(path)
 	return
+}
+
+func getSmilePath(SHA1 string, fileType uint8) (path string) {
+	path = imagePath(common.ImageWebRoot, "smiles", fileType, SHA1)
+	return filepath.FromSlash(path)
+}
+
+func WriteSmile(SHA1 string, fileType uint8, src []byte) error {
+	path := getSmilePath(SHA1, fileType)
+
+	ch := make(chan error)
+	// go func() {
+	// 	ch <- writeFile(path, src)
+	// }()
+
+	for _, err := range [...]error{writeFile(path, src), <-ch} {
+		switch {
+		// Ignore files already written by another thread or process
+		case err == nil, os.IsExist(err):
+		default:
+			return err
+		}
+	}
+	return nil
+
 }
 
 // Write writes file assets to disk
@@ -138,9 +168,20 @@ func Delete(SHA1 string, fileType, thumbType uint8) error {
 	return nil
 }
 
+// Delete deletes file assets belonging to a single upload
+func DeleteSmile(SHA1 string, fileType uint8) error {
+	path := getSmilePath(SHA1, fileType)
+	// Ignore somehow absent images
+	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	return nil
+}
+
 // CreateDirs creates directories for processed image storage
 func CreateDirs() error {
-	for _, dir := range [...]string{"src", "thumb"} {
+	for _, dir := range [...]string{"src", "thumb", "smiles"} {
 		path := filepath.Join(common.ImageWebRoot, dir)
 		if err := os.MkdirAll(path, 0755); err != nil {
 			return err

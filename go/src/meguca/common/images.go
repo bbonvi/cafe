@@ -60,3 +60,11 @@ type ImageCommon struct {
 	MD5       string    `json:"-"`
 	Artist    string    `json:"-"`
 }
+
+type SmileCommon struct {
+	SHA1     string `json:"sha1"`
+	FileType uint8  `json:"fileType"`
+	Board    string `json:"board"`
+	Name     string `json:"name,omitempty"`
+	ID       uint64 `json:"id,omitempty`
+}

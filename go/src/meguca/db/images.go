@@ -26,6 +26,13 @@ func WriteImage(tx *sql.Tx, i common.ImageCommon) error {
 	return err
 }
 
+func WriteSmileImage(tx *sql.Tx, s common.SmileCommon) error {
+	_, err := getStatement(tx, "write_smile_image").Exec(
+		s.Name, s.Board, s.FileType, s.SHA1,
+	)
+	return err
+}
+
 // GetImage retrieves a thumbnailed image record from the DB.
 func GetImage(SHA1 string) (common.ImageCommon, error) {
 	return scanImage(prepared["get_image"].QueryRow(SHA1))
@@ -97,6 +104,36 @@ func AllocateImage(src, thumb []byte, img common.ImageCommon) (err error) {
 	}
 
 	return
+}
+
+// AllocateSmileImage allocates an image's file resources to their respective
+// served directories and write its data to the database.
+func AllocateSmileImage(src []byte, smile common.SmileCommon) (err error) {
+	tx, err := BeginTx()
+	if err != nil {
+		return
+	}
+	defer EndTx(tx, &err)
+
+	if err = WriteSmileImage(tx, smile); err != nil {
+		return
+	}
+
+	err = assets.WriteSmile(smile.SHA1, smile.FileType, src)
+	if err != nil {
+		err = cleanUpFailedSmilesAllocation(smile, err)
+	}
+
+	return
+}
+
+// Delete any dangling image files in case of a failed image allocation.
+func cleanUpFailedSmilesAllocation(img common.SmileCommon, err error) error {
+	delErr := assets.DeleteSmile(img.SHA1, img.FileType)
+	if delErr != nil {
+		err = util.WrapError(err.Error(), delErr)
+	}
+	return err
 }
 
 // Delete any dangling image files in case of a failed image allocation.

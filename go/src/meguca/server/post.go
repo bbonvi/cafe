@@ -106,6 +106,20 @@ func getTreadUserReaction(w http.ResponseWriter, r *http.Request) {
 	serveJSON(w, r, re)
 }
 
+func getBoardSmiles(w http.ResponseWriter, r *http.Request) {
+	b := getParam(r, "board")
+	if !assertBoardAPI(w, b) {
+		return
+	}
+
+	sm, err := db.GetBoardSmiles(b)
+	if err != nil {
+		text404(w, err)
+		return
+	}
+	serveJSON(w, r, sm)
+}
+
 // Create thread.
 func createThread(w http.ResponseWriter, r *http.Request) {
 	postReq, ok := parsePostCreationForm(w, r)
@@ -307,6 +321,62 @@ func updatePostReaction(re reactionJSON, count uint64, exist bool) (postReaction
 		return
 	}
 	postReactionID, err = db.InsertPostReaction(re.PostID, re.SmileName)
+	return
+}
+
+func createSmile(w http.ResponseWriter, r *http.Request) {
+	f, m, err := parseUploadForm(w, r)
+	if err != nil {
+		serveErrorJSON(w, r, err)
+		return
+	}
+
+	// Board and user validation.
+	board := f.Get("board")
+	if !assertBoardAPI(w, board) {
+		return
+	}
+
+	ss, _ := getSession(r, board)
+	if ss == nil || ss.Positions.CurBoard < auth.BoardOwner {
+		serveErrorJSON(w, r, aerrBoardOwnersOnly)
+		return
+	}
+
+	fhs := m.File["files[]"]
+	if len(fhs) > 1 {
+		serveErrorJSON(w, r, aerrTooManyFiles)
+		return
+	}
+	if len(fhs) < 1 {
+		serveErrorJSON(w, r, atleastOneFile)
+		return
+	}
+
+	var smile *common.SmileCommon
+	smile.Name = f.Get("smileName")
+	smile.Board = board
+
+	res, err := uploadSmile(fhs[0], smile)
+	if err != nil {
+		serveErrorJSON(w, r, err)
+		return
+	}
+	fmt.Println(res)
+
+	// modOnly := config.IsModOnlyBoard(board)
+	// req = websockets.PostCreationRequest{
+	// 	FilesRequest: websockets.FilesRequest{tokens},
+	// 	Board:        board,
+	// 	Ip:           ip,
+	// 	Body:         body,
+	// 	UniqueID:     uniqueID,
+	// 	Token:        f.Get("token"),
+	// 	Sign:         f.Get("sign"),
+	// 	ShowBadge:    f.Get("showBadge") == "on" || modOnly,
+	// 	ShowName:     modOnly,
+	// 	Session:      ss,
+	// }
 	return
 }
 

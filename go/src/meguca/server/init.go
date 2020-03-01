@@ -67,7 +67,6 @@ func createRouter(debugRoutes bool) http.Handler {
 	r.GET("/admin/", assertBoardOwner(serveAdmin))
 	// Exactly same route, will handle board ID on JS side.
 	r.GET("/admin/:board", assertBoardOwner(serveAdmin))
-	// r.POST("/admin/smiles/:board", assertBoardOwner(serveAdmin))
 
 	// Assets.
 	r.GET("/static/*path", serveStatic)
@@ -79,6 +78,7 @@ func createRouter(debugRoutes bool) http.Handler {
 	// TODO(Kagami): RESTify.
 	api := r.NewGroup("/api")
 	// Common.
+	api.GET("/smiles/:board", getBoardSmiles)
 	api.GET("/socket", websockets.Handler)
 	api.GET("/embed", serveEmbed)
 	// Idols.
@@ -105,6 +105,7 @@ func createRouter(debugRoutes bool) http.Handler {
 	api.POST("/unban/:board", unban)
 	api.POST("/delete-post", deletePost)
 	api.PUT("/boards/:board", assertBoardOwnerAPI(configureBoard))
+	api.POST("/boards/:board/smile", createSmile)
 	// Admin.
 	api.POST("/create-board", createBoard)
 	// Too dangerous.

@@ -109,7 +109,7 @@ create table smiles (
   aliases text[],
   board text not null references boards on delete cascade,
   fileType smallint not null,
-  id bigint primary key,
+  id bigserial primary key,
   deleted boolean,
   deleted_at timestamp,
   file_hash char(40) not null,

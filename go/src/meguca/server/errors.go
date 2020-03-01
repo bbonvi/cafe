@@ -76,6 +76,7 @@ var (
 	aerrNoIdol           = aerrorNew(404, "No such idol")
 	aerrTooLarge         = aerrorNew(400, "File too large")
 	aerrTooManyFiles     = aerrorNew(400, "Too many files")
+	atleastOneFile       = aerrorNew(400, "Atleast one file is required")
 	aerrUploadRead       = aerrorNew(400, "Error reading upload")
 	aerrCorrupted        = aerrorNew(400, "Corrupted file")
 	aerrNameTaken        = aerrorNew(400, "Name already taken")

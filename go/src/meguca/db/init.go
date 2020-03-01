@@ -245,6 +245,11 @@ var upgrades = []func(*sql.Tx) error{
 			ALTER TABLE smiles ADD COLUMN file_hash char(40) not null`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			ALTER TABLE smiles DROP COLUMN id, ADD COLUMN id bigserial primary key;`,
+		)
+	},
 }
 
 func StartDB() (err error) {

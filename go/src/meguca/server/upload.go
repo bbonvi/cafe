@@ -48,6 +48,7 @@ type jobResult struct {
 }
 
 type uploadResult struct {
+	smile *common.SmileCommon
 	file  *common.ImageCommon
 	token string
 }
@@ -70,6 +71,61 @@ func uploadFile(fh *multipart.FileHeader) (res uploadResult, err error) {
 	jobs <- jreq
 	jres := <-jresults
 	return jres.res, jres.err
+}
+
+func uploadSmile(fh *multipart.FileHeader, smile *common.SmileCommon) (res uploadResult, err error) {
+	// TODO: Move to config
+	if fh.Size > 256*1024 {
+		err = aerrTooLarge
+		return
+	}
+
+	fd, err := fh.Open()
+	if err != nil {
+		err = aerrUploadRead.Hide(err)
+		return
+	}
+	defer fd.Close()
+
+	data, err := ioutil.ReadAll(fd)
+	if err != nil {
+		err = aerrUploadRead.Hide(err)
+		return
+	}
+	hash := getSha1(data)
+	smile.SHA1 = hash
+	return saveSmile(data, smile)
+}
+
+func saveSmile(srcData []byte, smile *common.SmileCommon) (res uploadResult, err error) {
+	// We don't need thumbnail, just going to get file metadatas. Should be fast enough
+	thumb, err := ipc.GetThumbnail("", srcData)
+	switch err {
+	case nil:
+		// Do nothing.
+	case ipc.ErrThumbUnsupported:
+		err = aerrUnsupported
+		return
+	case ipc.ErrThumbTracks:
+		err = aerrNoTracks
+		return
+	case ipc.ErrThumbProcess:
+		err = aerrCorrupted
+		return
+	default:
+		err = aerrInternal
+		return
+	}
+
+	// Map fields.
+	smile.FileType = mimeTypes[thumb.Mime]
+	// smilePath := assets.SmilePath(smile.FileType, smile.SHA1)
+	if err = db.AllocateSmileImage(srcData, *smile); err != nil {
+		err = aerrInternal.Hide(err)
+		return
+	}
+	res.smile = smile
+	return
 }
 
 func worker(user string) {

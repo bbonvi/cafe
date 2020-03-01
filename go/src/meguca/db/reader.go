@@ -375,11 +375,34 @@ func AssertNotReacted(
 }
 
 // GetPostReactCount reads a single post reaction from the database.
-func GetPostReactCount(id uint64, smile_name string) (count uint64) {
-	err := prepared["get_post_react_count"].QueryRow(id, smile_name).Scan(&count)
+func GetPostReactCount(id uint64, smileName string) (count uint64) {
+	err := prepared["get_post_react_count"].QueryRow(id, smileName).Scan(&count)
 	if err != nil {
 		count = 0
 	}
+	return
+}
+
+// GetBoardSmiles returns board's smiles.
+func GetBoardSmiles(board string) (smiles []common.SmileCommon, err error) {
+	rows, err := prepared["get_board_smiles"].Query(board)
+	if err != nil {
+		return nil, err
+	}
+
+	smiles = make([]common.SmileCommon, 0, 64)
+	var s common.SmileCommon
+
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&s.Name, &s.ID, &s.SHA1, &s.Board)
+		if err != nil {
+			err = errors.New("something went wrong")
+			return
+		}
+		smiles = append(smiles, s)
+	}
+	err = rows.Err()
 	return
 }
 
