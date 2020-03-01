@@ -76,6 +76,7 @@ const emit = {
 export const API = {
   post: {
     create: emit.POST.Form("post"),
+    smile: (board: string, d?: Dict) => emit.POST.Form(`smiles/${board}`)(d),
     createToken: emit.POST.JSON("post/token"),
     react: (d?: Dict): Promise<SmileReact> => emit.POST.JSON("post/react")(d),
     delete: emit.POST.JSON("delete-post"),

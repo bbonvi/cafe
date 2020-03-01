@@ -98,11 +98,11 @@ func WriteSmile(SHA1 string, fileType uint8, src []byte) error {
 	path := getSmilePath(SHA1, fileType)
 
 	ch := make(chan error)
-	// go func() {
-	// 	ch <- writeFile(path, src)
-	// }()
+	go func() {
+		ch <- writeFile(path, src)
+	}()
 
-	for _, err := range [...]error{writeFile(path, src), <-ch} {
+	for _, err := range [...]error{<-ch} {
 		switch {
 		// Ignore files already written by another thread or process
 		case err == nil, os.IsExist(err):

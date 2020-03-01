@@ -189,6 +189,7 @@ h2 {
     outline: none;
     user-select: none;
     transition: 0.1s;
+    height: 100%;
 
     &:not(:disabled):hover {
         color: @buttonHover;
@@ -3466,12 +3467,16 @@ html:not(.pos_moderators) {
     width: 30px;
 }
 
+.admin-smiles {
+    max-width: 860px;
+    margin: auto;
+}
+
 .admin-smiles-list {
     overflow: auto;
     height: 500px;
     display: flex;
     flex-direction: column;
-    max-width: 860px;
     margin: 0 auto;
 }
 
@@ -3493,7 +3498,13 @@ html:not(.pos_moderators) {
 
 .admin-smile-search {
     width: 100%;
-    margin-bottom: 4px;
+    padding: 7px 0;
+    margin-bottom: 14px;
+    margin-right: 5px;
+}
+
+.admin-smiles-search {
+    display: flex;
 }
 
 .admin-smile-item {

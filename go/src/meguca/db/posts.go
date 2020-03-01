@@ -198,6 +198,14 @@ func ValidateOP(id uint64, board string) (valid bool, err error) {
 	return
 }
 
+func ValidSmileName(smileName string, board string) (valid bool, err error) {
+	err = prepared["get_smile"].QueryRow(board, smileName).Scan(&valid)
+	if err == sql.ErrNoRows {
+		return true, nil
+	}
+	return false, nil
+}
+
 // GetPostOP retrieves the parent thread ID of the passed post
 func GetPostOP(id uint64) (op uint64, err error) {
 	err = prepared["get_post_op"].QueryRow(id).Scan(&op)

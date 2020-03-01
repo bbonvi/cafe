@@ -105,6 +105,12 @@ func checkRegisteredOnly(board string, ss *auth.Session) bool {
 	return true
 }
 
+// Ensure smilename not used on this board
+func assertSmileNameNotUsed(smileName string, board string) bool {
+	valid, _ := db.ValidSmileName(smileName, board)
+	return valid
+}
+
 // Ensure only mods and above can post at read-only boards.
 func assertNotReadOnlyAPI(w http.ResponseWriter, board string, ss *auth.Session) bool {
 	if !checkReadOnly(board, ss) {

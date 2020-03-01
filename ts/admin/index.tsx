@@ -6,13 +6,13 @@
 
 import * as cx from "classnames";
 import { Component, h, render } from "preact";
-import { showSendAlert } from "../alerts";
+import { showSendAlert, showAlert } from "../alerts";
 import API from "../api";
 import { ModerationLevel } from "../auth";
 import _ from "../lang";
 import { BoardConfig, page } from "../state";
-import { readableTime, relativeTime } from "../templates";
-import { replace } from "../util";
+import { readableTime, relativeTime, fileSize } from "../templates";
+import { replace, setter as s, printf } from "../util";
 import { MAIN_CONTAINER_SEL } from "../vars";
 import { MemberList } from "../widgets";
 import smileList from "../../smiles-pp/smiles";
@@ -91,6 +91,7 @@ interface SmilesProps {
 }
 
 class Smiles extends Component<SmilesProps, {}> {
+    private fileEl: HTMLInputElement = null;
     constructor() {
         super();
         this.state = {
@@ -104,8 +105,51 @@ class Smiles extends Component<SmilesProps, {}> {
     public handleSearch = ({ target }) => {
         const searchValue = target.value;
         const { smiles } = this.props;
-        const smilesFilter = smiles.filter((s) => s.includes(searchValue));
+        const smilesFilter = smiles.filter((sm) => sm.includes(searchValue));
         this.setState({ smilesFilter });
+    }
+    public handleAttach = () => {
+        this.fileEl.click();
+    }
+    public handleFileChange = () => {
+        const files = this.fileEl.files;
+        if (files.length) {
+            this.handleFiles(files);
+        }
+        this.fileEl.value = null; // Allow to select same file again
+    }
+    public handleFiles = (files: FileList | Blob[]) => {
+        const file = files[0];
+        if (file.size > 256 * 1024) {
+            showAlert(_("tooBig"));
+            return;
+        }
+        this.handleUpload(file);
+    }
+    public handleUpload = (file: File | Blob) => {
+        const dict = {
+            smileName: this.getFileName((file as File).name),
+            files: [file],
+        };
+        API.post.smile(this.props.board, dict);
+    }
+    public getFileName(inputName: string) {
+        if (!inputName) {
+            inputName = (Math.random() * Date.now() * 100000).toString(16);
+        }
+        // Remove extension, convert "." to "_", remove everything except a-z and "_"
+        const outputName = inputName
+            .split("")
+            .reverse()
+            .join("")
+            .replace(/^.*?\./, "")
+            .replace(/[.]/g, "_")
+            .replace(/[^a-z_]/g, "")
+            .split("")
+            .reverse()
+            .join("");
+
+        return outputName.substr(0, 30);
     }
     public render({}, { smilesFilter }) {
         return (
@@ -119,6 +163,21 @@ class Smiles extends Component<SmilesProps, {}> {
                         placeholder={_("search")}
                         class="admin-smile-input admin-smile-search"
                         onInput={this.handleSearch}
+                    />
+                    <button
+                        class="button"
+                        title={printf(_("add"), fileSize(256 * 1024))}
+                        onClick={this.handleAttach}
+                    >
+                        {_("add")}
+                    </button>
+                    <input
+                        type="file"
+                        class="reply-files-input"
+                        accept="image/*"
+                        multiple={false}
+                        ref={s(this, "fileEl")}
+                        onChange={this.handleFileChange}
                     />
                 </div>
                 <div class="admin-smiles-list">

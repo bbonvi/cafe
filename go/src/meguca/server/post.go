@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"regexp"
 	"smiles"
 	"strconv"
 	"strings"
@@ -332,7 +333,7 @@ func createSmile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Board and user validation.
-	board := f.Get("board")
+	board := getParam(r, "board")
 	if !assertBoardAPI(w, board) {
 		return
 	}
@@ -353,18 +354,22 @@ func createSmile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var smile *common.SmileCommon
-	smile.Name = f.Get("smileName")
+	var smile common.SmileCommon
 	smile.Board = board
+	smile.Name = f.Get("smileName")
 
-	res, err := uploadSmile(fhs[0], smile)
+	smile.Name, err = getValidSmileName(smile.Name, smile.Board)
+	if err != nil {
+		serveErrorJSON(w, r, invalidName)
+	}
+
+	res, err := uploadSmile(fhs[0], &smile)
 	if err != nil {
 		serveErrorJSON(w, r, err)
 		return
 	}
-	fmt.Println(res)
 
-	// modOnly := config.IsModOnlyBoard(board)
+	serveJSON(w, r, res.smile)
 	// req = websockets.PostCreationRequest{
 	// 	FilesRequest: websockets.FilesRequest{tokens},
 	// 	Board:        board,
@@ -378,6 +383,32 @@ func createSmile(w http.ResponseWriter, r *http.Request) {
 	// 	Session:      ss,
 	// }
 	return
+}
+
+func getValidSmileName(smileName string, board string) (newName string, err error) {
+	if len(smileName) < 1 {
+		smileName = "unnamed"
+	}
+	if len(smileName) > 30 {
+		smileName = smileName[0:30]
+	}
+	var validSmileName = regexp.MustCompile(`^[a-z_]*$`)
+	if !validSmileName.MatchString(smileName) {
+		return "", invalidName
+	}
+
+	i := 1
+	baseName := smileName
+	newName = baseName
+
+	// We're looping db request, but the same name
+	// shouldn't occur very often, so it's fine
+	for !assertSmileNameNotUsed(newName, board) {
+		newName = baseName + "_" + strconv.Itoa(i)
+		i = i + 1
+	}
+
+	return newName, nil
 }
 
 // Create post.

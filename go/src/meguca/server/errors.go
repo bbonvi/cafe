@@ -77,6 +77,7 @@ var (
 	aerrTooLarge         = aerrorNew(400, "File too large")
 	aerrTooManyFiles     = aerrorNew(400, "Too many files")
 	atleastOneFile       = aerrorNew(400, "Atleast one file is required")
+	invalidName          = aerrorNew(400, "Invalid name")
 	aerrUploadRead       = aerrorNew(400, "Error reading upload")
 	aerrCorrupted        = aerrorNew(400, "Corrupted file")
 	aerrNameTaken        = aerrorNew(400, "Name already taken")
