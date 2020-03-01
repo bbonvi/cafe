@@ -106,6 +106,7 @@ func createRouter(debugRoutes bool) http.Handler {
 	api.POST("/delete-post", deletePost)
 	api.PUT("/boards/:board", assertBoardOwnerAPI(configureBoard))
 	api.POST("/smiles/:board", createSmile)
+	api.POST("/smiles/:board/rename", renameSmile)
 	// Admin.
 	api.POST("/create-board", createBoard)
 	// Too dangerous.

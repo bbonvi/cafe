@@ -325,6 +325,46 @@ func updatePostReaction(re reactionJSON, count uint64, exist bool) (postReaction
 	return
 }
 
+func renameSmile(w http.ResponseWriter, r *http.Request) {
+	f, _, err := parseUploadForm(w, r)
+	if err != nil {
+		serveErrorJSON(w, r, err)
+		return
+	}
+
+	// Board and user validation.
+	board := getParam(r, "board")
+	if !assertBoardAPI(w, board) {
+		return
+	}
+
+	ss, _ := getSession(r, board)
+	if ss == nil || ss.Positions.CurBoard < auth.BoardOwner {
+		serveErrorJSON(w, r, aerrBoardOwnersOnly)
+		return
+	}
+
+	var smile common.SmileCommon
+	smile.Board = board
+	smile.Name = f.Get("smileName")
+	oldName := f.Get("oldName")
+
+	smile.Name, err = getValidSmileName(smile.Name, smile.Board)
+	if err != nil {
+		serveErrorJSON(w, r, invalidName)
+		return
+	}
+
+	err = db.RenameSmile(smile.Board, smile.Name, oldName)
+	if err != nil {
+		serveErrorJSON(w, r, cantRenameSmile)
+		return
+	}
+
+	serveJSON(w, r, smile)
+	return
+}
+
 func createSmile(w http.ResponseWriter, r *http.Request) {
 	f, m, err := parseUploadForm(w, r)
 	if err != nil {
@@ -361,6 +401,7 @@ func createSmile(w http.ResponseWriter, r *http.Request) {
 	smile.Name, err = getValidSmileName(smile.Name, smile.Board)
 	if err != nil {
 		serveErrorJSON(w, r, invalidName)
+		return
 	}
 
 	res, err := uploadSmile(fhs[0], &smile)
@@ -370,18 +411,6 @@ func createSmile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serveJSON(w, r, res.smile)
-	// req = websockets.PostCreationRequest{
-	// 	FilesRequest: websockets.FilesRequest{tokens},
-	// 	Board:        board,
-	// 	Ip:           ip,
-	// 	Body:         body,
-	// 	UniqueID:     uniqueID,
-	// 	Token:        f.Get("token"),
-	// 	Sign:         f.Get("sign"),
-	// 	ShowBadge:    f.Get("showBadge") == "on" || modOnly,
-	// 	ShowName:     modOnly,
-	// 	Session:      ss,
-	// }
 	return
 }
 

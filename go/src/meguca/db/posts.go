@@ -323,6 +323,11 @@ func InsertPostReaction(postID uint64, smileName string) (reactionID uint64, err
 	return
 }
 
+func RenameSmile(board string, smileName string, originalName string) error {
+	err := execPrepared("rename_smile", smileName, originalName, board)
+	return err
+}
+
 // UpdateReactionCount updates count of post_reacts column
 func UpdateReactionCount(postID uint64, smileName string, count uint64) (reactionID uint64, err error) {
 	err = prepared["update_post_react"].QueryRow(count, postID, smileName).Scan(&reactionID)
