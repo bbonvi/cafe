@@ -107,6 +107,9 @@ func createRouter(debugRoutes bool) http.Handler {
 	api.PUT("/boards/:board", assertBoardOwnerAPI(configureBoard))
 	api.POST("/smiles/:board", createSmile)
 	api.POST("/smiles/:board/rename", renameSmile)
+	// TODO: We probably shouldn't completely remove smiles.
+	// Instead we should set 'deleted' status, so they stayed, but couldn't be used.
+	api.POST("/smiles/:board/delete", deleteSmile)
 	// Admin.
 	api.POST("/create-board", createBoard)
 	// Too dangerous.

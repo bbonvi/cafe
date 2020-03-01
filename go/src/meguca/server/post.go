@@ -365,6 +365,37 @@ func renameSmile(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func deleteSmile(w http.ResponseWriter, r *http.Request) {
+	f, _, err := parseUploadForm(w, r)
+	if err != nil {
+		serveErrorJSON(w, r, err)
+		return
+	}
+
+	// Board and user validation.
+	board := getParam(r, "board")
+	if !assertBoardAPI(w, board) {
+		return
+	}
+
+	ss, _ := getSession(r, board)
+	if ss == nil || ss.Positions.CurBoard < auth.BoardOwner {
+		serveErrorJSON(w, r, aerrBoardOwnersOnly)
+		return
+	}
+
+	smileName := f.Get("smileName")
+
+	err = db.DeleteSmile(board, smileName)
+	if err != nil {
+		serveErrorJSON(w, r, cantDeleteSmile)
+		return
+	}
+
+	serveEmptyJSON(w, r)
+	return
+}
+
 func createSmile(w http.ResponseWriter, r *http.Request) {
 	f, m, err := parseUploadForm(w, r)
 	if err != nil {

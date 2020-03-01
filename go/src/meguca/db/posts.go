@@ -327,6 +327,10 @@ func RenameSmile(board string, smileName string, originalName string) error {
 	err := execPrepared("rename_smile", smileName, originalName, board)
 	return err
 }
+func DeleteSmile(board string, smileName string) error {
+	err := execPrepared("delete_smile", smileName, board)
+	return err
+}
 
 // UpdateReactionCount updates count of post_reacts column
 func UpdateReactionCount(postID uint64, smileName string, count uint64) (reactionID uint64, err error) {

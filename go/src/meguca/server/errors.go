@@ -81,6 +81,7 @@ var (
 	aerrUploadRead       = aerrorNew(400, "Error reading upload")
 	aerrCorrupted        = aerrorNew(400, "Corrupted file")
 	cantRenameSmile      = aerrorNew(400, "Can't rename smile")
+	cantDeleteSmile      = aerrorNew(400, "Can't delete smile")
 	aerrNameTaken        = aerrorNew(400, "Name already taken")
 	aerrNotEnoughCntrast = aerrorNew(400, "Color must be distinguishable in both themes. Increase contrast ratio.")
 	aerrTooManyIgnores   = aerrorNew(400, "Too many users ignored")
