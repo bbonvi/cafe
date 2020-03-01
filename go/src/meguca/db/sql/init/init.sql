@@ -104,16 +104,19 @@ create index bumpTime on threads (bumpTime);
 create index replyTime on threads (replyTime);
 create index sticky on threads (sticky);
 
--- create table smiles (
---   name text not null,
---   aliases text[],
---   board text not null,
---   fileType smallint not null,
---   id bigint primary key,
---   file_hash char(40) not null,
---   timestamp timestamp default current_timestamp
--- );
-
+create table smiles (
+  name text not null,
+  aliases text[],
+  board text not null references boards on delete cascade,
+  fileType smallint not null,
+  id bigint primary key,
+  deleted boolean,
+  deleted_at timestamp,
+  file_hash char(40) not null,
+  created timestamp default (now() at time zone 'utc')
+);
+create INDEX smiles_name on smiles (name);
+create INDEX smiles_id on smiles (id);
 
 create table posts (
   editing boolean,

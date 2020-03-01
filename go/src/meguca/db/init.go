@@ -216,6 +216,35 @@ var upgrades = []func(*sql.Tx) error{
 			CREATE INDEX user_reacts_post_react_id ON user_reacts (post_react_id)`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			CREATE TABLE smiles (
+				name text not null,
+				aliases text[],
+				board text not null references boards on delete cascade,
+				fileType smallint not null,
+				id bigint primary key,
+				deleted boolean,
+				deleted_at timestamp,
+				created timestamp default (now() at time zone 'utc')
+			)`,
+		)
+	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			CREATE INDEX smiles_name ON smiles (name);
+		`)
+	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			CREATE INDEX smiles_id ON smiles (id);
+		`)
+	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			ALTER TABLE smiles ADD COLUMN file_hash char(40) not null`,
+		)
+	},
 }
 
 func StartDB() (err error) {
