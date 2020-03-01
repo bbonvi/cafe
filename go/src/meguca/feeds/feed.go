@@ -17,6 +17,7 @@ const (
 	ban
 	deleteImage
 	reactToPost
+	smilesUpdated
 )
 
 type postMessage struct {

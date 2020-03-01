@@ -5,6 +5,7 @@ package feeds
 
 import (
 	"meguca/common"
+	"meguca/db"
 	"sync"
 )
 
@@ -17,6 +18,7 @@ var feeds = feedMap{
 // Export without circular dependency
 func init() {
 	common.SendTo = SendTo
+	common.SendToBoard = SendToBoard
 	common.ClosePost = ClosePost
 	common.BanPost = BanPost
 	common.DeletePost = DeletePost
@@ -81,6 +83,22 @@ func SendTo(id uint64, msg []byte) {
 	sendIfExists(id, func(f *Feed) {
 		f.Send(msg)
 	})
+}
+
+// SendToBoard sends a message to a board feeds, if it exists
+func SendToBoard(boardID string, msg []byte) {
+	// TODO: Do it in one db hit
+	for _, feed := range feeds.feeds {
+		threadID := feed.id
+		if boardID == "all" {
+			SendTo(threadID, msg)
+			continue
+		}
+		board, _ := db.GetPostBoard(threadID)
+		if board == boardID {
+			SendTo(threadID, msg)
+		}
+	}
 }
 
 // Run a send function of a feed, if it exists

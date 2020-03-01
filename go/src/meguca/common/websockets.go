@@ -57,6 +57,7 @@ const (
 
 	// Notify the client, he needs a captcha solved
 	MessageCaptcha
+	SmilesUpdated
 )
 
 // Forwarded functions from "meguca/feeds" to avoid circular imports
@@ -66,6 +67,9 @@ var (
 
 	// SendTo sends a message to a feed, if it exists
 	SendTo func(id uint64, msg []byte)
+
+	// SendToBoard sends a message to a board feeds, if it exists
+	SendToBoard func(id string, msg []byte)
 
 	// ClosePost closes a post in a feed, if it exists
 	ClosePost func(id, op uint64, msg []byte)

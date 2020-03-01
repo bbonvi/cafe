@@ -44,6 +44,7 @@ export const enum message {
 
   // Notification about needing a captcha on the next post allocation
   captcha,
+  smilesUpdate,
 }
 
 // TODO(Kagami): Use proper message type (need to fix handler

@@ -325,6 +325,14 @@ func updatePostReaction(re reactionJSON, count uint64, exist bool) (postReaction
 	return
 }
 
+type updateType uint8
+
+const (
+	smileAdded updateType = iota
+	smileRenamed
+	smileDeleted
+)
+
 func renameSmile(w http.ResponseWriter, r *http.Request) {
 	f, _, err := parseUploadForm(w, r)
 	if err != nil {
@@ -362,6 +370,7 @@ func renameSmile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serveJSON(w, r, smile)
+	notifyAboutSmileChange(board, smile, smileRenamed)
 	return
 }
 
@@ -393,6 +402,8 @@ func deleteSmile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serveEmptyJSON(w, r)
+	var smile common.SmileCommon
+	notifyAboutSmileChange(board, smile, smileDeleted)
 	return
 }
 
@@ -442,6 +453,7 @@ func createSmile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serveJSON(w, r, res.smile)
+	notifyAboutSmileChange(board, smile, smileAdded)
 	return
 }
 
@@ -612,4 +624,38 @@ func sendReactionsToFeed(r common.Reacts, threadID uint64) error {
 	t = append(t, msg...)
 	feeds.SendTo(threadID, t)
 	return nil
+}
+
+type smileUpdate struct {
+	Board   string             `json:"board"`
+	Deleted bool               `json:"deleted"`
+	Renamed bool               `json:"renamed"`
+	Added   bool               `json:"added"`
+	Smile   common.SmileCommon `json:"smile"`
+}
+
+func notifyAboutSmileChange(board string, smile common.SmileCommon, changeType updateType) {
+	// TODO: Move this to helper or some shit...
+	var b smileUpdate
+	b.Board = board
+	switch changeType {
+	case smileAdded:
+		b.Added = true
+	case smileRenamed:
+		b.Renamed = true
+	case smileDeleted:
+		b.Deleted = true
+	}
+	b.Smile = smile
+
+	msgType := `40`
+	t := make([]byte, 0, 1<<10)
+	t = append(t, msgType...)
+
+	msg, _ := json.Marshal(b)
+
+	t = append(t, msg...)
+
+	feeds.SendToBoard(board, t)
+
 }

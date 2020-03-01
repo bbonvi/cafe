@@ -6,10 +6,11 @@ import { showAlert } from "../alerts";
 import { PostData, SmileReact } from "../common";
 import { connEvent, connSM, handlers, message } from "../connection";
 import { isHoverActive, Post, PostView, observePost } from "../posts";
-import { page, posts } from "../state";
+import { page, posts, Smile } from "../state";
 import { postAdded } from "../ui";
 import { isAtBottom, scrollToBottom } from "../util";
 import { isFirefox, isLinux, isWebkit } from "../vars";
+import { updateBoardSmiles } from "../page/common";
 
 // Run a function on a model, if it exists
 function handle(id: number, fn: (m: Post) => void) {
@@ -70,7 +71,6 @@ export function insertPost(data: PostData) {
   observePost(view.el)
 }
 
-// TODO: This has to be on server-side!!!
 function smileLineOffsetJob() {
   const elems = document.querySelectorAll(".post-message p");
   smileLineOffset(elems);
@@ -95,7 +95,7 @@ export function smileLineOffset(elems: any) {
         if (!elem.innerText || !/\S/.test(elem.innerText)) {
           elem.classList.add("smiles-offset");
         }
-    }, 0)
+    }, 0);
   }
 }
 
@@ -113,6 +113,17 @@ export function init() {
   handlers[message.redirect] = (board: string) => {
     location.href = `/${board}/`;
   };
+
+  interface SmileUpdate {
+    board: string;
+    deleted: boolean;
+    rename: boolean;
+    added: boolean;
+    smile: Smile;
+  }
+  handlers[message.smilesUpdate] = (d: SmileUpdate) => {
+    updateBoardSmiles(d.board);
+  }
 
   // handlers[message.notification] = (text: string) =>
   //   new OverlayNotification(text);
