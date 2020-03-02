@@ -181,7 +181,7 @@ CREATE TABLE sticker_tags (
 CREATE INDEX sticker_tags_tag_id ON sticker_tags (tag_id);
 
 create table post_reacts (
-  smile_name text not null,
+  smile_id bigserial references smiles on delete cascade,
   count bigint default 0,
   post_id bigint references posts on delete cascade,
   timestamp timestamp default current_timestamp,
@@ -195,4 +195,5 @@ create table user_reacts (
 );
 
 create index post_reacts_post_id on post_reacts (post_id);
+create index post_reacts_smile_id on post_reacts (smile_id);
 create index user_reacts_post_react_id on user_reacts (post_react_id);
