@@ -266,6 +266,11 @@ var upgrades = []func(*sql.Tx) error{
 			create index post_reacts_smile_id on post_reacts (smile_id);`,
 		)
 	},
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			ALTER TABLE smiles ADD COLUMN readonly boolean default false;`,
+		)
+	},
 }
 
 func StartDB() (err error) {
