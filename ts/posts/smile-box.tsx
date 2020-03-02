@@ -82,14 +82,23 @@ export function getRecent() {
     return recent;
 }
 
+interface AutocompleteContext {
+    board?: string;
+}
+
 /**
  * Try to autocomplete textarea input.
  *
  * This should be pretty fast because we execute it on each new
  * character.
+ *
+ * Second parameter contains optional `context` object with board name.
+ * Should be used in form on main page, where we don't know what board is it right now.
  */
-export function autocomplete(el: HTMLTextAreaElement): Smile[] | null {
-    const smileList = loadSmilesWithGlobal(page.board)
+export function autocomplete(el: HTMLTextAreaElement, context = {} as AutocompleteContext): Smile[] | null {
+    const curBoard = context.board;
+
+    const smileList = loadSmilesWithGlobal(curBoard || page.board, true);
     const start = el.selectionStart;
     const pos = el.selectionEnd;
 
@@ -150,7 +159,9 @@ export default class extends Component<any, any> {
         this.setSmiles();
     }
     public setSmiles = () => {
-        const smiles = loadSmilesWithGlobal(page.board);
+        const { context: c } = this.props;
+        const board = c && c.board || page.board;
+        const smiles = loadSmilesWithGlobal(board, true);
 
         this.setState({ smiles });
     }

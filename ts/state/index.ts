@@ -135,8 +135,18 @@ export function loadSmiles(board: string): Smile[] {
 /**
  * Returns board's and global smiles. Board's is always first.
  */
-export function loadSmilesWithGlobal(board?: string): Smile[] {
+export function loadSmilesWithGlobal(board?: string, sort?: boolean): Smile[] {
     const smiles = [...loadSmiles(board || page.board), ...loadSmiles("all")];
+
+    if (sort) {
+        smiles.sort((a, b) => {
+            // Natural sorting
+            // TODO: Move to utils
+            return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" })
+                ? 1
+                : -1;
+        });
+    }
 
     return getUnique(smiles, "name");
 }

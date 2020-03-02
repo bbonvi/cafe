@@ -3074,16 +3074,12 @@ html:not(.pos_moderators) {
 }
 
 .smiles-item {
-    min-width: 40px;
     text-align: center;
-    height: 32px;
-    padding: 4px 0;
+    padding: 4px;
     cursor: pointer;
+    display: inherit;
 }
 
-.smile-box_autocomplete .smiles-item {
-    min-width: 40px;
-}
 
 .smiles-item_cur {
     background: @controlHover;
@@ -3094,6 +3090,13 @@ html:not(.pos_moderators) {
     left: 134px;
     bottom: 38px;
     padding: 5px;
+
+    .smiles-item {
+        .smile {
+            max-height: 1.934em;
+            max-width: 1.934em;
+        }
+    }
 
     .smiles {
         overflow-y: scroll;
@@ -3598,10 +3601,9 @@ html:not(.pos_moderators) {
 // SMILES
 //////////////////////////////
 .smile {
-    // TODO: Remove later when gulp job will be fixed
-    background: unset !important;
     display: inline-block;
     cursor: default;
+    user-select: none;
     transform: translateY(1px);
     max-height: 2.534em;
     max-width: 2.534em;
@@ -3625,6 +3627,11 @@ html:not(.pos_moderators) {
 
 .smiles-offset {
     position: relative;
+
+    .smile {
+        max-height: 2.534em;
+        max-width: 2.534em;
+    }
 }
 
 .post-reacts {
@@ -3713,8 +3720,9 @@ html.page-loaded {
 
     .smile {
         cursor: pointer;
-        margin: -4px 0;
-        transform: scale(0.5);
+        max-height: 1.5em;
+        max-width: 1.5em;
+        margin: 2px 4px 4px 4px;
     }
 }
 
@@ -3771,7 +3779,6 @@ html:not(.user) {
     padding: 0px 2px 0px 3px;
     flex-wrap: wrap;
     position: absolute;
-    margin: -2px 0;
 
     &__add {
         color: @control;
@@ -3791,26 +3798,18 @@ html:not(.user) {
     }
 
     .smiles-item {
-        min-width: unset;
-        padding: 0;
-        margin: -2px -1px;
 
         &--heart {
             padding-left: 8px;
-
-            .smile {
-                transform: scale(0.53);
-            }
         }
 
         .smile {
-            transform: scale(0.53);
+            max-height: 1.534em;
+            max-width: 1.534em;
         }
 
         .fa-plus {
-            height: 32px;
-            width: 32px;
-            line-height: 2.2;
+            padding-right: 10px;
         }
     }
 
@@ -3818,6 +3817,7 @@ html:not(.user) {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+        align-items: center;
     }
 }
 

@@ -42,6 +42,7 @@ import {
 import { Progress } from "../widgets";
 import * as signature from "./signature";
 import SmileBox, { autocomplete } from "./smile-box";
+import { updateBoardSmiles } from "../page/common";
 /* var isMob: boolean = window.matchMedia("(max-width: 768px) and (hover: none)").matches
 addEventListener('resize', function(){
   isMob = window.matchMedia("(max-width: 768px) and (hover: none)").matches
@@ -326,8 +327,9 @@ class BodyPreview extends Component<any, any> {
   public shouldComponentUpdate({ body }: any) {
     return body !== this.props.body;
   }
-  public render({ body }: any) {
+  public render({ body, board }: any) {
     const post = { body } as PostData;
+    post.board = board;
     const html = renderBody(post);
     return (
       <div class="reply-body reply-message" dangerouslySetInnerHTML={{ __html: html }} />
@@ -405,6 +407,8 @@ class Reply extends Component<any, any> {
     this.focusAndScroll();
     const caret = this.state.body.length;
     this.bodyEl.setSelectionRange(caret, caret);
+
+    updateBoardSmiles(this.state.board);
   }
 
   public componentWillUnmount() {
@@ -853,6 +857,8 @@ class Reply extends Component<any, any> {
   }
   private handleBoardChange = (e: any) => {
     this.setState({ board: e.target.value });
+
+    updateBoardSmiles(e.target.value);
   }
   // private setBodyScroll() {
   // const hasScroll = this.bodyEl.scrollHeight > this.bodyEl.clientHeight;
@@ -863,7 +869,7 @@ class Reply extends Component<any, any> {
   // }
   private handleBodyChange = () => {
     // this.setBodyScroll();
-    const smileBoxAC = autocomplete(this.bodyEl);
+    const smileBoxAC = autocomplete(this.bodyEl, { board: this.state.board });
     const smileBox = !!smileBoxAC;
 
     this.setState({ body: this.bodyEl.value, smileBox, smileBoxAC });
@@ -1205,12 +1211,13 @@ class Reply extends Component<any, any> {
     );
   }
   private renderSmileBox() {
-    const { body, smileBox, smileBoxAC } = this.state;
+    const { body, smileBox, board, smileBoxAC } = this.state;
     if (!smileBox) return null;
     return (
       <SmileBox
         body={body}
         acList={smileBoxAC}
+        context={{ board }}
         wrapper={this.mainEl}
         textarea={this.bodyEl}
         onSelect={this.handleSmileSelect}
@@ -1222,7 +1229,7 @@ class Reply extends Component<any, any> {
 
 class RenderBody extends Component<any, any> {
   public render() {
-    const { editing, sending, body } = this.props;
+    const { editing, sending, body, board } = this.props;
     return editing ? (
       <div class="reply-body">
         <textarea
@@ -1237,7 +1244,7 @@ class RenderBody extends Component<any, any> {
         <div class="reply-body-coverbar" ref={s(this, "coverEl")} />
       </div>
     ) : (
-        <BodyPreview body={body} />
+        <BodyPreview board={board} body={body} />
       );
   }
 }

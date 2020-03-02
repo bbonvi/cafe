@@ -5,7 +5,7 @@
 
 import { renderPostLink } from "."; // TODO(Kagami): Avoid circular import
 import { Command, PostData, PostLink } from "../common";
-import { page } from "../state";
+import { page, loadSmilesWithGlobal } from "../state";
 import { escape, unescape } from "../util";
 import marked from "./marked";
 
@@ -149,6 +149,11 @@ export function render(post: PostData): string {
         breaks: true,
         // pedantic: false,
         sanitize: true, // Very important!
+        // There is no other way to tell marked which emotes to render;
+        context: {
+            board: post.board,
+        },
+        smileList: loadSmilesWithGlobal(post.board),
         // sanitizer: null,
         // mangle: true,
         // smartLists: false,
