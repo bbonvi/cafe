@@ -212,11 +212,12 @@ interface CreateElementParams {
     classes?: string | string[];
     dataSet?: { [key: string]: string | number };
     text?: string | number;
+    src?: string;
     title?: string | number;
     append?: boolean;
 }
 export function createElement(tag: string, params: CreateElementParams = {}): HTMLElement {
-    const { classes, dataSet = {}, text, title, append = false, parent } = params;
+    const { classes, src, dataSet = {}, text, title, append = false, parent } = params;
     const element = document.createElement(tag);
     if (Array.isArray(classes)) {
         element.classList.add(...classes)
@@ -230,6 +231,9 @@ export function createElement(tag: string, params: CreateElementParams = {}): HT
 
     if (text) {
         element.innerText = String(text);
+    }
+    if (src) {
+        (element as HTMLImageElement).src = src;
     }
 
     if (title) {

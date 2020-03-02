@@ -2,7 +2,7 @@ import { View, ViewAttrs } from "../base";
 import { SmileReact } from "../common";
 import _ from "../lang";
 import options from "../options";
-import { page } from "../state";
+import { page, getSmileByItsName } from "../state";
 import {
     makePostContext, readableTime,
     relativeTime, renderPostLink, TemplateContext,
@@ -12,6 +12,7 @@ import { POST_BACKLINKS_SEL, THREAD_SEL } from "../vars";
 import { render as renderEmbeds } from "./embed";
 import { Post, Thread } from "./model";
 import { getRecent } from "./smile-box";
+import { smilePath } from "./images";
 
 /**
  * Base post view class
@@ -54,14 +55,21 @@ export default class PostView extends View<Post> {
         const recentContainer = this.model.view.el.querySelector(".reaction-box__recent");
         recentContainer.innerHTML = "";
         const recent = getRecent().filter((name) => name !== "heart").slice(0, 3);
-        for (const smileName of recent) {
+        const recentList = recent
+            .map((s) => getSmileByItsName(s))
+            .filter((s) => !!s);
+        for (const smile of recentList) {
             recentContainer.innerHTML += `
             <div
                 class="smiles-item trigger-react-post"
-                data-smile-name="${smileName}"
+                data-smile-name="${smile.name}"
                 data-post-id="${this.model.id}"
             >
-                <i class="smile smile-${smileName}" title=":${smileName}:"></i>
+                <img
+                    class="smile"
+                    src="${smilePath(smile.fileType, smile.sha1)}"
+                    title=":${smile.name}:"
+                >
             </div>
             `;
         }
@@ -103,20 +111,26 @@ export default class PostView extends View<Post> {
             "post-react",
             "trigger-react-post",
             "post-react--minimized", // for animation
-        ]
+        ];
 
-        const smileEl = createElement("i", {
-            classes: ["smile", "smile-" + reaction.smileName],
-            title: reaction.smileName,
-        })
+        const smile = getSmileByItsName(reaction.smileName);
+        if (!smile) {
+            throw Error();
+        }
+
+        const smileEl = createElement("img", {
+            classes: ["smile"],
+            src: smilePath(smile.fileType, smile.sha1),
+            title: smile.name,
+        });
         const counterEl = createElement("span", {
             classes: "post-react__count",
             text: 0,
-        })
+        });
 
         reactContainer.appendChild(smileEl);
         reactContainer.appendChild(counterEl);
-        reactContainer.classList.add(...containerClasses)
+        reactContainer.classList.add(...containerClasses);
         reactContainer.dataset.postId = String(this.model.id);
         reactContainer.dataset.smileName = reaction.smileName;
 
@@ -140,7 +154,11 @@ export default class PostView extends View<Post> {
 
         // dont' rerender if already exists
         if (created) {
-            this.renderReactContainerElements(reactContainer, reaction);
+            try {
+                this.renderReactContainerElements(reactContainer, reaction);
+            } catch (error) {
+                return;
+            }
         }
         if (reaction.self) {
             reactContainer.classList.add("post-react--self");

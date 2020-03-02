@@ -308,14 +308,6 @@ export default class extends Component<any, any> {
     }
     private renderAll() {
         return [
-            // <div class="smiles-group">
-            //   {this.renderList(smileList.filter(isThingSmile))}
-            // </div>,
-            // <hr class="smiles-separator" />,
-            // <div class="smiles-group">
-            //   {this.renderList(smileList.filter(isMemeSmile))}
-            // </div>,
-            // <hr class="smiles-separator" />,
             <div class="smiles-group">
                 {this.renderList(this.state.smiles)}
             </div>,

@@ -30,7 +30,8 @@
   <footer class="post-footer">
     <div class="post-backlinks">{{{Backlinks}}}</div>
     <div class="post-reacts post-reacts--hidden">
-      {{#Reacts}}
+    {{! TODO: Fix server-side rendering later. }}
+      {{#Reacts_}}
         <div
           title=":{{ SmileName }}:"
           class="react-{{ SmileName }} post-react trigger-react-post"
@@ -40,7 +41,7 @@
           <i class="smile smile-{{ SmileName }}"></i>
           <span class="post-react__count">{{ Count }}</span>
         </div>
-      {{/Reacts}}
+      {{/Reacts_}}
       <div class="post-reacts__divider"></div>
       <div style="display: none;" class="post-reacts__showmore fa fa-ellipsis-h">
       </div>
