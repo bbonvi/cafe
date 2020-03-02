@@ -464,7 +464,7 @@ func getValidSmileName(smileName string, board string) (newName string, err erro
 	if len(smileName) > 30 {
 		smileName = smileName[0:30]
 	}
-	var validSmileName = regexp.MustCompile(`^[a-z_]*$`)
+	var validSmileName = regexp.MustCompile(`^[a-z0-9_]*$`)
 	if !validSmileName.MatchString(smileName) {
 		return "", invalidName
 	}

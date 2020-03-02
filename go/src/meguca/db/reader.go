@@ -406,6 +406,21 @@ func GetBoardSmiles(board string) (smiles []common.SmileCommon, err error) {
 	return
 }
 
+// GetBoardWithGlobalSmiles returns concatenated list of board and global smiles.
+// Global should be last, as board is prioritized.
+func GetBoardWithGlobalSmiles(board string) []common.SmileCommon {
+	s1, err := GetBoardSmiles(board)
+	if err != nil {
+		s1 = make([]common.SmileCommon, 0)
+	}
+	s2, err := GetBoardSmiles("all")
+	if err != nil {
+		s2 = make([]common.SmileCommon, 0)
+	}
+	return append(s1, s2...)
+
+}
+
 // GetThreadUserReacts reads a list of thread reactions
 func GetThreadUserReacts(ss *auth.Session, threadID uint64) (reacts common.Reacts, err error) {
 	var userID *string

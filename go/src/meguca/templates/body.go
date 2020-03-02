@@ -4,11 +4,11 @@ package templates
 
 import (
 	"bytes"
+	"meguca/assets"
 	"meguca/common"
+	"meguca/db"
 	"regexp"
 	"strconv"
-
-	"smiles"
 
 	b "github.com/cutechan/blackfriday"
 	"github.com/microcosm-cc/bluemonday"
@@ -63,11 +63,13 @@ var policy = func() *bluemonday.Policy {
 	p.RequireNoFollowOnLinks(false)
 	p.AllowAttrs("rel").Matching(bluemonday.SpaceSeparatedTokens).OnElements("a")
 	p.AllowAttrs("class").Matching(bluemonday.SpaceSeparatedTokens).OnElements("a")
+	p.AllowAttrs("class").Matching(bluemonday.SpaceSeparatedTokens).OnElements("img")
 	p.AllowAttrs("target").Matching(regexp.MustCompile(`^_blank$`)).OnElements("a")
 	p.AllowAttrs("data-id").Matching(bluemonday.Integer).OnElements("a")
 	p.AllowAttrs("data-provider").Matching(bluemonday.SpaceSeparatedTokens).OnElements("a")
 	p.AllowAttrs("class").Matching(bluemonday.SpaceSeparatedTokens).OnElements("i")
 	p.AllowAttrs("title").Matching(regexp.MustCompile(`^[-:!%\w]+$`)).OnElements("i")
+	p.AllowAttrs("title").Matching(regexp.MustCompile(`^[-:!%\w]+$`)).OnElements("img")
 	return p
 }()
 
@@ -169,16 +171,35 @@ func (r *renderer) PostLink(out *bytes.Buffer, text []byte) {
 }
 
 func (r *renderer) Smile(out *bytes.Buffer, text []byte, id string) {
-	if !smiles.Smiles[id] {
+	// TODO: Fix "all" only board
+	// We can only render global emotes for now, because template engine
+	// doesn't know anything about current board
+	board, err := db.GetPostBoard(r.op)
+	if err != nil {
 		b.AttrEscape(out, text)
 		return
 	}
 
-	out.WriteString("<i class=\"smile smile-")
-	out.WriteString(id)
+	smiles := db.GetBoardWithGlobalSmiles(board)
+
+	var s common.SmileCommon
+	for _, smile := range smiles {
+		if id == smile.Name {
+			s = smile
+			break
+		}
+	}
+	if s.Name == "" {
+		b.AttrEscape(out, text)
+		return
+	}
+
+	out.WriteString("<img class=\"smile\"")
+	out.WriteString("src=\"")
+	out.WriteString(assets.SmilePath(s.FileType, s.SHA1))
 	out.WriteString("\" title=\":")
-	out.WriteString(id)
-	out.WriteString(":\"></i>")
+	out.WriteString(s.Name)
+	out.WriteString(":\">")
 }
 
 func (r *renderer) Command(out *bytes.Buffer, text []byte, c, q string) {
