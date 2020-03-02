@@ -79,7 +79,6 @@ func MakePostContext(l string, t common.Thread, p *common.Post, bls common.Backl
 		p.ShowColor = true
 	}
 	for i, s := range p.Reacts {
-		fmt.Println(p.Reacts[i])
 		p.Reacts[i].Smile.Path = assets.SmilePath(s.Smile.FileType, s.Smile.SHA1)
 	}
 	return PostContext{
