@@ -887,7 +887,7 @@ Renderer.prototype.del = function(text) {
 };
 
 Renderer.prototype.smile = function(s) {
-  return `<img class="smile" src="${smilePath(s.fileType, s.sha1)}" title=":${s.name}:">`
+  return `<img class="smile" src="${smilePath(s.fileType, s.sha1)}" title=":${s.name}: (${s.board})">`
 };
 
 Renderer.prototype.command = function(text, c, q) {

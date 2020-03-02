@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 
+	"meguca/assets"
 	"meguca/auth"
 	"meguca/common"
 	"meguca/config"
@@ -32,6 +33,9 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t, _ := db.GetPostReacts(id)
+	for i, s := range t {
+		t[i].Smile.Path = assets.SmilePath(s.Smile.FileType, s.Smile.SHA1)
+	}
 
 	switch post, err := db.GetPost(id); err {
 	case nil:

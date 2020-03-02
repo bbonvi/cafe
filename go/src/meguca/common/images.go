@@ -67,5 +67,5 @@ type SmileCommon struct {
 	Board    string `json:"board"`
 	Name     string `json:"name,omitempty"`
 	ID       uint64 `json:"id,omitempty`
-	Path     string `json:"path,omitempty"`
+	Path     string `json:"-"`
 }

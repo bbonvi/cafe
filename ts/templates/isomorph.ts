@@ -53,7 +53,9 @@ export function makePostContext(
     HasFiles: !!p.files,
     post: p,
     backlinks: bls,
-  }
+  };
+  // Mustache reactions rendering only for server side.
+  ctx.Reacts = []
 
   ctx.PostClass = () => {
     const classes = ["post"]
@@ -95,7 +97,6 @@ export function makePostContext(
 
   // NOOP because we need to re-render based on relativeTime setting.
   ctx.Time = ""
-
   ctx.Files = (p.files || []).map((img: ImageData, n: number) =>
     new TemplateContext("post-file", {
       SHA1: img.SHA1,

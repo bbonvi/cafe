@@ -2,7 +2,7 @@ import { View, ViewAttrs } from "../base";
 import { SmileReact } from "../common";
 import _ from "../lang";
 import options from "../options";
-import { page, getSmileByItsName } from "../state";
+import { page, getSmileByItsName, loadSmilesWithGlobal } from "../state";
 import {
     makePostContext, readableTime,
     relativeTime, renderPostLink, TemplateContext,
@@ -55,8 +55,9 @@ export default class PostView extends View<Post> {
         const recentContainer = this.model.view.el.querySelector(".reaction-box__recent");
         recentContainer.innerHTML = "";
         const recent = getRecent().filter((name) => name !== "heart").slice(0, 3);
+        const smileList = loadSmilesWithGlobal(this.model.board);
         const recentList = recent
-            .map((s) => getSmileByItsName(s))
+            .map((s) => getSmileByItsName(s, smileList))
             .filter((s) => !!s);
         for (const smile of recentList) {
             recentContainer.innerHTML += `
@@ -105,15 +106,22 @@ export default class PostView extends View<Post> {
         container.innerHTML = html;
     }
 
-    public renderReactContainerElements(reactContainer: HTMLElement, reaction: SmileReact) {
+    public renderReactContainerElements(
+        reactContainer: HTMLElement,
+        reaction: SmileReact,
+        skipAnimation?: boolean,
+    ) {
         const containerClasses = [
             "react-" + reaction.smile.name,
             "post-react",
             "trigger-react-post",
-            "post-react--minimized", // for animation
         ];
+        if (!skipAnimation) {
+            containerClasses.push("post-react--minimized")
 
-        const smile = getSmileByItsName(reaction.smile.name);
+        }
+
+        const smile = reaction.smile;
         if (!smile) {
             throw Error();
         }
@@ -134,7 +142,7 @@ export default class PostView extends View<Post> {
         reactContainer.dataset.postId = String(this.model.id);
         reactContainer.dataset.smileName = reaction.smile.name;
 
-        return reactContainer;
+        return reactContainer as HTMLDivElement;
     }
 
     public delayedRemoveReaction(reactContainer: HTMLElement, smileName: string) {
@@ -144,8 +152,10 @@ export default class PostView extends View<Post> {
         }, 100);
     }
 
-    public setReaction(reaction: SmileReact) {
-        const [reactContainer, created] = this.getReactContainer(reaction.smile.name);
+    public setReaction(reaction: SmileReact, skipAnimation?: boolean) {
+        // TODO: FIXME: Reactions not updating when rendering post from another thread
+        // tslint:disable-next-line: prefer-const
+        let [reactContainer, created] = this.getReactContainer(reaction.smile.name);
         if (reaction.count === 0 && created) {
             reactContainer.outerHTML = "";
             return;
@@ -155,8 +165,9 @@ export default class PostView extends View<Post> {
         // dont' rerender if already exists
         if (created) {
             try {
-                this.renderReactContainerElements(reactContainer, reaction);
+                this.renderReactContainerElements(reactContainer, reaction, skipAnimation);
             } catch (error) {
+                reactContainer.outerHTML = ""
                 return;
             }
         }
@@ -176,7 +187,7 @@ export default class PostView extends View<Post> {
             counter.innerText = reaction.count.toString();
         }
 
-        if (reaction.count !== oldValue) {
+        if (reaction.count !== oldValue && !skipAnimation) {
             reactContainer.classList.add("post-react--counterchange");
         }
         setTimeout(() => {

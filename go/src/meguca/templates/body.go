@@ -69,7 +69,7 @@ var policy = func() *bluemonday.Policy {
 	p.AllowAttrs("data-provider").Matching(bluemonday.SpaceSeparatedTokens).OnElements("a")
 	p.AllowAttrs("class").Matching(bluemonday.SpaceSeparatedTokens).OnElements("i")
 	p.AllowAttrs("title").Matching(regexp.MustCompile(`^[-:!%\w]+$`)).OnElements("i")
-	p.AllowAttrs("title").Matching(regexp.MustCompile(`^[-:!%\w]+$`)).OnElements("img")
+	p.AllowAttrs("title").Matching(regexp.MustCompile(`^[-:!%\w ()]+$`)).OnElements("img")
 	return p
 }()
 
@@ -199,7 +199,9 @@ func (r *renderer) Smile(out *bytes.Buffer, text []byte, id string) {
 	out.WriteString(assets.SmilePath(s.FileType, s.SHA1))
 	out.WriteString("\" title=\":")
 	out.WriteString(s.Name)
-	out.WriteString(":\">")
+	out.WriteString(": (")
+	out.WriteString(s.Board)
+	out.WriteString(")\">")
 }
 
 func (r *renderer) Command(out *bytes.Buffer, text []byte, c, q string) {

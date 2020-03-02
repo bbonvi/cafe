@@ -307,8 +307,10 @@ export default class extends Component<any, any> {
     private renderRecent() {
         // Map string[] of recent to Smile[].
         // Should be fast enough, because there is no more than 20 items
+        const { context } = this.props;
+        const smileList = loadSmilesWithGlobal(context && context.board);
         const recentList = recent
-            .map((s) => getSmileByItsName(s))
+            .map((s) => getSmileByItsName(s, smileList))
             .filter((s) => !!s);
         return [
             <div class="smiles-group">
@@ -330,7 +332,7 @@ export default class extends Component<any, any> {
             <div class={cx("smiles-item", { "smiles-item_cur": i === cur })}>
                 <img
                     class="smile"
-                    title={`:${smile.name}:`}
+                    title={`:${smile.name}: (${smile.board})`}
                     src={`${smilePath(smile.fileType, smile.sha1)}`}
                     onClick={this.handleSmileSelect.bind(null, smile.name)}
                 />

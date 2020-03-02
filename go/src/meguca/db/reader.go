@@ -486,7 +486,8 @@ func GetPostReacts(id uint64) (reacts common.Reacts, err error) {
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&p.Count, &p.Smile.Name, &p.PostID)
+		err = rows.Scan(&p.Count, &p.Smile.Name, &p.Smile.SHA1,
+			&p.Smile.FileType, &p.Smile.Board, &p.Smile.ID, &p.PostID)
 		if err != nil {
 			return
 		}
