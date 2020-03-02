@@ -4,7 +4,8 @@
  * https://github.com/chjj/marked
  */
 
-import smiles from "../../smiles-pp/smiles";
+import { loadSmiles, page } from "../state";
+import { smilePath } from "../posts/images"
 
 /**
  * Block-Level Grammar
@@ -683,9 +684,13 @@ InlineLexer.prototype.output = function(src) {
 
     // smile (cutechan)
     if (cap = this.rules.smile.exec(src)) {
-      if (smiles.has(cap[1])) {
+      const smiles1 = loadSmiles(page.board)
+      const smiles2 = loadSmiles("all")
+      const smiles = [...smiles1, ...smiles2]
+      const curSmile = smiles.find(s => s.name === cap[1])
+      if (curSmile) {
         src = src.substring(cap[0].length);
-        out += this.renderer.smile(cap[1]);
+        out += this.renderer.smile(curSmile);
         continue;
       }
     }
@@ -836,7 +841,7 @@ Renderer.prototype.listitem = function(text) {
 
 Renderer.prototype.paragraph = function(text) {
     return '<p>' + text + '</p>\n';
- 
+
 };
 
 Renderer.prototype.table = function(header, body) {
@@ -883,8 +888,8 @@ Renderer.prototype.del = function(text) {
   return '<del>' + text + '</del>';
 };
 
-Renderer.prototype.smile = function(id) {
-  return `<i class="smile smile-${id}" title=":${id}:"></i>`;
+Renderer.prototype.smile = function(s) {
+  return `<img class="smile" src="${smilePath(s.fileType, s.sha1)}" title=":${s.name}:">`
 };
 
 Renderer.prototype.command = function(text, c, q) {
@@ -1113,7 +1118,7 @@ Parser.prototype.tok = function() {
     }
     case 'text': {
       return this.renderer.paragraph(this.parseText());
-      
+
     }
   }
 };
@@ -1132,7 +1137,7 @@ function escape(html, encode) {
 }
 
 function unescape(html) {
-	// explicitly match decimal, hex, and named HTML entities 
+	// explicitly match decimal, hex, and named HTML entities
   return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function(_, n) {
     n = n.toLowerCase();
     if (n === 'colon') return ':';

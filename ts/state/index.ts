@@ -124,7 +124,7 @@ export interface Smile {
 export function storeSmiles(smiles: Smile[], board: string) {
     localStorage[board + "_smiles"] = JSON.stringify(smiles);
 }
-export function loadSmiles(board: string) {
+export function loadSmiles(board: string): Smile[] {
     try {
         return JSON.parse(localStorage[board + "_smiles"]);
     } catch (error) {
