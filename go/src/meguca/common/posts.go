@@ -81,11 +81,10 @@ type Commands []Command
 type Files []*Image
 
 type React struct {
-	SmileName string `json:"smileName"`
-	Count     uint64 `json:"count"`
-	PostID    uint64 `json:"postId"`
-	Self      bool   `json:"self,omitempty"`
-	Path      string `json:"self,omitempty"`
+	Count  uint64      `json:"count"`
+	PostID uint64      `json:"postId"`
+	Self   bool        `json:"self,omitempty"`
+	Smile  SmileCommon `json:"smile,omitempty"`
 }
 
 type Reacts []React

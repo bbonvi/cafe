@@ -107,13 +107,13 @@ export default class PostView extends View<Post> {
 
     public renderReactContainerElements(reactContainer: HTMLElement, reaction: SmileReact) {
         const containerClasses = [
-            "react-" + reaction.smileName,
+            "react-" + reaction.smile.name,
             "post-react",
             "trigger-react-post",
             "post-react--minimized", // for animation
         ];
 
-        const smile = getSmileByItsName(reaction.smileName);
+        const smile = getSmileByItsName(reaction.smile.name);
         if (!smile) {
             throw Error();
         }
@@ -132,7 +132,7 @@ export default class PostView extends View<Post> {
         reactContainer.appendChild(counterEl);
         reactContainer.classList.add(...containerClasses);
         reactContainer.dataset.postId = String(this.model.id);
-        reactContainer.dataset.smileName = reaction.smileName;
+        reactContainer.dataset.smileName = reaction.smile.name;
 
         return reactContainer;
     }
@@ -145,12 +145,12 @@ export default class PostView extends View<Post> {
     }
 
     public setReaction(reaction: SmileReact) {
-        const [reactContainer, created] = this.getReactContainer(reaction.smileName);
+        const [reactContainer, created] = this.getReactContainer(reaction.smile.name);
         if (reaction.count === 0 && created) {
             reactContainer.outerHTML = "";
             return;
         }
-        clearTimeout(this.timers[reaction.smileName]);
+        clearTimeout(this.timers[reaction.smile.name]);
 
         // dont' rerender if already exists
         if (created) {
@@ -170,7 +170,7 @@ export default class PostView extends View<Post> {
         const oldValue = parseInt(counter.innerText, 10);
 
         if (reaction.count === 0) {
-            this.delayedRemoveReaction(reactContainer, reaction.smileName);
+            this.delayedRemoveReaction(reactContainer, reaction.smile.name);
             return;
         } else {
             counter.innerText = reaction.count.toString();

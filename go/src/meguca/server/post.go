@@ -194,7 +194,7 @@ func createMap(reactQueue common.Reacts) threadMap {
 	// smileMap to PostIDs
 	for _, r := range reactQueue {
 		PostID := r.PostID
-		SmileID := r.SmileName
+		SmileID := r.Smile.Name
 
 		if p[PostID] == nil {
 			p[PostID] = make(smileMap)
@@ -299,18 +299,18 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res := common.React{
-		SmileName: re.SmileName,
-		Count:     count,
-		PostID:    re.PostID,
-		Self:      !alreadyReacted,
+		Smile:  s,
+		Count:  count,
+		PostID: re.PostID,
+		Self:   !alreadyReacted,
 	}
 	// make success response to the client
 	serveJSON(w, r, res)
 
 	react := common.React{
-		SmileName: re.SmileName,
-		Count:     count,
-		PostID:    re.PostID,
+		Smile:  s,
+		Count:  count,
+		PostID: re.PostID,
 	}
 	var reacts common.Reacts
 	reacts = append(reacts, react)
@@ -336,7 +336,18 @@ func updatePostReaction(re reactionJSON, count uint64, exist bool) (postReaction
 		postReactionID, err = db.UpdateReactionCount(re.PostID, re.SmileName, count)
 		return
 	}
-	postReactionID, err = db.InsertPostReaction(re.PostID, re.SmileName)
+	board, err := db.GetPostBoard(re.PostID)
+	if err != nil {
+		return
+	}
+	s, err := db.GetSmile(re.SmileName, board)
+	if err != nil {
+		s, err = db.GetSmile(re.SmileName, "all")
+		if err != nil {
+			return
+		}
+	}
+	postReactionID, err = db.InsertPostReaction(re.PostID, s.ID)
 	return
 }
 

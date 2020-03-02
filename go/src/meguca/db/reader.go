@@ -397,7 +397,7 @@ func GetBoardSmiles(board string) (smiles []common.SmileCommon, err error) {
 	for rows.Next() {
 		err = rows.Scan(&s.Name, &s.ID, &s.SHA1, &s.Board, &s.FileType)
 		if err != nil {
-			err = errors.New("something went wrong")
+			err = errors.New("something went wrong1")
 			return
 		}
 		smiles = append(smiles, s)
@@ -437,10 +437,11 @@ func GetThreadUserReacts(ss *auth.Session, threadID uint64) (reacts common.React
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID, &p.Self)
+		err = rows.Scan(&p.Count, &p.Smile.Name, &p.Smile.Board,
+			&p.Smile.SHA1, &p.Smile.FileType, &p.PostID, &p.Self)
 		if err != nil {
 			fmt.Println(err)
-			err = errors.New("something went wrong")
+			err = errors.New("something went wrong2")
 			return
 		}
 		reacts = append(reacts, p)
@@ -461,9 +462,10 @@ func GetThreadReacts(id uint64) (reacts common.Reacts, err error) {
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID, &p.Self)
+		err = rows.Scan(&p.Count, &p.Smile.Name, &p.Smile.Board,
+			&p.Smile.SHA1, &p.Smile.FileType, &p.PostID, &p.Self)
 		if err != nil {
-			err = errors.New("something went wrong")
+			err = errors.New("something went wrong3")
 			return
 		}
 		reacts = append(reacts, p)
@@ -484,7 +486,7 @@ func GetPostReacts(id uint64) (reacts common.Reacts, err error) {
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&p.Count, &p.SmileName, &p.PostID)
+		err = rows.Scan(&p.Count, &p.Smile.Name, &p.PostID)
 		if err != nil {
 			return
 		}

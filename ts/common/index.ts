@@ -1,3 +1,5 @@
+import { Smile } from "../state";
+
 /** Common types and constants. */
 
 /** Data of a thread. */
@@ -32,8 +34,8 @@ export interface PostData {
 
 export interface SmileReact {
   postId?: number;
-  smileName?: string;
   count?: number;
+  smile?: Smile;
   self?: boolean;
 }
 

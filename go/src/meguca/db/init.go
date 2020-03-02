@@ -255,6 +255,17 @@ var upgrades = []func(*sql.Tx) error{
 			ALTER TABLE smiles DROP COLUMN fileType, ADD COLUMN file_type smallint not null;`,
 		)
 	},
+	// Remove all existing reactions to recreate model.
+	// There is a couple solutions to preserve data,
+	// but it's not that big of a deal.
+	func(tx *sql.Tx) (err error) {
+		return execAll(tx, `
+			DELETE from post_reacts;
+			ALTER TABLE post_reacts DROP COLUMN IF EXISTS smile_name;
+			ALTER TABLE post_reacts ADD COLUMN smile_id bigserial references smiles on delete cascade;
+			create index post_reacts_smile_id on post_reacts (smile_id);`,
+		)
+	},
 }
 
 func StartDB() (err error) {

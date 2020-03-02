@@ -1,6 +1,9 @@
 SELECT DISTINCT
     count,
     smiles.name,
+    smiles.board,
+    smiles.file_hash,
+    smiles.file_type,
     post_id,
     ($2 != '' and $2 is not null and $2 in (
         SELECT account_id from user_reacts as ur where ur.post_react_id = pr.id

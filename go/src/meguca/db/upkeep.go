@@ -42,6 +42,8 @@ func runHourTasks() {
 
 // Delete reactions with smiles that not exist
 func deleteUnusedReactions() (err error) {
+	// TODO: Fix query
+	return nil
 	r, err := db.Query(`SELECT distinct smile_name from post_reacts`)
 	if err != nil {
 		return

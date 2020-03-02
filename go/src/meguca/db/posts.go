@@ -197,6 +197,13 @@ func ValidateOP(id uint64, board string) (valid bool, err error) {
 	}
 	return
 }
+func GetSmile(smileName string, board string) (s common.SmileCommon, err error) {
+	err = prepared["get_smile"].QueryRow(board, smileName).Scan(&s.Name, &s.ID, &s.SHA1, &s.Board)
+	if err == sql.ErrNoRows {
+		return
+	}
+	return
+}
 
 func ValidSmileName(smileName string, board string) (valid bool, err error) {
 	err = prepared["get_smile"].QueryRow(board, smileName).Scan(&valid)
@@ -315,8 +322,8 @@ func InsertUserReaction(ss *auth.Session, reactionID uint64) (err error) {
 }
 
 // InsertPostReaction inserts a post's reaction with relation to post.
-func InsertPostReaction(postID uint64, smileName string) (reactionID uint64, err error) {
-	err = prepared["write_post_react"].QueryRow(postID, smileName).Scan(&reactionID)
+func InsertPostReaction(postID uint64, smileID uint64) (reactionID uint64, err error) {
+	err = prepared["write_post_react"].QueryRow(postID, smileID).Scan(&reactionID)
 	if err != nil {
 		return
 	}
