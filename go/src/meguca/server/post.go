@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
-	"smiles"
 	"strconv"
 	"strings"
 
@@ -244,7 +243,23 @@ func reactToPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !smiles.Smiles[re.SmileName] {
+	board, err := db.GetPostBoard(threadID)
+	if err != nil {
+		err = errors.New("Couldn't get post board")
+		text404(w, err)
+		return
+	}
+
+	smiles := db.GetBoardWithGlobalSmiles(board)
+	var s common.SmileCommon
+	for _, smile := range smiles {
+		if re.SmileName == smile.Name {
+			s = smile
+			break
+		}
+	}
+
+	if s.Name == "" {
 		err := errors.New("Smile not found")
 		text404(w, err)
 		return

@@ -4,7 +4,6 @@ package db
 
 import (
 	"meguca/assets"
-	"smiles"
 	"strings"
 	"time"
 )
@@ -64,11 +63,12 @@ func deleteUnusedReactions() (err error) {
 		return
 	}
 
-	for _, smileName := range reactions {
-		if !smiles.Smiles[smileName] {
-			err = execPrepared("delete_unused_reactions", smileName)
-		}
-	}
+	// for _, smileName := range reactions {
+	// 	if !smiles.Smiles[smileName] {
+	// 		err = execPrepared("delete_unused_reactions", smileName)
+	// 	}
+	// }
+
 	return err
 
 }

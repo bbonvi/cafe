@@ -85,6 +85,7 @@ type React struct {
 	Count     uint64 `json:"count"`
 	PostID    uint64 `json:"postId"`
 	Self      bool   `json:"self,omitempty"`
+	Path      string `json:"self,omitempty"`
 }
 
 type Reacts []React

@@ -277,7 +277,6 @@ func (f *Feed) genSyncMessage() []byte {
 
 	// TODO: We send all thread reactions to connected client,
 	// although later he gonna call api to get all self reactions.
-	// This is no good
 	// t, _ := db.GetThreadReacts(f.id)
 	// if t != nil {
 	// 	p, _ := json.Marshal(t)
