@@ -4,7 +4,7 @@
  * https://github.com/chjj/marked
  */
 
-import { loadSmiles, page } from "../state";
+import { loadSmiles, page, loadSmilesWithGlobal } from "../state";
 import { smilePath } from "../posts/images"
 
 /**
@@ -684,9 +684,7 @@ InlineLexer.prototype.output = function(src) {
 
     // smile (cutechan)
     if (cap = this.rules.smile.exec(src)) {
-      const smiles1 = loadSmiles(page.board)
-      const smiles2 = loadSmiles("all")
-      const smiles = [...smiles1, ...smiles2]
+      const smiles = loadSmilesWithGlobal(page.board)
       const curSmile = smiles.find(s => s.name === cap[1])
       if (curSmile) {
         src = src.substring(cap[0].length);

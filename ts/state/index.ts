@@ -2,7 +2,7 @@
 
 import { setID } from "../db";
 import { Post, PostCollection } from "../posts";
-import { getClosestID } from "../util";
+import { getClosestID, getUnique } from "../util";
 
 // Server-wide global configurations
 interface Config {
@@ -130,6 +130,20 @@ export function loadSmiles(board: string): Smile[] {
     } catch (error) {
         return [];
     }
+}
+
+/**
+ * Returns board's and global smiles. Board's is always first.
+ */
+export function loadSmilesWithGlobal(board?: string): Smile[] {
+    const smiles = [...loadSmiles(board || page.board), ...loadSmiles("all")];
+
+    return getUnique(smiles, "name");
+}
+
+export function getSmileByItsName(name: string, list?: Smile[]) {
+    const initialList = list || loadSmilesWithGlobal();
+    return initialList.find((s) => s.name === name);
 }
 
 window.addEventListener("storage", loadPostStores);
