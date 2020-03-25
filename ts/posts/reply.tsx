@@ -71,6 +71,9 @@ function getVideoInfo(file: File | Blob): Promise<Dict> {
       ctx.drawImage(vid, 0, 0, width, height);
       const thumb = c.toDataURL();
       resolve({ width, height, dur, src, thumb });
+      vid.pause();
+      vid.src = "";
+      vid.load();
     };
     vid.onerror = reject;
     vid.src = src;
