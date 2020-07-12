@@ -118,7 +118,7 @@ function setVisibility(post: HTMLElement, visible: boolean, showOnly?: boolean) 
 export function observePost(post: HTMLElement) {
     observer.observe(post);
 }
-initIntersectionObserver();
+// initIntersectionObserver();
 
 
 export function replaceSrcs(post: HTMLElement) {
@@ -129,7 +129,7 @@ export function replaceSrcs(post: HTMLElement) {
         const thumb = container.firstElementChild as HTMLImageElement;
         const blur = thumb.nextElementSibling as HTMLImageElement;
         thumb.src = thumb.dataset.src;
-        thumb.srcset = thumb.dataset.srcset;
+        // thumb.srcset = thumb.dataset.srcset;
         if (thumb) {
             blur.style.backgroundImage = `url("${blur.dataset.src}")`;
         }

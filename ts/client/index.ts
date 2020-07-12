@@ -67,7 +67,7 @@ export function insertPost(data: PostData) {
     view.setReaction(react);
   });
 
-  observePost(view.el)
+  // observePost(view.el)
 }
 
 // TODO: This has to be on server-side!!!
