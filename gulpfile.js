@@ -408,22 +408,12 @@ gulp.task("smiles", () => {
         `;
         const css = `
         .smile {
-            background-image: unset;
-        }
-
-        html.has-webp .smile {
-            background-image: url(/static/img/smiles-${hash}.webp);
-        }
-        html.no-webp .smile {
             background-image: url(/static/img/smiles-${hash}.png);
         }
 
         @media (-webkit-min-device-pixel-ratio: 2),
                 (min-resolution: 192dpi) {
-            html.has-webp .smile {
-                background-image: url(/static/img/smiles-${hash}@2x.webp);
-            }
-            html.no-webp .smile {
+            .smile {
                 background-image: url(/static/img/smiles-${hash}@2x.png);
             }
         }
@@ -439,7 +429,7 @@ gulp.task("smiles", () => {
         `;
         try { fs.mkdirSync("go/src/smiles"); } catch(e) { /* skip */ }
         fs.writeFileSync("go/src/smiles/smiles.go", goModule);
-        runSequence("assets", "webp", "webp2x")
+        runSequence("assets")
       });
   });
 
@@ -450,29 +440,29 @@ const options = {
     nearLossless: 40,
   }
 
-gulp.task("webp", function() {
-    let src = IMG_DIR + '/smiles-*.png';
-    let dest = IMG_DIR;
+// gulp.task("webp", function() {
+//     let src = IMG_DIR + '/smiles-*.png';
+//     let dest = IMG_DIR;
 
-    return gulp.src(src)
-      .pipe(imagemin([
-        webp(options)
-      ]))
-      .pipe(extReplace(".webp"))
-      .pipe(gulp.dest(dest));
-});
+//     return gulp.src(src)
+//       .pipe(imagemin([
+//         webp(options)
+//       ]))
+//       .pipe(extReplace(".webp"))
+//       .pipe(gulp.dest(dest));
+// });
 
-gulp.task("webp2x", function() {
-    let src = IMG_DIR + '/smiles-*@2x.png';
-    let dest = IMG_DIR;
-    options.nearLossless = 35;
-    return gulp.src(src)
-      .pipe(imagemin([
-        webp( options )
-      ]))
-      .pipe(extReplace(".webp"))
-      .pipe(gulp.dest(dest));
-});
+// gulp.task("webp2x", function() {
+//     let src = IMG_DIR + '/smiles-*@2x.png';
+//     let dest = IMG_DIR;
+//     options.nearLossless = 35;
+//     return gulp.src(src)
+//       .pipe(imagemin([
+//         webp( options )
+//       ]))
+//       .pipe(extReplace(".webp"))
+//       .pipe(gulp.dest(dest));
+// });
 
 gulp.task("clean", () => del([DIST_DIR]));
 
