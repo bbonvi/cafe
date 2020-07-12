@@ -150,7 +150,7 @@ async function renderPostPreview(event: MouseEvent | TouchEvent) {
 
   const preview = new PostPreview(post, target);
   postPreviews.push(preview);
-  if (preview) replaceSrcs(preview.el);
+  // if (preview) replaceSrcs(preview.el);
 }
 
 function showImage(url: string, width: number, height: number, thumbSrc?: string,
