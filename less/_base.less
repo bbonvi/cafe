@@ -3672,9 +3672,9 @@ html:not(.user) {
     border-radius: 3px;
     display: flex;
     opacity: 0;
-    transition: 0.1s opacity;
+    transition: 0.1s;
     flex-direction: row;
-    top: 0px;
+    top: -5px;
     right: -2px;
     overflow: hidden;
     border-top: 1px solid rgba(0, 0, 0, 0.04);
@@ -3682,6 +3682,9 @@ html:not(.user) {
     flex-wrap: wrap;
     position: absolute;
     margin: -2px 0;
+    .post:hover & {
+      top: 0px;
+    }
 
     &__add {
         color: @control;
