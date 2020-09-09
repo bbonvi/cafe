@@ -8,12 +8,12 @@
     {{#OP}}
       <h3 class="post-header-item post-subject">{{ Subject }}</h3>
     {{/OP}}
-    <span style="{{ #ShowColor }}color:#{{ Color }}{{/ ShowColor }}" class="post-header-item post-name trigger-ignore-user">{{ Name }}</span>
-    <a class="post-header-item post-id" href="{{ URL }}">#</a>
     {{#Badge}}
-      <span class="post-header-item post-badge">### {{ Auth }} ###</span>
+      <span class="post-header-item post-badge">{{ Auth }}</span>
     {{/Badge}}
+    <span style="{{ #ShowColor }}color:#{{ Color }}{{/ ShowColor }}" class="post-header-item post-name trigger-ignore-user">{{ Name }}</span>
     <time class="post-header-item post-time">{{ Time }}</time>
+    <a class="post-header-item post-id" href="{{ URL }}">#</a>
   </header>
 
   <section class="post-body">
