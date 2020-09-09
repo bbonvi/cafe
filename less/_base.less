@@ -1805,7 +1805,7 @@ blockquote.twitter-tweet p {
     margin: 10px 0px 0px 0px;
     padding: 5px 15px;
     box-sizing: border-box;
-    min-width: 400px;
+    min-width: 450px;
     max-width: 860px;
     background: @postBG;
     box-shadow: @postShadow;
@@ -1842,7 +1842,7 @@ blockquote.twitter-tweet p {
 }
 
 .post_file {
-    min-width: 400px;
+    min-width: 450px;
     max-width: 1080px;
 }
 
@@ -2273,7 +2273,7 @@ html.work-mode {
 
 .post-control {
     font-size: inherit;
-    margin-right: 20px;
+    margin-left: 20px;
 }
 
 .post-quote-control {
@@ -2403,13 +2403,19 @@ html:not(.pos_moderators) {
 }
 
 .post-delete-control,
-.post-ban-control {
+.post-ban-control,
+.post-id {
     opacity: 0;
     transition: 0.1s;
-    font-size: 10px;
+    font-size: 11px;
 
     .post:hover & {
         opacity: 0.25;
+    }
+}
+.post-id {
+    .post:hover & {
+        opacity: 1;
     }
 }
 
@@ -3686,6 +3692,7 @@ html:not(.user) {
     }
 
     .reaction-box__recent {
+      display: none;
         // padding: 0 10px;
 
         .smiles-item:last-of-type {
@@ -3700,7 +3707,7 @@ html:not(.user) {
         margin: -2px -1px;
 
         &--heart {
-            padding-left: 8px;
+            // padding-left: 8px;
 
             .smile {
                 transform: scale(0.53);
