@@ -614,6 +614,18 @@ body {
         transition: 0s;
     }
 }
+.popup-container-inner {
+  transition: 0s;
+}
+.popup-container-inner.blured {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  backdrop-filter: blur(50px) saturate(300%);
+  background: rgba(25, 25, 35, 7%);
+}
 
 .popup-item:not(.popup-video-item) {
     background-size: 100%;
@@ -2205,22 +2217,39 @@ html.work-mode {
         .post-file-thumb {
             opacity: 1;
         }
+      .post-file-thumb_background {
+          filter: unset;
+      }
     }
 
     .post-file-thumb:not(.fa-music) {
         opacity: 0;
         transition: 0.1s;
     }
+    .post-file-thumb_background {
+        filter: grayscale(1);
+    }
 
     .smile {
-        opacity: @workmode + 0.3;
+        box-shadow: inset 0 0 0 20px @spoiler;
+    }
 
-        &:hover {
-            opacity: 1;
-        }
+    .post-reacts .smile {
+        filter: grayscale(1);
+        box-shadow: unset;
+    }
+    .post:hover .smile {
+        filter: unset;
+        box-shadow: unset;
+    }
+
+    .smile-box .smile {
+        box-shadow: unset;
+        filter: unset;
     }
 
     del:hover .smile {
+        box-shadow: unset;
         opacity: 1;
     }
 }

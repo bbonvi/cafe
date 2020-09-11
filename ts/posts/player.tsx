@@ -139,15 +139,16 @@ class RenderVideo extends Component<any, PopupState> {
       pause,
       seekHover,
       seekPosition,
-      minimized,
       fullscreen,
       duration,
       playbackRateShow,
       playbackRate
     } = this.state;
     const { muted, volume, itemEl, durationProp, record } = this.props;
-    let { width } = this.props;
+    let { width, isPreview = false } = this.props;
     if (record) width = 0;
+
+    const minimized = this.state.minimized || this.props.isPreview;
 
     return (
       <div

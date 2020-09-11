@@ -17,6 +17,9 @@ import {
   ZOOM_STEP_PX,
   POST_EMBED_TWITTER_SEL,
   isMobile,
+  HOVER_TRIGGER_TIMEOUT_SECS,
+  POST_FILE_THUMB_CONT_SEL,
+  PREVIEW_TRIGGER_TIMEOUT_SECS,
 } from "../vars";
 import { findPreloadImages } from "./hover";
 import RenderVideo from './player'
@@ -63,6 +66,8 @@ export interface PopupProps {
   duration: number;
   onChangeImage: (arg0: number) => void;
   onClose: () => void;
+
+  isPreview?: boolean;
 }
 
 export interface PopupState {
@@ -106,9 +111,26 @@ class Popup extends Component<PopupProps, PopupState> {
   constructor(props: PopupProps) {
     super(props);
 
-    const { width, height, twitter } = props;
-    const rect = getCenteredRect({ width, height });
+    let { width, height } = props;
+    const { twitter } = props;
+
     this.aspect = width / height;
+
+    if (props.isPreview) {
+      const innerHeight = window.innerHeight;
+      const innerWidth = window.innerWidth;
+      const PREVIEW_SIZE = 800;
+
+      if (width >= height && innerWidth > PREVIEW_SIZE) {
+        width = PREVIEW_SIZE;
+        height = width / this.aspect;
+      } else if (height > width && innerHeight > PREVIEW_SIZE) {
+        height = PREVIEW_SIZE;
+        width = height * this.aspect;
+      }
+    }
+
+    const rect = getCenteredRect({ width, height });
 
     if (props.embed) {
       const matchSrc = props.html.match(/src="(.*)"/);
@@ -162,6 +184,10 @@ class Popup extends Component<PopupProps, PopupState> {
     }
     if (twitter) this.initTwitter();
     this.left = this.state.left;
+
+    if (this.props.isPreview) {
+      this.setState({ muted: true })
+    }
   }
 
   public componentWillUnmount() {
@@ -576,13 +602,16 @@ class Popups extends Component<any, PopupsState> {
   public curElement = null as HTMLElement;
 
   public componentDidMount() {
-    on(document, "click", this.open, {
-      selector: TRIGGER_MEDIA_POPUP_SEL,
-    });
-    on(document, "click", this.open, {
-      selector: POST_FILE_THUMB_BG_SEL,
-    });
     document.addEventListener('keydown', this.handleKey);
+
+    if (!isMobile) {
+      document.addEventListener('mousedown', this.handleGlobalDown);
+      document.addEventListener('mouseup', this.handleGlobalUp);
+      document.addEventListener('drag', this.handleGlobalUp);
+    }
+    on(document, "click", this.open, {
+      selector: [TRIGGER_MEDIA_POPUP_SEL, POST_FILE_THUMB_BG_SEL],
+    });
   }
 
   public handleKey = (e: KeyboardEvent) => {
@@ -599,6 +628,48 @@ class Popups extends Component<any, PopupsState> {
 
     this.handleChangeImage({ left, right });
 
+  }
+
+  downTimer = null as null | NodeJS.Timer;
+  currentPreview = null as null | string;
+
+  private handleGlobalUp = (e: MouseEvent) => {
+    if (!options.imageHover) {
+      clearTimeout(this.downTimer)
+      this.closePreview(e)
+    }
+  }
+
+  private closePreview = (e: MouseEvent) => {
+    if (this.currentPreview) {
+      this.makeHandleClose(this.currentPreview)();
+      e.stopPropagation()
+      e.stopImmediatePropagation()
+      e.preventDefault()
+      setTimeout(() => this.currentPreview = null, 0)
+    }
+  }
+
+  private handleGlobalDown = (e: MouseEvent) => {
+      const { target } = e;
+      if (e.button === 0) {
+        if (target instanceof HTMLElement) {
+          this.handlePreview(target)
+        }
+      }
+  }
+
+  private handlePreview = (target: HTMLElement) => {
+    if (!options.imageHover) {
+      const element = target.closest(POST_FILE_THUMB_CONT_SEL);
+      if (element instanceof HTMLElement) {
+
+        clearTimeout(this.downTimer)
+        this.downTimer = setTimeout(() => {
+          this.handleOpen(target, { isPreview: true });
+        }, PREVIEW_TRIGGER_TIMEOUT_SECS * 1000)
+      }
+    }
   }
 
   handleChangeImage = ({ left, right }: any) => {
@@ -618,7 +689,7 @@ class Popups extends Component<any, PopupsState> {
       if (left) pos = -1
       if (right) pos = +1
       this.handlePreloadNext(getNextElement(pos*2))
-      this.handleOpen(getNextElement(pos), true);
+      this.handleOpen(getNextElement(pos), { omitSameSkip: true });
     })
   }
 
@@ -641,6 +712,7 @@ class Popups extends Component<any, PopupsState> {
 
     let img = document.createElement('img');
     img.onload = () => img = null;
+    img.onerror = () => img = null;
     img.src = file.src;
 
   }
@@ -654,7 +726,7 @@ class Popups extends Component<any, PopupsState> {
 
   public render({ }, { popups }: PopupsState) {
     return (
-      <div class="popup-container-inner">
+      <div class={cx("popup-container-inner", { "blured": popups.find(p =>p.isPreview) })}>
         {popups.map((props) => (
           <Popup
             onChangeImage={this.handleChangeImage}
@@ -667,7 +739,10 @@ class Popups extends Component<any, PopupsState> {
     );
   }
 
-  public handleOpen(target: HTMLElement, omitSameSkip = false) {
+  public handleOpen(
+    target: HTMLElement,
+    { omitSameSkip, isPreview }: { omitSameSkip?: boolean; isPreview?: boolean } = {}
+) {
     const props = {
       video: false,
       image: false,
@@ -680,6 +755,7 @@ class Popups extends Component<any, PopupsState> {
       width: 0,
       height: 0,
       duration: 0,
+      isPreview,
     } as PopupProps;
     let { popups } = this.state;
 
@@ -696,6 +772,11 @@ class Popups extends Component<any, PopupsState> {
       this.curElement = target as HTMLElement;
       const { sha1 } = (target as HTMLImageElement).dataset;
       const file = post.getFileByHash(sha1);
+
+      // don't redraw popup if it is already previewing
+      if (this.currentPreview === file.src) {
+        return
+      }
 
       Object.assign(props, {
         video: file.video,
@@ -720,6 +801,10 @@ class Popups extends Component<any, PopupsState> {
       });
     } else {
       return;
+    }
+
+    if (isPreview) {
+      this.currentPreview = props.url;
     }
 
     if (IS_EMBED_INSTAGRAM) props.instagram = true;
