@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"meguca/auth"
+	"strings"
 	"meguca/common"
 	"meguca/feeds"
 	"meguca/util"
@@ -92,7 +93,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := c.listen(); err != nil {
-		c.logError(err)
+		// TODO: fix it
+		if !strings.Contains(err.Error(), "connection reset by peer") {
+			c.logError(err)
+		}
 	}
 }
 
