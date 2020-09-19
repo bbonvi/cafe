@@ -611,6 +611,12 @@ msgstr "Показать все"
 msgid "show"
 msgstr "Показать"
 
+msgid "open"
+msgstr "Открыть"
+
+msgid "loadMore"
+msgstr "Загрузить ещё"
+
 msgid "you"
 msgstr "(Вы)"
 

@@ -62,7 +62,7 @@ function getState(href: string): PageState {
     landing: pathname === "/",
     stickers: pathname.startsWith("/stickers/"),
     admin: admin ? (admin[1] || "all") : "",
-    lastN: /[&\?]last=100/.test(u.search) ? 100 : 0,
+    lastN: /[&\?]last=50/.test(u.search) ? 50 : 0,
     page: pageN ? parseInt(pageN[1], 10) : 0,
     thread: parseInt(thread && thread[1], 10) || 0,
   };

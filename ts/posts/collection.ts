@@ -54,6 +54,18 @@ export default class PostCollection extends Model {
       .map((id) => this.models[id]);
   }
 
+  /** Return first post in thread that is not OP */
+  public getFirst(): Post {
+      const all = this.all();
+      return all[1]
+  }
+
+  /** Return last post in thread that is not OP */
+  public getLast(): Post {
+      const all = this.all();
+      return all.slice(1)[all.length - 2]
+  }
+
   /** Make collection iterable. */
   public *[Symbol.iterator](): IterableIterator<Post> {
     yield* this.all();

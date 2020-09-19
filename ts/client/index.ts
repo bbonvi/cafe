@@ -40,7 +40,7 @@ var vis = () => {
 };
 
 // Insert a post into the models and DOM
-export function insertPost(data: PostData) {
+export function insertPost(data: PostData, silent = false) {
   const atBottom = isAtBottom();
 
   const model = new Post(data);
@@ -52,18 +52,19 @@ export function insertPost(data: PostData) {
 
   model.propagateLinks();
 
-  // Find last allocated post and insert after it
   const last = document.getElementById("thread-container").firstChild.lastElementChild;
   last.after(view.el);
-  postAdded(model);
+  if (!silent) {
+    postAdded(model);
+  }
   smileLineOffset(view.el.querySelectorAll(".post-message p"));
   const tabInFocus = vis();
   // options.scrollToBottom &&
-  if (tabInFocus && atBottom && !isHoverActive()) {
+  if (tabInFocus && atBottom && !isHoverActive() && !silent) {
     scrollToBottom();
   }
-  const { reacts = []} = data;
-  reacts.forEach((react: SmileReact) => {
+  const { reacts = [] } = data;
+  (reacts || []).forEach((react: SmileReact) => {
     view.setReaction(react);
   });
 

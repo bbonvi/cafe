@@ -605,6 +605,12 @@ msgstr "See all"
 msgid "show"
 msgstr "Show"
 
+msgid "open"
+msgstr "Open"
+
+msgid "loadMore"
+msgstr "Load more"
+
 msgid "you"
 msgstr "(You)"
 

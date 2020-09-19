@@ -75,6 +75,8 @@ const emit = {
 
 export const API = {
   post: {
+    listRange: (thread: number, start: number, limit: number) =>
+      emit.GET.JSON(`thread/${thread}?start=${start}&limit=${limit}`)(),
     create: emit.POST.Form("post"),
     createToken: emit.POST.JSON("post/token"),
     react: (d?: Dict): Promise<SmileReact> => emit.POST.JSON("post/react")(d),

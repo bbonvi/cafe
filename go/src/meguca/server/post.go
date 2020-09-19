@@ -50,6 +50,51 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Serve thread as json
+func serveThreadPosts(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.ParseUint(getParam(r, "thread"), 10, 64)
+	if err != nil {
+		text400(w, err)
+		return
+	}
+
+    post, err := db.GetPost(id)
+    if err != nil {
+        text500(w, r, err)
+        return
+    }
+
+    ss, _ := getSession(r, post.Board)
+    if !assertNotModOnly(w, r, post.Board, ss) {
+        return
+    }
+
+	start, err := strconv.Atoi(r.URL.Query().Get("start"));
+    if err != nil {
+        start = 0
+    }
+    // start id should be higher than thread id
+    if start <= int(id) {
+        start = int(id) + 1
+    }
+
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"));
+    if err != nil {
+        limit = 100;
+    }
+    if limit > 100 {
+        limit = 100;
+    }
+
+	posts, err := db.GetThreadRange(id, start, limit)
+	if err != nil {
+		text500(w, r, err)
+		return
+	}
+    serveJSON(w, r, posts)
+}
+
 func getHashedHeaders(r *http.Request) string {
 	str := strings.Join(r.Header["User-Agent"][:], "")
 	str += strings.Join(r.Header["Accept"], "")
@@ -90,7 +135,7 @@ func createPostToken(w http.ResponseWriter, r *http.Request) {
 	serveJSON(w, r, res)
 }
 
-func getTreadUserReaction(w http.ResponseWriter, r *http.Request) {
+func getThreadUserReaction(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(getParam(r, "thread"), 10, 64)
 	if err != nil {
 		text400(w, err)

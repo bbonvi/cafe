@@ -9,6 +9,7 @@ export const ALERTS_CONTAINER_SEL = ".alerts-container";
 export const HOVER_CONTAINER_SEL = ".hover-container";
 export const REACTION_HOVER_CONTAINER_SEL = ".reaction-container";
 export const POPUP_CONTAINER_SEL = ".popup-container";
+export const LOAD_MORE_SEL = ".load-more";
 export const MODAL_CONTAINER_SEL = ".modal-container";
 export const REPLY_CONTAINER_SEL = ".reply-container";
 export const PROFILES_CONTAINER_SEL = ".header-profiles";

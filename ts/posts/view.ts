@@ -225,9 +225,14 @@ export default class PostView extends View<Post> {
         thread.append(this.el);
     }
 
+    /** Return ClientRect of post element */
+    public getRect() {
+      return this.el.getBoundingClientRect();
+    }
+
     // Check if we can see the post or have scrolled past it.
     public scrolledPast() {
-        const rect = this.el.getBoundingClientRect();
+        const rect = this.getRect();
         const viewW = document.body.clientWidth;
         const viewH = document.body.clientHeight;
         return rect.bottom < viewH && rect.left > 0 && rect.left < viewW;

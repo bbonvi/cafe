@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+    "math"
 	"meguca/auth"
 	"meguca/common"
 
@@ -244,6 +245,113 @@ func findReactionsInList(re common.Reacts, id uint64) (r common.Reacts, err erro
 	}
 	return r, nil
 
+}
+
+func GetThreadRange(id uint64, post_cursor int, lastN int) (p common.Posts, err error) {
+	// Read all data in single transaction.
+	tx, err := StartTransaction()
+	if err != nil {
+		return
+	}
+	defer tx.Rollback()
+	err = SetReadOnly(tx)
+	if err != nil {
+		return
+	}
+	// Get thread info and OP post.
+    t, err := scanThread(tx.Stmt(prepared["get_thread"]).QueryRow(id))
+	if err != nil {
+		return
+	}
+
+	t.Abbrev = lastN != 0
+	postCnt := int(t.PostCtr)
+    limitFixed := int(math.Abs(float64(lastN)))
+
+
+	var r *sql.Rows
+	// Get thread posts.
+    // if lastN is negative then load N posts before specified id.
+    if lastN < 0 {
+      r, err = tx.Stmt(prepared["get_thread_posts_offset"]).Query(id, post_cursor, limitFixed)
+    } else {
+      r, err = tx.Stmt(prepared["get_thread_posts_range"]).Query(id, post_cursor, limitFixed)
+    }
+	if err != nil {
+		return
+	}
+	defer r.Close()
+
+	re, err := GetThreadReacts(id)
+	if err != nil {
+		fmt.Print(err)
+	}
+	threadReactions, err := findReactionsInList(re, id)
+	if err != nil {
+		fmt.Print(err)
+	} else {
+		t.Reacts = threadReactions
+	}
+
+	// Fill thread posts.
+	var ps postScanner
+	args := ps.ScanArgs()
+	t.Posts = make([]*common.Post, 0, postCnt)
+	postIds := make([]uint64, 1, postCnt+1) // + OP
+	postIds[0] = id
+	postsById := make(map[uint64]*common.Post, postCnt+1) // + OP
+	postsById[t.ID] = t.Post
+	for r.Next() {
+		err = r.Scan(args...)
+		if err != nil {
+			return
+		}
+		p := ps.Val()
+		t.Posts = append(t.Posts, &p)
+		postIds = append(postIds, p.ID)
+		postsById[p.ID] = &p
+
+		postReactions, err := findReactionsInList(re, p.ID)
+		if err != nil {
+			postsById[p.ID].Reacts = make(common.Reacts, 0, 64)
+			continue
+		}
+		postsById[p.ID].Reacts = postReactions
+	}
+	err = r.Err()
+	if err != nil {
+		return
+	}
+
+	// Get thread files.
+	var r2 *sql.Rows
+	if lastN == 0 {
+		r2, err = tx.Stmt(prepared["get_thread_files"]).Query(id)
+	} else {
+		ids := pq.Array(postIds)
+		r2, err = tx.Stmt(prepared["get_abbrev_thread_files"]).Query(ids)
+	}
+	if err != nil {
+		return
+	}
+	defer r2.Close()
+
+	// Fill posts files.
+	var fs fileScanner
+	var pID uint64
+	args = append([]interface{}{&pID}, fs.ScanArgs()...)
+	for r2.Next() {
+		err = r2.Scan(args...)
+		if err != nil {
+			return
+		}
+		img := fs.Val()
+		if p, ok := postsById[pID]; ok {
+			p.Files = append(p.Files, img)
+		}
+	}
+	err = r2.Err()
+	return t.Posts, nil
 }
 
 // GetThread retrieves public thread data from the database.

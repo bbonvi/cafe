@@ -32,7 +32,7 @@ const (
 	DefaultAdminPassword = "password"
 	ThreadsPerPage       = 20
 	NumPostsAtIndex      = 3
-	NumPostsOnRequest    = 100
+	NumPostsOnRequest    = 50
 )
 
 // Available themes. Change this, when adding any new ones.

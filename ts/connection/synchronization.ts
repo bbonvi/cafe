@@ -46,6 +46,25 @@ async function fetchMissingPost(id: number) {
   posts.get(id).view.reposition();
 }
 
+// Fetch posts in specific range and insert it in thread
+export async function insertPostsInRange(start: number, limit: number) {
+  const postsFetched = await API.post.listRange(page.thread, start, limit)
+  postsFetched.reverse()
+  let inserted = 0;
+  for (const post of postsFetched) {
+    // avoid duplicates
+    if (posts.get(post.id)) {
+      continue
+    }
+
+    insertPost(post, true)
+    posts.get(post.id).view.reposition();
+    inserted += 1;
+  }
+
+  return inserted;
+}
+
 // Synchronise to the server and start receiving updates on the appropriate
 // channel. If there are any missed messages, fetch them.
 handlers[message.synchronise] = async (data: SyncData) => {

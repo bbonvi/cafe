@@ -16,7 +16,6 @@ func Start(address, user string, debugRoutes bool) (err error) {
 	startThumbWorkers(user)
 	router := createRouter(debugRoutes)
 	return http.ListenAndServe(address, router)
-
 }
 
 // If user uploads large file (40MB max by default), Go consumes quite a
@@ -79,18 +78,14 @@ func createRouter(debugRoutes bool) http.Handler {
 	// Common.
 	api.GET("/socket", websockets.Handler)
 	api.GET("/embed", serveEmbed)
-	// Idols.
-	/* 	api.GET("/idols/profiles", serveIdolProfiles)
-	   	api.POST("/idols/recognize", serveIdolRecognize)
-	   	api.POST("/idols/:id/preview", serveSetIdolPreview) */
-	/* 	api.GET("/idols/by-image/:id", serveImageInfo) */
 	// Posts.
 	api.GET("/post/:post", servePost)
 	api.POST("/post/token", createPostToken)
 	api.POST("/post", createPost)
 	api.POST("/post/react", reactToPost)
 	api.POST("/thread", createThread)
-	api.GET("/thread/:thread/reacts", getTreadUserReaction)
+	api.GET("/thread/:thread/reacts", getThreadUserReaction)
+	api.GET("/thread/:thread", serveThreadPosts)
 	// Account.
 	api.POST("/register", register)
 	api.POST("/login", login)
