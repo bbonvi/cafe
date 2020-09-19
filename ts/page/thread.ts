@@ -61,7 +61,7 @@ async function loadMore() {
       })
       .finally(() => { ref.loading = false })
     for (const post of posts) {
-        post.propagateLinks()
+        post.propagateLinks(true)
     }
     const scrollHeightAfter = document.documentElement.scrollHeight
     document.documentElement.scrollBy(0, scrollHeightAfter - scrollHeightBefore)
