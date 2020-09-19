@@ -100,7 +100,6 @@ class RenderVideo extends Component<any, PopupState> {
     };
     return (
       <video
-        crossOrigin="use-credential"
         onTimeUpdate={this.setDuration}
         class="popup-item popup-video-item"
         ref={this.props.setRef}
