@@ -57,6 +57,7 @@ type Post struct {
 	Commands  Commands `json:"commands,omitempty"`
 	Files     Files    `json:"files,omitempty"`
 	Reacts    Reacts   `json:"reacts"`
+    ClientID  string   `json:"clientID,omitempty"`
 }
 
 // StandalonePost is a post view that includes the "op" and "board"

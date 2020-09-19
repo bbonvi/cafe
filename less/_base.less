@@ -1819,6 +1819,13 @@ blockquote.twitter-tweet p {
     box-shadow: @postShadow;
     word-break: break-word;
     position: relative;
+    opacity: 1;
+
+    transition: 1s opacity;
+
+    &.sending {
+        opacity: 0.5!important;
+    }
 
     ul {
         word-wrap: normal;
@@ -2726,6 +2733,9 @@ html:not(.pos_moderators) {
     .reply-content {
         transition: 0.1s;
     }
+}
+.reply_sending.reply_textonly {
+    display: none;
 }
 
 .reply_float {

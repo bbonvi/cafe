@@ -28,6 +28,7 @@ export interface PostData {
   reacts?: SmileReact[];
   op?: number;
   board?: string;
+  clientID?: string;
 }
 
 export interface SmileReact {

@@ -3,12 +3,12 @@ import { Component, h, render } from "preact";
 import vmsg from "vmsg";
 import { showAlert } from "../alerts";
 import API from "../api";
-import { isModerator } from "../auth";
-import { smileLineOffset } from "../client";
+import { isModerator, account } from "../auth";
+import { smileLineOffset, insertPost } from "../client";
 import { PostData } from "../common";
 import _ from "../lang";
 const imageConversion = require("image-conversion")
-import { boards, config, page, storeMine } from "../state";
+import { boards, config, page, storeMine, posts } from "../state";
 import { duration, fileSize, renderBody } from "../templates";
 import {
   AbortError,
@@ -42,6 +42,7 @@ import {
 import { Progress } from "../widgets";
 import * as signature from "./signature";
 import SmileBox, { autocomplete } from "./smile-box";
+import {PostView} from ".";
 /* var isMob: boolean = window.matchMedia("(max-width: 768px) and (hover: none)").matches
 addEventListener('resize', function(){
   isMob = window.matchMedia("(max-width: 768px) and (hover: none)").matches
@@ -455,7 +456,7 @@ class Reply extends Component<any, any> {
   // }
   public render({ }, { float, fwraps, showBadge, sending, progress }: any) {
     const manyf = fwraps.length > 1;
-    const progressIs100 = (!fwraps.length && sending) || sending && progress === 100;
+    const progressIs100 = (!fwraps.length && sending) || sending && progress > 99;
     return (
       <div
         ref={s(this, "mainEl")}
@@ -464,7 +465,8 @@ class Reply extends Component<any, any> {
           reply_files: manyf,
           reply_mod: showBadge,
           reply_sending: sending,
-          reply_progress100: progressIs100
+          reply_progress100: progressIs100,
+          reply_textonly: fwraps.length === 0,
         })}
         style={{ ...this.style }}
         onMouseDown={this.handleFormDown}
@@ -934,12 +936,35 @@ class Reply extends Component<any, any> {
     }
     return getFileInfo(file).then((info: Dict) => ({ file, info }));
   }
+
+  token = null as null | string;
+  loadingToken = false
+
   private handleSend = () => {
     if (this.disabled) return;
     const { board, thread, subject, body, showBadge } = this.state;
     const files = this.state.fwraps.map((f) => f.file);
     const sendFn = page.thread ? API.post.create : API.thread.create;
-    this.setState({ sending: true });
+    this.setState({ sending: true, editing: false });
+
+    // we use clientID to identify user posts in websocket feed.
+    // this is stupid but whatever
+    const clientID = (Math.random() * Date.now()).toString(16)
+    const userID = window.session ? window.session.userID : null;
+    let postView: PostView | null;
+    if (page.thread && files.length === 0) {
+        postView = insertPost({
+          id: Infinity, time: Date.now()/1000, body, reacts: [],
+          userID: userID,
+          userName: account && account.showName ? account.name : null,
+          userColor: account && account.showName ? account.color : null,
+          clientID,
+        })
+        postView.setSending()
+    }
+
+    // (window as any).clientID = clientID;
+
     API.post
       .createToken()
       .then(({ id: token }: Dict) => {
@@ -952,6 +977,7 @@ class Reply extends Component<any, any> {
             body,
             files,
             showBadge,
+            clientID,
             token,
             sign,
           },
@@ -960,8 +986,19 @@ class Reply extends Component<any, any> {
         );
       })
       .then(
-        (res: Dict) => {
+        (res: PostData) => {
           if (page.thread) {
+            const hasFiles = this.state.fwraps.length > 0;
+            // preemptively add own posts in thread without waiting for websocket
+            // TODO: return files in API
+            if (postView) {
+                postView.setSent()
+                postView.setId(res.id)
+                postView.reposition()
+            } else {
+                insertPost(res)
+            }
+
             storeMine(res.id, page.thread);
             this.handleFormHide();
           } else {
@@ -970,12 +1007,14 @@ class Reply extends Component<any, any> {
           }
         },
         (err: Error) => {
+          this.setState({ editing: true });
+          postView.remove()
           if (err instanceof AbortError) return;
           showAlert({ title: _("sendErr"), message: err.message });
         },
       )
       .then(() => {
-        this.setState({ sending: false, progress: 0 });
+        this.setState({ sending: false, progress: 0, editing: true });
         this.sendAPI = {};
       });
   }

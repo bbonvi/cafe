@@ -41,6 +41,14 @@ var vis = () => {
 
 // Insert a post into the models and DOM
 export function insertPost(data: PostData, silent = false) {
+  // don't insert post that is already exists
+  const postWithSameClienIdExists =
+      data.clientID && posts.all().find(p => p.clientID === data.clientID);
+  const postsWithSameIdExists = data.id < Infinity && posts.has(data.id);
+  if (postsWithSameIdExists || postWithSameClienIdExists) {
+      return
+  }
+
   const atBottom = isAtBottom();
 
   const model = new Post(data);
@@ -67,6 +75,8 @@ export function insertPost(data: PostData, silent = false) {
   (reacts || []).forEach((react: SmileReact) => {
     view.setReaction(react);
   });
+
+  return view
 
   // observePost(view.el)
 }

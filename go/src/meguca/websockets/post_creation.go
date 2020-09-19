@@ -44,6 +44,7 @@ type PostCreationRequest struct {
 	Body         string
 	Token        string
 	Sign         string
+    ClientID     string
 	ShowBadge    bool
 	ShowName     bool
 	Session      *auth.Session
@@ -146,6 +147,7 @@ func constructPost(tx *sql.Tx, req PostCreationRequest) (post db.Post, err error
 			Post: common.Post{
 				Time: time.Now().Unix(),
 				Body: req.Body,
+                ClientID: req.ClientID,
 			},
 			Board: req.Board,
 		},

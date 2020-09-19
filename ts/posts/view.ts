@@ -38,6 +38,21 @@ export default class PostView extends View<Post> {
         this.model.view.el.innerHTML = this.getEveryoneHTML();
     }
 
+    public setId(id: number) {
+        this.id = id;
+        const postId = this.el.querySelector(".post-id")
+        if (postId instanceof HTMLAnchorElement) {
+            postId.href = `#${id}`
+        }
+    }
+
+    public setSending() {
+        this.el.classList.add("sending")
+    }
+    public setSent() {
+        this.el.classList.remove("sending")
+    }
+
     // Apply client-specific formatting to post rendered on server-side.
     public afterRender(): Promise<void> {
         this.renderTime();

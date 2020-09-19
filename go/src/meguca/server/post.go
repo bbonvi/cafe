@@ -394,8 +394,8 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 	}
 	feeds.InsertPostInto(post.StandalonePost, msg)
 
-	res := map[string]uint64{"id": post.ID}
-	serveJSON(w, r, res)
+    // res := map[string]interface{}{"id": post.ID, "files": post.Files, "body": post.Body}
+	serveJSON(w, r, post.StandalonePost)
 }
 
 // ok = false if failed and caller should return.
@@ -470,6 +470,7 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 	// consistent with WebSocket requests and store normalized data in DB.
 	body := f.Get("body")
 	body = strings.Replace(body, "\r\n", "\n", -1)
+	clientID := f.Get("clientID")
 
 	modOnly := config.IsModOnlyBoard(board)
 	req = websockets.PostCreationRequest{
@@ -483,6 +484,7 @@ func parsePostCreationForm(w http.ResponseWriter, r *http.Request) (
 		ShowBadge:    f.Get("showBadge") == "on" || modOnly,
 		ShowName:     modOnly,
 		Session:      ss,
+        ClientID:     clientID,
 	}
 	ok = true
 	return

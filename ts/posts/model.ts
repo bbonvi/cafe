@@ -46,6 +46,8 @@ export class Post extends Model implements PostData {
   public deleted?: boolean;
   public subject?: string;
 
+  public clientID?: string;
+
   constructor(attrs: PostData) {
     super();
     Object.assign(this, attrs);
