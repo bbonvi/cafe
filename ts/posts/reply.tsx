@@ -455,7 +455,7 @@ class Reply extends Component<any, any> {
   // }
   public render({ }, { float, fwraps, showBadge, sending, progress }: any) {
     const manyf = fwraps.length > 1;
-    const display = (!fwraps.length && sending) || sending && progress === 100 ? 'none' : '';
+    const progressIs100 = (!fwraps.length && sending) || sending && progress === 100;
     return (
       <div
         ref={s(this, "mainEl")}
@@ -463,8 +463,10 @@ class Reply extends Component<any, any> {
           reply_float: float,
           reply_files: manyf,
           reply_mod: showBadge,
+          reply_sending: sending,
+          reply_progress100: progressIs100
         })}
-        style={{ ...this.style, display }}
+        style={{ ...this.style }}
         onMouseDown={this.handleFormDown}
         onMouseMove={this.handleFormMove}
       >
@@ -964,7 +966,7 @@ class Reply extends Component<any, any> {
             this.handleFormHide();
           } else {
             storeMine(res.id, res.id);
-            location.href = `/${board}/${res.id}`;
+            location.href = `/${board}/${res.id}?last=50#bottom`;
           }
         },
         (err: Error) => {
