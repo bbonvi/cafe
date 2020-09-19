@@ -529,11 +529,11 @@ class Popup extends Component<PopupProps, PopupState> {
     const { clientX, clientY } = e as MouseEvent;
 
     const order = e.deltaY < 0 ? 1 : -1;
-    // order = -1 � scale down
-    // order = 1 � scale up
     let zoom = ZOOM_STEP_PX;
     let { left, top, width, height } = this.state;
     let { width: realWidth, height: realHeight } = this.props;
+    realWidth *= 3
+    realHeight *= 3
 
     const rect = this.itemEl.getBoundingClientRect();
     const itemWidth = rect.width;
@@ -562,18 +562,7 @@ class Popup extends Component<PopupProps, PopupState> {
 
     const isUndersized = width <= 230 || height <= 230;
 
-    const isOversized = width > realWidth || height > realHeight;
-
     if (isUndersized && order < 0) return;
-
-    if (isOversized) {
-      const offsetWidth = width - this.props.width;
-      const offsetHeight = height - this.props.height;
-      left = left + offsetWidth / 2 / relativePositionX;
-      top = top + offsetHeight / 2 / relativePositionY;
-      width = width - offsetWidth;
-      height = height - offsetHeight;
-    }
     this.setState({ top, left, height, width, seekHover: false })
   }
 }
