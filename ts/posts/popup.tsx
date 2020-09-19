@@ -552,7 +552,7 @@ class Popup extends Component<PopupProps, PopupState> {
     const relativePositionX = ((itemWidth / 2) / offsetX);
     const relativePositionY = ((itemHeight / 2) / offsetY);
 
-    const isOriginalSize = width === realWidth && height === realHeight;
+    const isOriginalSize = width > realWidth || height > realHeight;
     if (isOriginalSize && order > 0) return;
 
     left = left - (zoom / 2 / relativePositionX) * order;
