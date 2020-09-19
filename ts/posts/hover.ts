@@ -298,7 +298,6 @@ function clearPostPreviews() {
       postPreview.remove();
 
     // remove model from posts list if its view doesn't exist anymore
-    console.log(document.querySelector(`#post${postPreview.model.id}`))
     if (!document.querySelector(`#post${postPreview.model.id}`)) {
       posts.remove(postPreview.model)
     }

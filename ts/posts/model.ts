@@ -82,7 +82,7 @@ export class Post extends Model implements PostData {
   public propagateLinks(silent = false) {
     if (this.isReply()) {
       addHasReplyClass(this.view.el);
-      if (!silent) {
+      if (!silent && !mine.has(this.id)) {
         notifyAboutReply(this);
       }
     }

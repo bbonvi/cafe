@@ -9,8 +9,8 @@ import { repliedToMe } from "./tab";
 // Notify the user that one of their posts has been replied to.
 export default function notifyAboutReply(post: Post) {
   // Ignore my replies to me (lol samefag).
-  if (options.doNotDisturb) return;
   if (mine.has(post.id)) return;
+  if (options.doNotDisturb) return;
 
   // Check if already seen.
   if (post.seen()) return;
