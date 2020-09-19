@@ -140,7 +140,7 @@ func Delete(SHA1 string, fileType, thumbType uint8) error {
 
 // CreateDirs creates directories for processed image storage
 func CreateDirs() error {
-	for _, dir := range [...]string{"src", "thumb"} {
+	for _, dir := range [...]string{"src", "thumb", "blur"} {
 		path := filepath.Join(common.ImageWebRoot, dir)
 		if err := os.MkdirAll(path, 0755); err != nil {
 			return err
