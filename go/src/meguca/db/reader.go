@@ -310,9 +310,6 @@ func GetThreadRange(id uint64, post_cursor int, lastN int) (p common.Posts, err 
 		t.Posts = append(t.Posts, &p)
 		postIds = append(postIds, p.ID)
 		postsById[p.ID] = &p
-        if p.ID == 506 {
-          fmt.Println(p)
-        }
 
 		postReactions, err := findReactionsInList(re, p.ID)
 		if err != nil {
