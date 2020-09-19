@@ -85,10 +85,8 @@ export class Post extends Model implements PostData {
       notifyAboutReply(this);
     }
     if (this.links) {
-      console.log("propagated")
       for (const [id] of this.links) {
         const post = posts.get(id);
-        console.log(this.id, this.op)
         if (post) {
           post.insertBacklink(this.id, this.op);
         }

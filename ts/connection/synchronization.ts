@@ -57,8 +57,9 @@ export async function insertPostsInRange(start: number, limit: number) {
       continue
     }
 
-    insertPost(post, true)
-    posts.get(post.id).view.reposition();
+    const postview = insertPost(post, true)
+    const curPost = posts.get(post.id)
+    curPost.view.reposition();
     inserted += 1;
   }
 
