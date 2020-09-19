@@ -1821,8 +1821,6 @@ blockquote.twitter-tweet p {
     position: relative;
     opacity: 1;
 
-    transition: 1s opacity;
-
     &.sending {
         opacity: 0.5!important;
     }
@@ -1836,18 +1834,8 @@ blockquote.twitter-tweet p {
         margin-bottom: 0;
     }
 
-    &.should-anim {
-        transform: translateY(-50%) scaleY(0.0);
-        opacity: 0;
-        transition: 0.15s transform, opacity;
-    }
-
-    &.post_loaded {
-        opacity: 1;
-        transform: none;
-    }
-
     &.has-reply {
+        padding-left: 10px;
         border-left: 5px solid @yous;
     }
 }
@@ -2723,11 +2711,6 @@ html:not(.pos_moderators) {
         }
         .reply-content {
             opacity: 0.6;
-        }
-    }
-    &.reply_progress100 {
-        .reply-content {
-            opacity: 0.3;
         }
     }
     .reply-content {

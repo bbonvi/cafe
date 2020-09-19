@@ -30,17 +30,16 @@ export default class PostView extends View<Post> {
 
         this.model.view = this;
         this.model.seenOnce = !!el;
-        this.animate = !el;
-        if (this.animate) {
-            this.el.classList.add("should-anim");
-        }
         this.timers = {};
         this.model.view.el.innerHTML = this.getEveryoneHTML();
     }
 
     public setId(id: number) {
         this.id = id;
+        this.model.id = id;
         const postId = this.el.querySelector(".post-id")
+        this.el.id = `post${id}`
+        this.el.dataset.id = id.toString()
         if (postId instanceof HTMLAnchorElement) {
             postId.href = `#${id}`
         }
@@ -56,9 +55,6 @@ export default class PostView extends View<Post> {
     // Apply client-specific formatting to post rendered on server-side.
     public afterRender(): Promise<void> {
         this.renderTime();
-        if (this.animate) {
-            this.el.classList.add("post_loaded");
-        }
 
         return renderEmbeds(this.el);
     }

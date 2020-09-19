@@ -988,16 +988,13 @@ class Reply extends Component<any, any> {
       .then(
         (res: PostData) => {
           if (page.thread) {
-            const hasFiles = this.state.fwraps.length > 0;
             // preemptively add own posts in thread without waiting for websocket
             // TODO: return files in API
             if (postView) {
-                postView.setSent()
-                postView.setId(res.id)
-                postView.reposition()
-            } else {
-                insertPost(res)
+                posts.remove(postView.model)
+                postView.remove()
             }
+            insertPost(res)
 
             storeMine(res.id, page.thread);
             this.handleFormHide();
@@ -1008,7 +1005,9 @@ class Reply extends Component<any, any> {
         },
         (err: Error) => {
           this.setState({ editing: true });
-          postView.remove()
+          if (postView) {
+              postView.remove()
+          }
           if (err instanceof AbortError) return;
           showAlert({ title: _("sendErr"), message: err.message });
         },

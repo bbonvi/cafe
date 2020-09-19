@@ -62,7 +62,6 @@ class PostPreview extends View<Post> {
   constructor(model: Post, parent: HTMLElement) {
     const { el } = model.view;
     super({ el: clonePost(el) });
-    this.el.classList.remove('should-anim')
     this.parent = parent;
     this.model = Object.assign({}, model);
     this.render();

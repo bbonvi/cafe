@@ -84,7 +84,7 @@ export function insertPost(data: PostData, silent = false) {
 // TODO: This has to be on server-side!!!
 function smileLineOffsetJob() {
   const elems = document.querySelectorAll(".post-message p");
-  smileLineOffset(elems);
+  smileLineOffset(elems, true);
 }
 smileLineOffsetJob();
 
@@ -100,13 +100,18 @@ if (isWebkit) {
   document.documentElement.classList.add("is-webkit");
 }
 
-export function smileLineOffset(elems: any) {
+export function smileLineOffset(elems: any, isAsync = false) {
   for (const elem of elems) {
-    setTimeout(() => {
-        if (!elem.innerText || !/\S/.test(elem.innerText)) {
-          elem.classList.add("smiles-offset");
-        }
-    }, 0)
+    function exec() {
+      if (!elem.innerText || !/\S/.test(elem.innerText)) {
+        elem.classList.add("smiles-offset");
+      }
+    }
+    if (isAsync) {
+      setTimeout(exec, 0)
+    } else {
+      exec()
+    }
   }
 }
 

@@ -52,7 +52,7 @@ async function loadMore() {
 
     ref.loading = true;
     const scrollHeightBefore = document.documentElement.scrollHeight;
-    await (insertPostsInRange(post.id, -50) as any)
+    await (insertPostsInRange(post.id, -30) as any)
       .then((inserted: number) => {
         updateOmit(inserted)
         if (inserted === 0 || posts.all().length >= (op as any).postCtr) {
