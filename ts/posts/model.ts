@@ -79,10 +79,12 @@ export class Post extends Model implements PostData {
 
   // Check if this post replied to one of the user's posts and trigger
   // handlers. Set and render backlinks on any linked posts.
-  public propagateLinks() {
+  public propagateLinks(silent = false) {
     if (this.isReply()) {
       addHasReplyClass(this.view.el);
-      notifyAboutReply(this);
+      if (!silent) {
+        notifyAboutReply(this);
+      }
     }
     if (this.links) {
       for (const [id] of this.links) {

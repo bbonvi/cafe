@@ -58,7 +58,7 @@ export function insertPost(data: PostData, silent = false) {
   const view = new PostView(model, null);
   view.afterRender();
 
-  model.propagateLinks();
+  model.propagateLinks(silent);
 
   const last = document.getElementById("thread-container").firstChild.lastElementChild;
   last.after(view.el);
