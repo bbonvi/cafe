@@ -72,7 +72,6 @@ class PostPreview extends View<Post> {
   public remove() {
     this.parent.removeEventListener("click", clearPostPreviews);
     super.remove();
-    posts.remove(this.model)
   }
 
   private render() {
@@ -296,8 +295,13 @@ function clearInactivePostPreviews() {
 function clearPostPreviews() {
   while (postPreviews.length) {
     const postPreview = postPreviews.pop();
-    posts.remove(postPreview.model)
-    postPreview.remove();
+      postPreview.remove();
+
+    // remove model from posts list if its view doesn't exist anymore
+    console.log(document.querySelector(`#post${postPreview.model.id}`))
+    if (!document.querySelector(`#post${postPreview.model.id}`)) {
+      posts.remove(postPreview.model)
+    }
   }
 }
 
