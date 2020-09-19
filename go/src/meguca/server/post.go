@@ -324,6 +324,14 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 		text400(w, err)
 		return
 	}
+
+    // user can not post in bumplimited thread last post of which was over a week ago
+	ok = db.AssertNotArchivedThread(op)
+	if !ok {
+		text400(w, fmt.Errorf("Thread is archived"))
+		return
+	}
+
 	ok, err = db.ValidateOP(op, req.Board)
 	if err != nil {
 		text500(w, r, err)

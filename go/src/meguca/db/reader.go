@@ -374,6 +374,14 @@ func AssertNotReacted(
 	return
 }
 
+func AssertNotArchivedThread(threadId uint64) (r bool) {
+	err := prepared["assert_not_archived_thread"].QueryRow(threadId).Scan(&r)
+	if err != nil {
+		return false
+	}
+	return
+}
+
 // GetPostReactCount reads a single post reaction from the database.
 func GetPostReactCount(id uint64, smile_name string) (count uint64) {
 	err := prepared["get_post_react_count"].QueryRow(id, smile_name).Scan(&count)
