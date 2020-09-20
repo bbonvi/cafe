@@ -116,16 +116,15 @@ class Popup extends Component<PopupProps, PopupState> {
 
     this.aspect = width / height;
 
-    if (props.isPreview) {
+    // videos look better when they are in full screen
+    if (props.video) {
       const innerHeight = window.innerHeight;
       const innerWidth = window.innerWidth;
-      const PREVIEW_SIZE = 900;
-
-      if (width >= height && innerWidth > PREVIEW_SIZE) {
-        width = PREVIEW_SIZE;
+      if (width >= height && innerWidth > width) {
+        width = innerWidth;
         height = width / this.aspect;
-      } else if (height > width && innerHeight > PREVIEW_SIZE) {
-        height = PREVIEW_SIZE;
+      } else if (height > width && innerHeight > height) {
+        height = innerHeight;
         width = height * this.aspect;
       }
     }
@@ -184,10 +183,6 @@ class Popup extends Component<PopupProps, PopupState> {
     }
     if (twitter) this.initTwitter();
     this.left = this.state.left;
-
-    if (this.props.isPreview) {
-      this.setState({ muted: true })
-    }
   }
 
   public componentWillUnmount() {
