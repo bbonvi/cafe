@@ -119,7 +119,7 @@ class Popup extends Component<PopupProps, PopupState> {
     if (props.isPreview) {
       const innerHeight = window.innerHeight;
       const innerWidth = window.innerWidth;
-      const PREVIEW_SIZE = 800;
+      const PREVIEW_SIZE = 900;
 
       if (width >= height && innerWidth > PREVIEW_SIZE) {
         width = PREVIEW_SIZE;
